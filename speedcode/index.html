@@ -688,12 +688,12 @@ function canType(){ return S.phase==='play' && !padLocked && iPlay() && $('sGame
 function press(k){
   if(!canType()) return;
   if(k==='del'){ S.input=S.input.slice(0,-1); renderAns(); return; }
-  if(k==='ok'){ check(true); return; }
+  if(k==='ok'){ check(); return; }
   if(S.input.length>=4) return;
   if(S.input==='0') S.input='';
-  S.input+=k; renderAns(); check(false);
+  S.input+=k; renderAns();
 }
-function check(explicit){
+function check(){
   if(!S.input) return;
   if(+S.input===S.cur){
     S.score++; S.lastSolve=Date.now(); S.maxBits=Math.max(S.maxBits, S.bits); dirtyScore=true;
@@ -703,7 +703,7 @@ function check(explicit){
     var lvlUp = bitsFor(S.score, S.settings.maxBits) > S.bits;
     timers.push(setTimeout(function(){ if(S.phase==='play'){ nextQ(); if(lvlUp) toast((S.bits)+'비트로 올라갔어요!'); } }, 260));
     if(S.role==='host') boardDirty=true;
-  } else if(explicit){
+  } else {
     S.wrong++; dirtyScore=true; renderAns('bad');
     lockPad(true); timers.push(setTimeout(function(){ S.input=''; renderAns(); lockPad(false); }, 420));
   }
