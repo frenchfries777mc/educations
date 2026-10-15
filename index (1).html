@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frenchfries777 Educations</title>
+<meta name="description" content="Frenchfries777이 만든 교육용 브라우저 게임 모음. 설치 없이 바로 수업에서 써요.">
+<meta property="og:title" content="Frenchfries777 Educations"><meta property="og:description" content="설치 없이 브라우저에서 바로 하는 교육용 게임들"><meta property="og:type" content="website">
+<meta name="theme-color" content="#08090d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=Orbit&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="https://frenchfries777mc.github.io/games/ff-lang.js"></script>
+<script id="i18n">
+/* Site translation (same 6 languages and the same saved choice as the game).
+   The pages are written in Korean; this file translates their text in place. Whole text nodes are looked up first (S: site strings),
+   then the game's own phrase dictionary (G) is applied piece by piece, longest phrase first, like in the game. */
+(function(){
+var LS='arenaClashLang', LANGS=['ko','en','es','fr','de','ja'];
+var NAMES={ko:'한국어',en:'English',es:'Español',fr:'Français',de:'Deutsch',ja:'日本語'};
+var S={"k": ["게임", "언어", "교육용 게임", "수업에서 바로 쓰는 교육용 게임 모음이에요. 링크를 열면 설치 없이 시작해요.", "Frenchfries777이 만든 교육용 브라우저 게임 모음. 설치 없이 바로 수업에서 써요.", "설치 없이 브라우저에서 바로 하는 교육용 게임들", "데이터 탐험", "행성 탐사", "중1 정보 · 데이터", "혼자 · 반 코드", "로그인 없이", "외계인 탐사선이 되어 살 수 있는 행성을 찾는 게임이에요. 행성마다 신호, 사진, 소리, 영상을 모아 기록하고, 그 데이터로 종족마다 맞는 행성을 골라 정착시켜요.", "2진 신호를 풀어 온도, 중력, 산소, 방사선 읽기", "저장 용량 안에서 사진 화질과 크기 고르기", "모은 데이터를 표, 막대그래프, 산점도, 벤 다이어그램으로 보기", "플레이", "행성 탐사 플레이", "행성 탐사 첫 화면", "바로 시작", "다운로드 없이 브라우저에서 열면 끝. PC와 태블릿, 휴대폰 모두 돼요.", "반 코드로 함께", "같은 반 코드를 넣으면 모두 같은 행성과 요청으로 시작해서 결과를 비교할 수 있어요.", "놀면서 배우기", "문제를 푸는 대신 게임 속에서 직접 데이터를 모으고 정리해요."], "en": ["Games", "Language", "Learning Games", "Learning games ready for class. Open the link and play, no install needed.", "Browser learning games by Frenchfries777. Use them in class with no install.", "Learning games that run right in the browser", "Data exploration", "Planet Search", "Grade 7 · Data", "Solo · Class code", "No login needed", "Play an alien probe looking for a planet to live on. Collect signals, photos, sounds and videos from each planet, then use that data to settle each species on the right world.", "Decode binary signals to read temperature, gravity, oxygen and radiation", "Pick photo quality and size within your storage", "See your data as tables, bar charts, scatter plots and Venn diagrams", "Play", "Play Planet Search", "Planet Search title screen", "Start instantly", "No download, just open it in the browser. Works on PC, tablet and phone.", "Together with a class code", "Everyone who enters the same class code gets the same planets and requests, so you can compare results.", "Learn by playing", "Instead of answering quizzes, you collect and organize data inside the game."], "es": ["Juegos", "Idioma", "Juegos educativos", "Juegos educativos listos para clase. Abre el enlace y juega, sin instalar nada.", "Juegos educativos de navegador de Frenchfries777. Úsalos en clase sin instalar nada.", "Juegos educativos que funcionan en el navegador", "Exploración de datos", "Planet Search", "1.º ESO · Datos", "Solo · Código de clase", "Sin iniciar sesión", "Eres una sonda alienígena que busca un planeta habitable. Recoge señales, fotos, sonidos y vídeos de cada planeta y usa esos datos para asentar a cada especie en el mundo adecuado.", "Descifra señales binarias para leer temperatura, gravedad, oxígeno y radiación", "Elige la calidad y el tamaño de las fotos según tu almacenamiento", "Mira tus datos en tablas, gráficos de barras, de dispersión y diagramas de Venn", "Jugar", "Jugar a Planet Search", "Pantalla de inicio de Planet Search", "Empieza ya", "Sin descargas, solo ábrelo en el navegador. Funciona en PC, tableta y móvil.", "Juntos con un código de clase", "Con el mismo código de clase todos reciben los mismos planetas y peticiones, así podéis comparar resultados.", "Aprende jugando", "En lugar de responder preguntas, recoges y organizas datos dentro del juego."], "fr": ["Jeux", "Langue", "Jeux éducatifs", "Des jeux éducatifs prêts pour la classe. Ouvrez le lien et jouez, sans installation.", "Jeux éducatifs par navigateur de Frenchfries777. À utiliser en classe sans installation.", "Des jeux éducatifs qui tournent dans le navigateur", "Exploration de données", "Planet Search", "5e · Données", "Solo · Code de classe", "Sans connexion", "Incarnez une sonde extraterrestre à la recherche d'une planète habitable. Collectez signaux, photos, sons et vidéos sur chaque planète, puis utilisez ces données pour installer chaque espèce sur le bon monde.", "Décoder des signaux binaires pour lire température, gravité, oxygène et radiation", "Choisir la qualité et la taille des photos selon votre stockage", "Voir vos données en tableaux, histogrammes, nuages de points et diagrammes de Venn", "Jouer", "Jouer à Planet Search", "Écran titre de Planet Search", "Démarrage immédiat", "Rien à télécharger, ouvrez-le dans le navigateur. Fonctionne sur PC, tablette et téléphone.", "Ensemble avec un code de classe", "Avec le même code de classe, tout le monde reçoit les mêmes planètes et demandes pour comparer les résultats.", "Apprendre en jouant", "Au lieu de répondre à des quiz, vous collectez et organisez des données dans le jeu."], "de": ["Spiele", "Sprache", "Lernspiele", "Lernspiele für den Unterricht. Link öffnen und loslegen, ohne Installation.", "Browser-Lernspiele von Frenchfries777. Ohne Installation im Unterricht nutzen.", "Lernspiele, die direkt im Browser laufen", "Datenforschung", "Planet Search", "Klasse 7 · Daten", "Solo · Klassencode", "Ohne Anmeldung", "Du bist eine außerirdische Sonde auf der Suche nach einem bewohnbaren Planeten. Sammle Signale, Fotos, Töne und Videos von jedem Planeten und siedle mit diesen Daten jede Spezies auf der passenden Welt an.", "Binärsignale entschlüsseln und Temperatur, Schwerkraft, Sauerstoff und Strahlung ablesen", "Fotoqualität und -größe passend zum Speicher wählen", "Deine Daten als Tabelle, Balkendiagramm, Streudiagramm und Venn-Diagramm ansehen", "Spielen", "Planet Search spielen", "Titelbildschirm von Planet Search", "Sofort loslegen", "Kein Download, einfach im Browser öffnen. Läuft auf PC, Tablet und Handy.", "Gemeinsam mit Klassencode", "Mit demselben Klassencode bekommen alle dieselben Planeten und Aufträge und können die Ergebnisse vergleichen.", "Spielend lernen", "Statt Quizfragen zu beantworten, sammelst und ordnest du Daten im Spiel."], "ja": ["ゲーム", "言語", "学習ゲーム", "授業ですぐ使える学習ゲーム集です。リンクを開けばインストールなしで始められます。", "Frenchfries777が作ったブラウザ学習ゲーム集。インストールなしで授業に使えます。", "ブラウザですぐ遊べる学習ゲーム", "データ探検", "惑星探査", "中1 情報・データ", "ひとり・クラスコード", "ログイン不要", "宇宙人の探査機になって、住める惑星を探すゲームです。惑星ごとに信号、写真、音、映像を集めて記録し、そのデータで種族ごとに合う惑星を選んで移住させます。", "2進数の信号を解読して温度、重力、酸素、放射線を読み取る", "保存容量の中で写真の画質とサイズを選ぶ", "集めたデータを表、棒グラフ、散布図、ベン図で見る", "プレイ", "惑星探査をプレイ", "惑星探査のタイトル画面", "すぐ始める", "ダウンロード不要、ブラウザで開くだけ。PC、タブレット、スマホで動きます。", "クラスコードでいっしょに", "同じクラスコードを入れると全員が同じ惑星と依頼で始まり、結果を比べられます。", "遊びながら学ぶ", "問題を解く代わりに、ゲームの中でデータを集めて整理します。"]};
+var G={k:[]};
+var pref=null; try{ pref=localStorage.getItem(LS); }catch(e){}
+function detect(){ var c=[]; try{ c=(navigator.languages&&navigator.languages.length)?navigator.languages:[navigator.language||'']; }catch(e){} for(var i=0;i<c.length;i++){ var b=String(c[i]||'').toLowerCase().split('-')[0]; if(LANGS.indexOf(b)>=0) return b; } return 'en'; }
+var lang=LANGS.indexOf(pref)>=0?pref:detect();
+var HAN=/[가-힣]/, exact=Object.create(null), sub=Object.create(null), re=null;
+if(lang!=='ko'){
+  var i, keys=[];
+  if(G[lang]) for(i=0;i<G.k.length;i++){ exact[G.k[i]]=G[lang][i]; sub[G.k[i]]=G[lang][i]; keys.push(G.k[i]); }
+  if(S[lang]) for(i=0;i<S.k.length;i++){ exact[S.k[i]]=S[lang][i]; if(S.k[i].length>2 && S.k[i].indexOf('{')<0){ sub[S.k[i]]=S[lang][i]; keys.push(S.k[i]); } }
+  keys=keys.filter(function(k,j){ return keys.indexOf(k)===j; }).sort(function(a,b){ return b.length-a.length; });
+  if(keys.length) re=new RegExp(keys.map(function(k){ return k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|'),'g');
+}
+function T(s){
+  if(lang==='ko'||typeof s!=='string'||!HAN.test(s)) return s;
+  var m=/^(\s*)([\s\S]*?)(\s*)$/.exec(s), core=m[2];
+  if(exact[core]!==undefined) return m[1]+exact[core]+m[3];
+  return re ? s.replace(re,function(x){ return sub[x]; }) : s;
+}
+function F(tpl){ var a=arguments, s=(lang==='ko')?tpl:(exact[tpl]!==undefined?exact[tpl]:tpl); return s.replace(/\{(\d)\}/g,function(_,n){ var v=a[+n+1]; return v==null?'':String(v); }); }
+var ATTRS=['placeholder','title','aria-label','alt'], seen=new WeakMap();
+function skip(n){ for(var e=n.nodeType===1?n:n.parentNode;e&&e.nodeType===1;e=e.parentNode){ if(e.nodeName==='SCRIPT'||e.nodeName==='STYLE'||e.hasAttribute('data-notr')) return true; } return false; }
+function doText(n){ var v=n.nodeValue; if(!HAN.test(v)||seen.get(n)===v||skip(n)) return; var o=T(v); seen.set(n,o); if(o!==v) n.nodeValue=o; }
+function doAttr(el){ for(var i=0;i<ATTRS.length;i++){ var a=ATTRS[i], v=el.getAttribute&&el.getAttribute(a); if(v&&HAN.test(v)&&!skip(el)) el.setAttribute(a,T(v)); } }
+function walk(root){
+  if(!root) return; if(root.nodeType===3){ doText(root); return; } if(root.nodeType!==1) return;
+  doAttr(root); var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT|NodeFilter.SHOW_ELEMENT,null), n;
+  while((n=w.nextNode())){ if(n.nodeType===3) doText(n); else doAttr(n); }
+}
+function picker(){
+  var slots=document.querySelectorAll('[data-lang-slot]');
+  for(var j=0;j<slots.length;j++){
+    var sel=document.createElement('select'); sel.className='langSel'; sel.setAttribute('data-notr',''); sel.setAttribute('aria-label',lang==='ko'?'언어':T('언어'));
+    LANGS.forEach(function(l){ var o=document.createElement('option'); o.value=l; o.textContent=NAMES[l]; if(l===lang) o.selected=true; sel.appendChild(o); });
+    sel.onchange=function(){ try{ localStorage.setItem(LS,this.value); }catch(e){} try{ if(window.FFLang) FFLang.set(this.value); }catch(e){} location.reload(); };
+    slots[j].appendChild(sel);
+  }
+}
+function start(){
+  picker();
+  document.documentElement.lang=lang;
+  if(lang==='ko') return;
+  var tt=document.querySelector('title'); if(tt) tt.textContent=T(tt.textContent);
+  var md=document.querySelector('meta[name="description"]'); if(md) md.setAttribute('content',T(md.getAttribute('content')||''));
+  walk(document.body);
+  if(window.MutationObserver) new MutationObserver(function(ms){ ms.forEach(function(m){ if(m.type==='characterData') doText(m.target); else m.addedNodes.forEach(walk); }); })
+    .observe(document.body,{childList:true,subtree:true,characterData:true});
+}
+window.SI18N={lang:lang, T:T, F:F, pick:function(o){ return (lang!=='ko' && o && o.tr && o.tr[lang]) || o; }};
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
+})();
+</script>
+<style>
+  :root{ --bg:#08090d; --panel:#10131b; --line:#222837; --text:#eef0f5; --dim:#8a93a6; --fry:#ffc93c; --fry2:#ff8a3d; }
+  *{box-sizing:border-box;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text);}
+  body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:16px; line-height:1.6; min-height:100vh;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    background-image:radial-gradient(ellipse 900px 520px at 10% -10%, rgba(255,201,60,.10), transparent 60%), radial-gradient(ellipse 800px 600px at 110% 30%, rgba(255,77,94,.08), transparent 60%), radial-gradient(ellipse 800px 600px at -10% 90%, rgba(31,74,165,.12), transparent 60%);
+    background-attachment:fixed;}
+  .wrap{max-width:1120px; margin:0 auto; padding:0 22px;}
+  header{display:flex; align-items:center; justify-content:space-between; padding:26px 0 0;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Oswald',sans-serif; font-weight:600; font-size:20px; letter-spacing:.04em; color:var(--text); text-decoration:none;}
+  .logo .fry{width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font-size:20px; background:linear-gradient(135deg,var(--fry),var(--fry2)); box-shadow:0 6px 18px rgba(255,160,60,.25);}
+  .logo b{color:var(--fry); font-weight:700;}
+  header nav a{color:var(--dim); text-decoration:none; font-size:15px; margin-left:18px;}
+  header nav a:hover{color:var(--text);}
+  header .right{display:flex; align-items:center;}
+  .langSel{background:var(--panel); color:var(--dim); border:1px solid var(--line); border-radius:8px; padding:6px 9px; font:inherit; font-size:14px; cursor:pointer; margin-left:16px;}
+  .langSel:hover{color:var(--text); border-color:var(--fry);}
+  .hero{padding:58px 0 34px;}
+  .hero .eyebrow{display:inline-block; font-size:13px; font-weight:700; letter-spacing:.14em; color:var(--fry); text-transform:uppercase;}
+  .hero h1{font-family:'Oswald','Noto Sans KR',sans-serif; font-weight:700; font-size:clamp(40px,7vw,76px); line-height:1.02; margin:10px 0 0; text-transform:uppercase; letter-spacing:.01em;}
+  .hero h1 span{background:linear-gradient(90deg,var(--fry),var(--fry2)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .hero p{color:var(--dim); font-size:18px; margin:16px 0 0; max-width:46ch;}
+  .games{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:22px; padding-bottom:20px;}
+  .game{position:relative; border-radius:18px; overflow:hidden; display:flex; flex-direction:column; border:1px solid var(--line); background:var(--panel); transition:transform .18s ease, box-shadow .18s ease, border-color .18s;}
+  .game:hover{transform:translateY(-4px);}
+  .shot{position:relative; aspect-ratio:16/9; overflow:hidden; display:block;}
+  .shot img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s ease;}
+  .game:hover .shot img{transform:scale(1.045);}
+  .shot::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg,transparent 45%,var(--card) 100%);}
+  .badge{position:absolute; top:14px; left:14px; z-index:1; font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:99px; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);}
+  .body{padding:4px 26px 26px; margin-top:-34px; position:relative; z-index:1; display:flex; flex-direction:column; flex:1;}
+  .game h2{margin:0; line-height:1.05;}
+  .tags{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0;}
+  .tags span{font-size:13px; font-weight:500; padding:3px 10px; border-radius:99px;}
+  .desc{margin:14px 0 0; font-size:15.5px; flex:1;}
+  .desc ul{margin:10px 0 0; padding-left:18px;} .desc li{margin:3px 0;}
+  .acts{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;}
+  .play{display:inline-flex; align-items:center; gap:10px; padding:14px 24px; border-radius:10px; font-weight:700; font-size:17px; text-decoration:none; transition:filter .12s, transform .12s;}
+  .play:hover{filter:brightness(1.1);} .play:active{transform:scale(.98);}
+  .play svg{width:18px; height:18px;}
+  .sub{display:inline-flex; align-items:center; padding:14px 16px; border-radius:10px; font-weight:600; font-size:15.5px; text-decoration:none; border:1px solid; transition:background .12s;}
+
+  .acct{display:grid; grid-template-columns:auto 1fr auto; gap:18px; align-items:center; margin:0 0 26px; padding:18px 22px; border-radius:16px; border:1px solid rgba(255,196,61,.35); background:linear-gradient(100deg,rgba(255,196,61,.13),rgba(255,140,40,.05) 60%,var(--panel));}
+  .acct .ai{font-size:34px; width:58px; height:58px; display:grid; place-items:center; border-radius:14px; background:rgba(255,196,61,.14); border:1px solid rgba(255,196,61,.3);}
+  .acct h3{margin:0; font-size:19px;} .acct p{margin:4px 0 0; color:var(--dim); font-size:15px;}
+  .acct .ag{display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end;}
+  .acct .ag span{font-size:13px; font-weight:700; padding:4px 11px; border-radius:99px; white-space:nowrap;}
+  .acct .ag span::before{content:'✓ ';}
+  .acct .g1{background:rgba(63,224,197,.12); color:#3fe0c5; border:1px solid rgba(63,224,197,.3);}
+  .acct .g2{background:rgba(212,175,79,.12); color:#f2dc94; border:1px solid rgba(212,175,79,.35);}
+  .acct .g3{background:rgba(242,199,90,.10); color:#f3e4b0; border:1px solid rgba(242,199,90,.3);}
+  .game .tags span.acc{background:rgba(255,196,61,.12); color:#ffd36b; border:1px solid rgba(255,196,61,.35); font-weight:700;}
+  .tags span.acc i{font-style:normal; margin-right:4px;}
+  @media(max-width:860px){ .acct{grid-template-columns:auto 1fr;} .acct .ag{grid-column:1 / -1; justify-content:flex-start;} }
+  @media(max-width:520px){ .acct{padding:16px; gap:12px;} .acct .ai{width:46px; height:46px; font-size:26px;} .acct h3{font-size:17px;} }
+  .why{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:40px 0 0;}
+  .why > div{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px;}
+  .why .ic{font-size:24px;} .why h3{margin:6px 0 4px; font-size:16.5px;} .why p{margin:0; color:var(--dim); font-size:14.5px;}
+  footer{margin:56px 0 40px; padding-top:20px; border-top:1px solid var(--line); color:var(--dim); font-size:14px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;}
+  footer a{color:var(--dim);}
+  /* 행성 탐사: probe console, deep space with ice blue, amber only for the main button */
+  .ps{--card:#070b18; background:#070b18; border-color:#1f2a44;}
+  .ps:hover{border-color:#9fd4ff; box-shadow:0 18px 50px rgba(159,212,255,.16);}
+  .ps .badge{background:rgba(159,212,255,.9); color:#06101f;}
+  .ps h2{font-family:'Orbit','Noto Sans KR',sans-serif; font-weight:400; font-size:40px; letter-spacing:.06em; color:#eef4ff;}
+  .ps .motto{display:flex; align-items:center; gap:10px; color:#9fd4ff; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; letter-spacing:.32em; margin-top:6px; white-space:nowrap;}
+  .ps .motto i{flex:0 0 26px; height:1px; background:#9fd4ff; opacity:.6;}
+  .ps .tags span{background:rgba(159,212,255,.08); color:#cfe6ff; border:1px solid rgba(159,212,255,.28);}
+  .ps .desc{color:#a6b2c9;} .ps .desc li::marker{color:#9fd4ff;}
+  .ps .play{background:#ffb547; color:#1d1203;}
+  .games{grid-template-columns:repeat(auto-fit,minmax(320px,560px));}
+  html[data-ff-theme=light]{--bg:#f6f3ec; --panel:#ffffff; --line:#e2dccf; --text:#1f1b14; --dim:#6d6658;}
+  html[data-ff-theme=light] body{background-image:radial-gradient(ellipse 900px 520px at 10% -10%, rgba(255,201,60,.22), transparent 60%), radial-gradient(ellipse 800px 600px at 110% 30%, rgba(255,77,94,.10), transparent 60%);}
+  html[data-ff-theme=light] .langSel{background:#fff;} html[data-ff-theme=light] .ffa-set,html[data-ff-theme=light] .ffa-bell{background:#fff; color:#1f1b14; border-color:#d9d2c3;}
+  @media(max-width:860px){ .why{grid-template-columns:1fr;} }
+  @media(max-width:380px){ .games{grid-template-columns:1fr;} }
+  @media(max-width:520px){
+    .wrap{padding:0 16px;} header nav{display:none;} header{gap:8px;} .logo{font-size:16px; gap:8px; min-width:0; flex:1 1 auto;} .logo span:last-child{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;} header .right{flex:0 0 auto;} .logo .fry{width:30px; height:30px; font-size:17px;} .langSel{margin-left:0; padding:6px 6px;} .ffa-wrap{margin-left:8px !important;} .ffa-chip{max-width:118px !important;} .ffa-btn{padding:7px 10px !important;} .hero{padding:38px 0 24px;} .hero p{font-size:16.5px;}
+    .body{padding:4px 18px 20px;} .ps h2{font-size:34px;}
+    .play{flex:1; justify-content:center;} .sub{flex:1; justify-content:center;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <a class="logo" href="./"><span class="fry">🍟</span><span>FRENCHFRIES<b>777</b></span></a>
+    <div class="right"><nav><a href="#games">게임</a><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">GitHub</a></nav><span data-lang-slot></span><span data-ff-account></span></div>
+  </header>
+
+  <section class="hero">
+    <span class="eyebrow">Learning Games</span>
+    <h1>Frenchfries777<br><span>Educations</span></h1>
+    <p>수업에서 바로 쓰는 교육용 게임 모음이에요. 링크를 열면 설치 없이 시작해요.</p>
+  </section>
+
+  <section class="games" id="games">
+    <article class="game ps">
+      <a class="shot" href="planetsearch/" aria-label="행성 탐사 플레이"><span class="badge">데이터 탐험</span><img src="planetsearch.webp" alt="행성 탐사 첫 화면" loading="lazy"></a>
+      <div class="body">
+        <h2>행성 탐사</h2>
+        <div class="motto"><i></i>PLANET SEARCH<i></i></div>
+        <div class="tags"><span>중1 정보 · 데이터</span><span>혼자 · 반 코드</span><span>로그인 없이</span></div>
+        <div class="desc">
+          외계인 탐사선이 되어 살 수 있는 행성을 찾는 게임이에요. 행성마다 신호, 사진, 소리, 영상을 모아 기록하고, 그 데이터로 종족마다 맞는 행성을 골라 정착시켜요.
+          <ul>
+            <li>2진 신호를 풀어 온도, 중력, 산소, 방사선 읽기</li>
+            <li>저장 용량 안에서 사진 화질과 크기 고르기</li>
+            <li>모은 데이터를 표, 막대그래프, 산점도, 벤 다이어그램으로 보기</li>
+          </ul>
+        </div>
+        <div class="acts">
+          <a class="play" href="planetsearch/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <section class="why">
+    <div><div class="ic">⚡</div><h3>바로 시작</h3><p>다운로드 없이 브라우저에서 열면 끝. PC와 태블릿, 휴대폰 모두 돼요.</p></div>
+    <div><div class="ic">🏫</div><h3>반 코드로 함께</h3><p>같은 반 코드를 넣으면 모두 같은 행성과 요청으로 시작해서 결과를 비교할 수 있어요.</p></div>
+    <div><div class="ic">📊</div><h3>놀면서 배우기</h3><p>문제를 푸는 대신 게임 속에서 직접 데이터를 모으고 정리해요.</p></div>
+  </section>
+
+  <footer><span>Made by Frenchfries777 with Claude AI</span><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">github.com/frenchfries777mc</a></footer>
+</div>
+<script src="https://frenchfries777mc.github.io/games/ff-auth.js"></script>
+</body>
+</html>
