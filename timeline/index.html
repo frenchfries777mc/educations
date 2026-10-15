@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>Timeline Battle</title>
+<meta name="description" content="사건 카드를 연표의 알맞은 자리에 끼워 넣는 역사 대결 게임">
+<meta name="theme-color" content="#0b0a10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<style>
+  :root{ --bg:#0b0a10; --panel:#14121b; --panel2:#1b1824; --line:#2b2736; --text:#f2eee6; --dim:#968fa3; --fry:#ffc93c; --fry2:#ff8a3d; --gold:#e9c46a; --ok:#3fe0a0; --bad:#ff5468; }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0; background:var(--bg); color:var(--text);}
+  body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:16px; line-height:1.5; min-height:100vh; min-height:100dvh;
+    padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px); overflow-x:hidden;}
+  /* archive hall: warm spotlights, a long timeline rail with year ticks */
+  .hall{position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden;
+    background:
+      radial-gradient(ellipse 40% 50% at 20% 0%, rgba(233,196,106,.13), transparent 70%),
+      radial-gradient(ellipse 40% 50% at 80% 0%, rgba(233,196,106,.09), transparent 70%),
+      radial-gradient(ellipse 70% 40% at 50% 110%, rgba(120,70,160,.18), transparent 70%),
+      linear-gradient(180deg,#110f17,#0b0a10);}
+  .hall .rail{position:absolute; left:0; right:0; bottom:46px; opacity:.6; height:2px; background:linear-gradient(90deg,transparent,rgba(233,196,106,.35),transparent);}
+  .hall .rail::before{content:''; position:absolute; left:0; right:0; top:-8px; height:18px; background:repeating-linear-gradient(90deg, transparent 0 79px, rgba(233,196,106,.25) 79px 81px); -webkit-mask:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent); mask:linear-gradient(90deg,transparent,#000 20%,#000 80%,transparent);}
+  .hall .yrs{position:absolute; left:0; right:0; bottom:20px; opacity:.7; display:flex; justify-content:space-around; font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(233,196,106,.22); letter-spacing:.1em;}
+  .wrap{position:relative; z-index:1; max-width:1180px; margin:0 auto; padding:0 18px;}
+  button,input,select{font:inherit; color:inherit;}
+  button{cursor:pointer; touch-action:manipulation;}
+  header{display:flex; align-items:center; justify-content:space-between; padding:16px 0 0; gap:12px;}
+  .logo{display:flex; align-items:center; gap:10px; font-family:'Oswald',sans-serif; font-weight:600; font-size:19px; letter-spacing:.04em; color:var(--text); text-decoration:none;}
+  .logo .fry{width:32px; height:32px; border-radius:9px; display:grid; place-items:center; font-size:18px; background:linear-gradient(135deg,var(--fry),var(--fry2)); box-shadow:0 6px 18px rgba(255,160,60,.25);}
+  .logo b{color:var(--fry); font-weight:700;}
+  .net{font-size:13px; color:var(--dim); display:flex; align-items:center; gap:7px; white-space:nowrap;}
+  .net i{width:8px; height:8px; border-radius:50%; background:var(--dim); display:inline-block;}
+  .net.on i{background:var(--ok); box-shadow:0 0 8px var(--ok);} .net.off i{background:var(--bad);}
+  @media(max-width:420px){ .net span{display:none;} .logo{font-size:17px;} }
+  .langSel{background:var(--panel); color:var(--dim); border:1px solid var(--line); border-radius:8px; padding:5px 8px; font-size:13.5px; cursor:pointer;}
+  .screen{display:none; padding:22px 0 40px; animation:fade .25s ease;}
+  .screen.on{display:block;}
+  @keyframes fade{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  .title{font-family:'Oswald',sans-serif; font-weight:700; text-transform:uppercase; line-height:.95; margin:0; letter-spacing:.01em; font-size:clamp(52px,11vw,116px);}
+  .title span{background:linear-gradient(90deg,var(--gold),#ffe3a3); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .ticker{font-family:'JetBrains Mono',monospace; color:var(--dim); font-size:15px; margin:14px 0 0; letter-spacing:.04em; white-space:nowrap; overflow:hidden;}
+  .ticker b{color:var(--gold); font-weight:700;}
+  .panel{background:rgba(20,18,27,.93); border:1px solid var(--line); border-radius:16px; padding:20px;}
+  .homeGrid{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:28px;}
+  .homeGrid .full{grid-column:1/-1;}
+  @media(max-width:680px){ .homeGrid{grid-template-columns:1fr;} }
+  label.lb{display:block; font-size:13px; font-weight:700; color:var(--dim); letter-spacing:.06em; margin:0 0 8px;}
+  .inp{width:100%; background:var(--bg); border:1px solid var(--line); border-radius:10px; padding:13px 14px; font-size:18px; outline:none;}
+  .inp:focus{border-color:var(--fry);}
+  .inp.code{font-family:'JetBrains Mono',monospace; text-transform:uppercase; letter-spacing:.3em; font-weight:800; font-size:24px; text-align:center;}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; border:0; border-radius:12px; padding:14px 20px; font-weight:700; font-size:17px; transition:filter .12s, transform .1s;}
+  .btn:active{transform:scale(.97);}
+  .btn.main{background:linear-gradient(90deg,var(--fry),var(--fry2)); color:#1c1405;}
+  .btn.main:hover{filter:brightness(1.08);}
+  .btn.ghost{background:rgba(11,10,16,.6); border:1px solid var(--line); color:var(--text);}
+  .btn.ghost:hover{border-color:var(--fry);}
+  .btn.sm{padding:9px 14px; font-size:15px; border-radius:10px;}
+  .btn[disabled]{opacity:.45; pointer-events:none;}
+  .btn.wide{width:100%; margin-top:12px;}
+  .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+  .msg{min-height:22px; margin-top:10px; font-size:14.5px; color:var(--bad);}
+  .msg.info{color:var(--dim);}
+  .card h3{margin:0 0 4px; font-size:19px;}
+  .card p{margin:0 0 12px; color:var(--dim); font-size:14.5px;}
+  .soloBox{border-color:rgba(233,196,106,.35); background:linear-gradient(120deg,rgba(233,196,106,.09),rgba(233,196,106,.02)), rgba(20,18,27,.93);}
+  .soloBox .row{justify-content:space-between;}
+  .best{font-family:'Oswald',sans-serif; color:var(--gold); font-size:18px; white-space:nowrap;}
+  .seg{display:inline-flex; padding:3px; border-radius:99px; border:1px solid var(--line); background:var(--bg); flex-wrap:wrap;}
+  .seg button{border:0; background:none; color:var(--dim); font-weight:700; font-size:14.5px; padding:7px 15px; border-radius:99px;}
+  .seg button.on{background:linear-gradient(90deg,var(--fry),var(--fry2)); color:#1c1405;}
+
+  /* lobby */
+  .lobbyTop{display:grid; grid-template-columns:auto 1fr; gap:24px; align-items:center;}
+  @media(max-width:680px){ .lobbyTop{grid-template-columns:1fr;} }
+  .codeBox{text-align:center; padding:18px 26px; border-radius:16px; border:1px solid rgba(255,196,61,.4); background:linear-gradient(140deg,rgba(255,201,60,.10),rgba(255,138,61,.05)), rgba(11,10,16,.8);}
+  .codeBox small{display:block; color:var(--dim); font-size:13px; font-weight:700; letter-spacing:.1em;}
+  .codeBox .cd{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:clamp(46px,9vw,78px); letter-spacing:.12em; color:var(--fry); line-height:1.1;}
+  .codeBox .lnk{font-size:13px; color:var(--dim); word-break:break-all; margin-top:4px;}
+  .codeBox .lnk button{background:none; border:1px solid var(--line); border-radius:8px; color:var(--text); font-size:12.5px; padding:3px 9px; margin-left:6px;}
+  .settings{display:grid; gap:14px;}
+  .setRow{display:flex; align-items:center; gap:12px; flex-wrap:wrap;}
+  .setRow > span{min-width:84px; font-size:14px; color:var(--dim); font-weight:700;}
+  .pcount{font-family:'Oswald',sans-serif; font-size:22px; margin:26px 0 10px; display:flex; align-items:baseline; gap:10px;}
+  .pcount b{color:var(--fry);} .pcount small{color:var(--dim); font-family:'Noto Sans KR',sans-serif; font-size:14px;}
+  .chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .chip{padding:7px 13px; border-radius:99px; background:var(--panel); border:1px solid var(--line); font-weight:500; font-size:15px; animation:pop .25s ease;}
+  .chip.me{border-color:var(--fry); color:var(--fry);}
+  @keyframes pop{from{transform:scale(.7); opacity:0;} to{transform:none; opacity:1;}}
+  .waitDots::after{content:''; animation:dots 1.4s steps(4) infinite;}
+  @keyframes dots{0%{content:'';}25%{content:'.';}50%{content:'..';}75%{content:'...';}}
+
+  /* game */
+  .hud{display:flex; align-items:stretch; gap:10px; flex-wrap:wrap;}
+  .stat{background:rgba(20,18,27,.93); border:1px solid var(--line); border-radius:12px; padding:6px 14px; min-width:86px;}
+  .stat small{display:block; font-size:11.5px; color:var(--dim); font-weight:700; letter-spacing:.08em; white-space:nowrap;}
+  .stat b{font-family:'Oswald',sans-serif; font-size:26px; line-height:1.15; white-space:nowrap;}
+  .stat.time b{color:var(--fry);}
+  .stat.time.low b{color:var(--bad); animation:blink 1s infinite;}
+  .stat .hearts{color:var(--bad); letter-spacing:2px; font-size:22px;}
+  .stat .hearts i{font-style:normal; color:#3a3445;}
+  .stat.streak b{color:var(--gold);}
+  @keyframes blink{50%{opacity:.5;}}
+  .hud .sp{flex:1;}
+  @media(max-width:480px){ .hud{gap:6px;} .stat{min-width:0; padding:5px 10px;} .stat b{font-size:21px;} .stat .hearts{font-size:18px;} .hud .btn.sm{padding:8px 10px;} }
+  .tbar{height:5px; border-radius:6px; background:var(--panel); margin:10px 0 0; overflow:hidden;}
+  .tbar i{display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--fry),var(--fry2)); transition:width .25s linear;}
+  .strip{display:flex; gap:6px; margin-top:10px; overflow:hidden;}
+  .strip .brow{flex:1 1 0; min-width:0;}
+  .tGrid{display:grid; grid-template-columns:380px minmax(0,1fr); gap:20px; margin-top:14px; align-items:start;}
+  @media(max-width:860px){ .tGrid{grid-template-columns:1fr; gap:12px;} .curCol{position:sticky; top:0; z-index:5; padding-top:6px; background:linear-gradient(180deg,var(--bg) 85%,transparent);} }
+  .curCol{display:flex; flex-direction:column; gap:10px;}
+  .ev{position:relative; border-radius:18px; padding:22px 20px 20px; text-align:center; overflow:hidden;
+    background:linear-gradient(160deg,#2a2233,#191520); border:1px solid rgba(233,196,106,.45); box-shadow:0 20px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06);}
+  .ev::before{content:''; position:absolute; inset:8px; border:1px solid rgba(233,196,106,.18); border-radius:12px; pointer-events:none;}
+  .ev .em{font-size:58px; line-height:1.1;}
+  .ev .tt{font-size:clamp(20px,2.4vw,25px); font-weight:900; margin-top:8px; line-height:1.3; word-break:keep-all;}
+  .ev .yr{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:22px; color:var(--gold); margin-top:10px; letter-spacing:.06em;}
+  .ev.in{animation:deal .35s ease;}
+  .ev.bad{animation:shake .4s ease; border-color:var(--bad);}
+  .ev.good{border-color:var(--ok);}
+  @keyframes deal{from{transform:translateY(-20px) rotate(-3deg); opacity:0;} to{transform:none; opacity:1;}}
+  @keyframes shake{20%,60%{transform:translateX(-10px) rotate(-1deg);}40%,80%{transform:translateX(10px) rotate(1deg);}}
+  @media(max-width:860px){ .ev{padding:12px 14px; display:grid; grid-template-columns:auto 1fr; gap:12px; text-align:left; align-items:center;} .ev .em{font-size:40px;} .ev .tt{margin:0; font-size:19px;} .ev .yr{display:none;} }
+  .fb{min-height:46px; border-radius:12px; padding:10px 14px; font-weight:700; display:flex; align-items:center; gap:10px; background:rgba(20,18,27,.93); border:1px solid var(--line); color:var(--dim); font-size:15px;}
+  .fb.ok{color:var(--ok); border-color:rgba(63,224,160,.4);}
+  .fb.bad{color:var(--bad); border-color:rgba(255,84,104,.4);}
+  .fb .pts{margin-left:auto; font-family:'Oswald',sans-serif; font-size:22px;}
+  @media(max-width:860px){ .fb{min-height:38px; padding:6px 12px; font-size:14px;} }
+  .left{font-size:13.5px; color:var(--dim); text-align:center;}
+  .tl{position:relative; padding:4px 0 4px 0;}
+  .tl::before{content:''; position:absolute; left:84px; top:0; bottom:0; width:2px; background:linear-gradient(180deg,transparent,rgba(233,196,106,.35) 4%,rgba(233,196,106,.35) 96%,transparent);}
+  .gap{position:relative; display:flex; align-items:center; width:100%; height:44px; border:0; background:none; padding:0 0 0 70px;}
+  .gap span{flex:1; height:30px; border-radius:10px; border:1.5px dashed rgba(233,196,106,.28); display:flex; align-items:center; padding-left:14px; gap:8px; color:rgba(233,196,106,.6); font-weight:700; font-size:14px; transition:all .12s; margin-left:-0px;}
+  .gap span::before{content:'＋';}
+  .gap:hover span,.gap:focus-visible span{border-color:var(--gold); background:rgba(233,196,106,.1); color:var(--gold);}
+  .gap.hint span{border-color:var(--bad); background:rgba(255,84,104,.12); color:var(--bad);}
+  .tl.lock .gap{pointer-events:none;}
+  .tl.lock .gap span{opacity:.4;}
+  .tc{position:relative; display:grid; grid-template-columns:70px 28px minmax(0,1fr); align-items:center; gap:0; min-height:52px;}
+  .tc .y{font-family:'JetBrains Mono',monospace; font-weight:800; font-size:14.5px; color:var(--gold); text-align:right; padding-right:8px; line-height:1.2;}
+  .tc .y small{display:block; font-size:10.5px; color:var(--dim); font-weight:700;}
+  .tc .dot{width:14px; height:14px; border-radius:50%; background:var(--gold); justify-self:center; box-shadow:0 0 0 4px rgba(233,196,106,.15);}
+  .tc .bx{display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:12px; background:rgba(27,24,36,.95); border:1px solid var(--line); font-weight:700; font-size:15.5px; line-height:1.3;}
+  .tc .bx .e{font-size:22px;}
+  .tc.new .bx{border-color:var(--ok); box-shadow:0 0 18px rgba(63,224,160,.25); animation:slot .4s ease;}
+  .tc.new .dot{background:var(--ok);}
+  .tc.ghost .bx{border-color:var(--bad); background:rgba(255,84,104,.1); color:#ffd0d6;}
+  .tc.ghost .dot{background:var(--bad);} .tc.ghost .y{color:var(--bad);}
+  .tc.ghost{animation:ghost 1.6s ease forwards;}
+  @keyframes slot{from{transform:scaleY(.4); opacity:0;} to{transform:none; opacity:1;}}
+  @keyframes ghost{0%{opacity:0; transform:translateX(30px);} 15%{opacity:1; transform:none;} 80%{opacity:1;} 100%{opacity:0;}}
+  .done{padding:22px; text-align:center; color:var(--dim);}
+  .countdown{position:fixed; inset:0; display:none; place-items:center; background:rgba(11,10,16,.82); z-index:20; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);}
+  .countdown.on{display:grid;}
+  .countdown b{font-family:'Oswald',sans-serif; font-size:min(40vw,240px); color:var(--fry); animation:cnt 1s ease infinite;}
+  @keyframes cnt{0%{transform:scale(1.4); opacity:0;}20%{opacity:1; transform:scale(1);}100%{opacity:.2; transform:scale(.9);}}
+
+  /* boards */
+  .brow{display:grid; grid-template-columns:28px minmax(0,1fr) auto; gap:8px; align-items:center; padding:7px 10px; border-radius:10px; background:rgba(11,10,16,.85); border:1px solid var(--line); position:relative; overflow:hidden;}
+  .brow .bar{position:absolute; left:0; top:0; bottom:0; background:linear-gradient(90deg,rgba(233,196,106,.16),rgba(233,196,106,.04)); transition:width .5s ease; z-index:0;}
+  .brow > *{position:relative; z-index:1;}
+  .brow .rk{font-family:'Oswald',sans-serif; font-size:16px; color:var(--dim); text-align:center;}
+  .brow .nm{overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:500;}
+  .brow .sc{font-family:'Oswald',sans-serif; font-size:19px; white-space:nowrap;}
+  .brow .sc small{font-size:13px; color:var(--dim); margin-left:6px;}
+  .brow.me{border-color:var(--fry);} .brow.me .nm{color:var(--fry);}
+  .brow.r1 .rk{color:#ffd54a;} .brow.r2 .rk{color:#c9d3e3;} .brow.r3 .rk{color:#e09a5c;}
+  .brow.off{opacity:.45;}
+  @media(max-width:700px){ .strip .brow:nth-child(n+4){display:none;} .strip .brow{grid-template-columns:auto minmax(0,1fr) auto; padding:5px 8px;} .strip .brow .sc small{display:none;} }
+  .boardBig{display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:8px; margin-top:16px;}
+  .boardBig .brow{padding:10px 12px;}
+
+  /* result */
+  .podium{display:flex; justify-content:center; align-items:flex-end; gap:12px; margin:26px 0 8px;}
+  .pod{flex:0 1 180px; text-align:center;}
+  .pod .who{font-weight:700; font-size:17px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; padding:0 4px;}
+  .pod .pts{color:var(--dim); font-size:14px; margin-bottom:8px;}
+  .pod .blkp{border-radius:14px 14px 0 0; display:grid; place-items:start center; padding-top:10px; font-family:'Oswald',sans-serif; font-weight:700; font-size:42px; color:#1c1405; animation:rise .7s ease backwards;}
+  .pod.p1 .blkp{height:170px; background:linear-gradient(180deg,#ffd54a,#ff9d3d); animation-delay:.5s;}
+  .pod.p2 .blkp{height:120px; background:linear-gradient(180deg,#e6ecf5,#9aa6b8); animation-delay:.25s;}
+  .pod.p3 .blkp{height:90px; background:linear-gradient(180deg,#f0b27a,#b8672e);}
+  .pod.p1 .who{color:var(--fry); font-size:20px;}
+  @keyframes rise{from{transform:scaleY(0); transform-origin:bottom;} to{transform:scaleY(1); transform-origin:bottom;}}
+  .myRes{text-align:center; margin:18px 0 0; font-size:18px;}
+  .myRes b{color:var(--fry); font-family:'Oswald',sans-serif; font-size:26px;}
+  .resTbl{width:100%; border-collapse:collapse; font-size:15px;}
+  .resTbl th{font-size:12.5px; color:var(--dim); font-weight:700; letter-spacing:.06em; text-align:left; padding:8px 10px; border-bottom:1px solid var(--line);}
+  .resTbl td{padding:9px 10px; border-bottom:1px solid var(--line);}
+  .resTbl td.n{font-family:'Oswald',sans-serif; font-size:17px;}
+  .resTbl tr.me td{color:var(--fry);}
+  .tblWrap{max-height:46vh; overflow:auto; border-radius:12px; border:1px solid var(--line); background:rgba(20,18,27,.93); margin-top:18px;}
+  .secT{font-family:'Oswald',sans-serif; font-size:24px; margin:30px 0 10px; letter-spacing:.02em;}
+  .hard{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:10px;}
+  .hard .h{display:grid; grid-template-columns:auto minmax(0,1fr) auto; gap:12px; align-items:center; padding:12px 14px; border-radius:14px; border:1px solid var(--line); background:rgba(20,18,27,.93);}
+  .hard .h .e{font-size:28px;} .hard .h .t{font-weight:700; line-height:1.3;} .hard .h .y{font-family:'JetBrains Mono',monospace; color:var(--gold); font-weight:800; font-size:13.5px;}
+  .hard .h .m{font-family:'Oswald',sans-serif; color:var(--bad); font-size:18px; text-align:right; white-space:nowrap;}
+  .hard .h .m small{display:block; font-family:'Noto Sans KR',sans-serif; color:var(--dim); font-size:11.5px;}
+  .soloRes{text-align:center; margin-top:16px;}
+  .soloRes .big{font-family:'Oswald',sans-serif; font-size:clamp(64px,12vw,110px); color:var(--gold); line-height:1;}
+  .soloRes p{color:var(--dim); margin:8px 0 0;}
+  .soloRes .nb{display:inline-block; margin-top:10px; padding:4px 12px; border-radius:99px; background:rgba(63,224,160,.12); color:var(--ok); font-weight:700;}
+  .center{text-align:center;}
+  .hide{display:none !important;}
+  .toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%) translateY(20px); background:#221e2b; border:1px solid var(--line); border-radius:12px; padding:10px 16px; font-size:15px; opacity:0; transition:all .25s; z-index:30; pointer-events:none; max-width:90vw;}
+  .toast.on{opacity:1; transform:translateX(-50%);}
+</style>
+</head>
+<body>
+<div class="hall" aria-hidden="true"><div class="rail"></div><div class="yrs"><span>-3000</span><span>-500</span><span>0</span><span>500</span><span>1000</span><span>1500</span><span>1800</span><span>1900</span><span>2000</span></div></div>
+<div class="wrap">
+  <header>
+    <a class="logo" href="../"><span class="fry">🍟</span><span>Frenchfries<b>777</b></span></a>
+    <div class="row" style="gap:12px; flex-wrap:nowrap"><div class="net" id="net"><i></i><span id="netTxt">오프라인</span></div><select class="langSel" id="langSel" aria-label="언어"><option value="ko">한국어</option><option value="en">English</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="ja">日本語</option></select></div>
+  </header>
+
+  <!-- HOME -->
+  <section class="screen on" id="sHome">
+    <h1 class="title">Timeline<br><span>Battle</span></h1>
+    <div class="ticker" id="ticker"></div>
+    <div class="homeGrid">
+      <div class="panel full">
+        <label class="lb" for="nameIn">이름</label>
+        <div class="row" style="flex-wrap:nowrap"><input class="inp" id="nameIn" maxlength="16" placeholder="이름을 입력하세요" autocomplete="off"><button class="btn ghost" id="diceBtn" title="무작위 이름" style="padding:12px 14px;font-size:20px">🎲</button></div>
+      </div>
+      <div class="panel full soloBox">
+        <div class="row"><h3 style="margin:0;font-size:19px">혼자 하기</h3><span class="best" id="soloBest"></span></div>
+        <div class="row" style="margin-top:12px"><div class="seg" id="segSoloDeck"><button data-v="k" class="on">한국사</button><button data-v="w">세계사</button><button data-v="s">과학·발명</button><button data-v="a">모두</button></div><button class="btn main sm" id="soloBtn">시작</button></div>
+      </div>
+      <div class="panel card">
+        <h3>방 만들기</h3>
+        <p>방 코드를 받아 친구들을 초대해요. 최대 40명.</p>
+        <button class="btn main wide" id="hostBtn">방 만들기</button>
+      </div>
+      <div class="panel card">
+        <h3>참가하기</h3>
+        <p>받은 방 코드를 입력하세요.</p>
+        <input class="inp code" id="codeIn" maxlength="5" placeholder="•••••" autocomplete="off" autocapitalize="characters" spellcheck="false">
+        <button class="btn main wide" id="joinBtn">참가</button>
+      </div>
+      <div class="full"><div class="msg" id="homeMsg"></div></div>
+    </div>
+  </section>
+
+  <!-- LOBBY -->
+  <section class="screen" id="sLobby">
+    <div class="lobbyTop">
+      <div class="codeBox">
+        <small>방 코드</small>
+        <div class="cd" id="lobbyCode">-----</div>
+        <div class="lnk" id="lobbyLink"></div>
+      </div>
+      <div>
+        <div id="hostSet" class="panel settings hide">
+          <div class="setRow"><span>시간</span><div class="seg" id="segTime"><button data-v="180">3분</button><button data-v="300" class="on">5분</button><button data-v="480">8분</button></div></div>
+          <div class="setRow"><span>카드</span><div class="seg" id="segDeck"><button data-v="k" class="on">한국사</button><button data-v="w">세계사</button><button data-v="s">과학·발명</button><button data-v="a">모두</button></div></div>
+          <div class="setRow"><span>방장</span><div class="seg" id="segHostPlay"><button data-v="0" class="on">순위판만 보기</button><button data-v="1">나도 참가</button></div></div>
+          <button class="btn main" id="startBtn" disabled>시작</button>
+        </div>
+        <div id="guestWait" class="panel hide">
+          <h3 style="margin:0 0 6px">방장이 시작하기를 기다리는 중<span class="waitDots"></span></h3>
+          <div class="msg info" id="guestSet"></div>
+        </div>
+      </div>
+    </div>
+    <div class="pcount">참가자 <b id="pNum">0</b><small>/ 40</small></div>
+    <div class="chips" id="chips"></div>
+    <div class="row" style="margin-top:26px"><input class="inp" id="renameIn" maxlength="16" placeholder="내 이름" autocomplete="off" style="max-width:220px;font-size:16px;padding:11px 12px"><button class="btn ghost" id="renameBtn">이름 바꾸기</button><button class="btn ghost" id="leaveBtn" style="margin-left:auto">나가기</button></div>
+  </section>
+
+  <!-- GAME -->
+  <section class="screen" id="sGame">
+    <div class="hud">
+      <button class="btn ghost sm solo" id="gQuit">← 그만하기</button>
+      <div class="stat"><small>점수</small><b id="gScore">0</b></div>
+      <div class="stat streak"><small>연속</small><b id="gStreak">0</b></div>
+      <div class="stat solo"><small>목숨</small><b class="hearts" id="gHearts"></b></div>
+      <div class="stat time race" id="gTimeBox"><small>남은 시간</small><b id="gTime">0:00</b></div>
+      <div class="stat race"><small>순위</small><b id="gRank">-</b></div>
+      <div class="sp"></div>
+      <button class="btn ghost sm hide" id="endNow2">지금 끝내기</button>
+    </div>
+    <div class="tbar race"><i id="gBar"></i></div>
+    <div class="strip race" id="gStrip"></div>
+    <div class="tGrid">
+      <div class="curCol">
+        <div class="ev" id="ev"></div>
+        <div class="fb" id="fb"></div>
+        <div class="left" id="gLeft"></div>
+      </div>
+      <div class="tl" id="tl"></div>
+    </div>
+  </section>
+
+  <!-- HOST WATCH -->
+  <section class="screen" id="sWatch">
+    <div class="hud">
+      <div class="stat"><small>방 코드</small><b id="wCode" style="font-family:'JetBrains Mono',monospace;color:var(--fry)">-----</b></div>
+      <div class="stat time" id="wTimeBox"><small>남은 시간</small><b id="wTime">0:00</b></div>
+      <div class="stat"><small>전체 정답</small><b id="wTotal">0</b></div>
+    </div>
+    <div class="tbar"><i id="wBar"></i></div>
+    <div class="boardBig" id="wBoard"></div>
+    <div class="row" style="margin-top:22px"><button class="btn ghost" id="endNowBtn">지금 끝내기</button></div>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="sResult">
+    <h1 class="title" style="font-size:clamp(44px,9vw,84px)">결과</h1>
+    <div id="raceRes">
+      <div class="podium" id="podium"></div>
+      <div class="myRes" id="myRes"></div>
+      <div class="tblWrap"><table class="resTbl"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>정답</th><th>정확도</th><th>최고 연속</th></tr></thead><tbody id="resBody"></tbody></table></div>
+    </div>
+    <div id="soloRes" class="soloRes"></div>
+    <div id="hardWrap"><h3 class="secT">가장 많이 틀린 사건</h3><div class="hard" id="hard"></div></div>
+    <div class="row" style="margin-top:22px; justify-content:center">
+      <button class="btn main hide" id="againBtn">다시 하기</button>
+      <button class="btn ghost" id="homeBtn">처음으로</button>
+    </div>
+    <div class="msg info center" id="resWait"></div>
+  </section>
+</div>
+
+<div class="countdown" id="cd"><b id="cdNum">3</b></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+var MAX_PLAYERS = 40, PREFIX = 'ff-timeline-', CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', SAVE_KEY = 'timeline.v1', LIVES = 3;
+var $ = function(id){ return document.getElementById(id); };
+var qs = new URLSearchParams(location.search);
+
+var I18N = {"10분": ["10 min", "10 min", "10 Min.", "10 min", "10分"], "3분": ["3 min", "3 min", "3 Min.", "3 min", "3分"], "5분": ["5 min", "5 min", "5 Min.", "5 min", "5分"], "8분": ["8 min", "8 min", "8 Min.", "8 min", "8分"], "{0} · 시작 단계 {1}": ["{0} · start: {1}", "{0} · départ : {1}", "{0} · Start: {1}", "{0} · inicio: {1}", "{0} · 開始ステージ {1}"], "{0}위 · {1}점 · 탈출 {2}개": ["Rank {0} · {1} pts · {2} escaped", "Rang {0} · {1} pts · {2} sorties", "Rang {0} · {1} Pkt. · {2} entkommen", "Puesto {0} · {1} pts · {2} salidas", "{0}位 · {1}点 · 脱出 {2}個"], "{0}점": ["{0} pts", "{0} pts", "{0} Pkt.", "{0} pts", "{0}点"], "← 단계": ["← Levels", "← Niveaux", "← Level", "← Niveles", "← ステージ"], "← 처음으로": ["← Home", "← Accueil", "← Start", "← Inicio", "← 最初へ"], "↶ 되돌리기": ["↶ Undo", "↶ Annuler", "↶ Rückgängig", "↶ Deshacer", "↶ 元に戻す"], "▶ 실행": ["▶ Run", "▶ Lancer", "▶ Start", "▶ Ejecutar", "▶ 実行"], "★★★ 목표": ["★★★ goal", "Objectif ★★★", "★★★-Ziel", "Meta ★★★", "★★★ 目標"], "★★★ 목표 {0}개": ["★★★ goal {0}", "objectif ★★★ {0}", "★★★-Ziel {0}", "meta ★★★ {0}", "★★★ 目標 {0}個"], "건너뛰기": ["Skip", "Passer", "Überspringen", "Saltar", "スキップ"], "결과": ["Results", "Résultats", "Ergebnis", "Resultados", "結果"], "결과를 기다리는 중": ["Waiting for results", "En attente des résultats", "Warte auf das Ergebnis", "Esperando resultados", "結果を待っています"], "기초": ["Basics", "Bases", "Grundlagen", "Básico", "きほん"], "나가기": ["Leave", "Quitter", "Verlassen", "Salir", "退出"], "나도 참가": ["Play too", "Jouer aussi", "Mitspielen", "Jugar también", "自分も参加"], "남은 시간": ["Time left", "Temps restant", "Restzeit", "Tiempo restante", "残り時間"], "내 이름": ["My name", "Mon nom", "Mein Name", "Mi nombre", "自分の名前"], "너무 오래 걸려서 멈췄어요": ["Stopped: it ran too long", "Arrêté : trop long", "Gestoppt: lief zu lange", "Detenido: tardó demasiado", "長すぎたので止めました"], "다시 시도": ["Try again", "Réessayer", "Nochmal", "Reintentar", "もう一度"], "다시 연결 중": ["Reconnecting", "Reconnexion", "Verbinde neu", "Reconectando", "再接続中"], "다시 하기": ["Play again", "Rejouer", "Nochmal", "Otra vez", "もう一度"], "다음 단계": ["Next level", "Niveau suivant", "Nächstes Level", "Siguiente nivel", "次のステージ"], "다음 미로": ["Next maze", "Labyrinthe suivant", "Nächstes Labyrinth", "Siguiente laberinto", "次の迷路"], "단계": ["Level", "Niveau", "Level", "Nivel", "ステージ"], "단계 선택": ["Levels", "Niveaux", "Level", "Niveles", "ステージ選択"], "단계를 깨며 새 블록을 열어요.": ["Clear levels to unlock new blocks.", "Réussis les niveaux pour débloquer des blocs.", "Schaffe Level und schalte neue Blöcke frei.", "Supera niveles y desbloquea bloques.", "ステージをクリアして新しいブロックを解放。"], "도착하지 못했어요": ["Didn't reach the goal", "But non atteint", "Ziel nicht erreicht", "No llegó a la meta", "ゴールに着きませんでした"], "도착할 때까지": ["Until goal", "Jusqu'au but", "Bis zum Ziel", "Hasta la meta", "ゴールまで"], "도착할 때까지 반복": ["Repeat until goal", "Répéter jusqu'au but", "Wiederhole bis zum Ziel", "Repetir hasta la meta", "ゴールまでくり返す"], "링크를 복사했어요": ["Link copied", "Lien copié", "Link kopiert", "Enlace copiado", "リンクをコピーしました"], "만약": ["If", "Si", "Wenn", "Si", "もし"], "만약 {0}": ["If {0}", "Si {0}", "Wenn {0}", "Si {0}", "もし{0}"], "모두 지우기": ["Clear all", "Tout effacer", "Alles löschen", "Borrar todo", "全部消す"], "목표 {0}": ["goal {0}", "objectif {0}", "Ziel {0}", "meta {0}", "目標 {0}"], "목표보다 짧아요!": ["Shorter than the goal!", "Plus court que l'objectif !", "Kürzer als das Ziel!", "¡Más corto que la meta!", "目標より短い!"], "무작위 이름": ["Random name", "Nom aléatoire", "Zufälliger Name", "Nombre aleatorio", "ランダムな名前"], "미로": ["Maze", "Labyrinthe", "Labyrinth", "Laberinto", "迷路"], "미로 {0}": ["Maze {0}", "Labyrinthe {0}", "Labyrinth {0}", "Laberinto {0}", "迷路 {0}"], "미로별 가장 짧은 코드": ["Shortest code for each maze", "Code le plus court par labyrinthe", "Kürzester Code pro Labyrinth", "Código más corto por laberinto", "迷路ごとのいちばん短いコード"], "반복": ["Repeat", "Répéter", "Wiederhole", "Repetir", "くり返す"], "반복 {0}번": ["Repeat {0} times", "Répéter {0} fois", "Wiederhole {0}-mal", "Repetir {0} veces", "{0}回くり返す"], "받은 방 코드를 입력하세요.": ["Enter the room code you got.", "Entrez le code de la salle.", "Gib den Raumcode ein.", "Escribe el código de la sala.", "もらったルームコードを入力。"], "방 만들기": ["Create room", "Créer une salle", "Raum erstellen", "Crear sala", "ルームを作る"], "방 코드": ["Room code", "Code de la salle", "Raumcode", "Código de sala", "ルームコード"], "방 코드 5자리를 입력하세요.": ["Enter the 5-character room code.", "Entrez le code à 5 caractères.", "Gib den 5-stelligen Raumcode ein.", "Escribe el código de 5 caracteres.", "5文字のルームコードを入力してください。"], "방 코드를 받아 친구들을 초대해요. 최대 40명.": ["Get a room code and invite your friends. Up to 40 players.", "Obtenez un code et invitez vos amis. Jusqu'à 40 joueurs.", "Hol dir einen Raumcode und lade Freunde ein. Bis zu 40 Spieler.", "Consigue un código e invita a tus amigos. Hasta 40 jugadores.", "ルームコードで友だちを招待。最大40人。"], "방에 연결하는 중...": ["Connecting to room...", "Connexion à la salle...", "Verbinde mit dem Raum...", "Conectando a la sala...", "ルームに接続中..."], "방을 만드는 중...": ["Creating room...", "Création de la salle...", "Raum wird erstellt...", "Creando sala...", "ルームを作成中..."], "방을 만들지 못했어요 ({0}). 잠시 후 다시 해 보세요.": ["Couldn't create the room ({0}). Try again shortly.", "Impossible de créer la salle ({0}). Réessayez bientôt.", "Raum konnte nicht erstellt werden ({0}). Versuch es gleich nochmal.", "No se pudo crear la sala ({0}). Inténtalo en un momento.", "ルームを作れませんでした({0})。少し後でもう一度試してください。"], "방을 찾을 수 없어요. 코드를 확인하세요.": ["Room not found. Check the code.", "Salle introuvable. Vérifiez le code.", "Raum nicht gefunden. Prüfe den Code.", "Sala no encontrada. Revisa el código.", "ルームが見つかりません。コードを確認してください。"], "방이 가득 찼어요 (최대 40명).": ["The room is full (max 40).", "La salle est pleine (40 max).", "Der Raum ist voll (max. 40).", "La sala está llena (máx. 40).", "ルームが満員です(最大40人)。"], "방장": ["Host", "Hôte", "Gastgeber", "Anfitrión", "ホスト"], "방장과 연결 끊김": ["Host disconnected", "Hôte déconnecté", "Gastgeber getrennt", "Anfitrión desconectado", "ホストと切断"], "방장과 연결이 끊겼어요": ["Lost connection to the host", "Connexion à l'hôte perdue", "Verbindung zum Gastgeber verloren", "Se perdió la conexión con el anfitrión", "ホストとの接続が切れました"], "방장이 다시 시작하면 대기실로 이동해요.": ["You'll go to the lobby when the host starts again.", "Vous irez au salon quand l'hôte relancera.", "Wenn der Gastgeber neu startet, geht es zur Lobby.", "Irás a la sala de espera cuando el anfitrión vuelva a empezar.", "ホストが再開するとロビーに移動します。"], "방장이 시작하기를 기다리는 중": ["Waiting for the host to start", "En attente du lancement par l'hôte", "Warten auf den Start durch den Gastgeber", "Esperando a que el anfitrión empiece", "ホストの開始を待っています"], "벽에 부딪혔어요": ["Bumped into a wall", "Contre un mur !", "Gegen die Wand gefahren", "Chocó contra una pared", "かべにぶつかりました"], "복사": ["Copy", "Copier", "Kopieren", "Copiar", "コピー"], "블록 {0}개": ["{0} blocks", "{0} blocs", "{0} Blöcke", "{0} bloques", "ブロック{0}個"], "블록은 {0}개까지 쓸 수 있어요": ["You can use up to {0} blocks", "{0} blocs maximum", "Höchstens {0} Blöcke", "Máximo {0} bloques", "ブロックは{0}個まで使えます"], "블록을 더 줄일 수 있어요": ["You can use fewer blocks", "Tu peux utiliser moins de blocs", "Es geht mit weniger Blöcken", "Puedes usar menos bloques", "ブロックをもっと減らせます"], "블록을 먼저 놓으세요": ["Place some blocks first", "Place d'abord des blocs", "Leg zuerst Blöcke an", "Coloca bloques primero", "先にブロックを置いてください"], "새 블록: {0}": ["New block: {0}", "Nouveau bloc : {0}", "Neuer Block: {0}", "Bloque nuevo: {0}", "新しいブロック: {0}"], "서버 연결 끊김": ["Server disconnected", "Serveur déconnecté", "Server getrennt", "Servidor desconectado", "サーバー切断"], "속도": ["Speed", "Vitesse", "Tempo", "Velocidad", "速さ"], "순위": ["Rank", "Rang", "Rang", "Puesto", "順位"], "순위판만 보기": ["Watch the board", "Voir le classement", "Nur Rangliste", "Solo ver el ranking", "ランキングを見る"], "시간": ["Time", "Temps", "Zeit", "Tiempo", "時間"], "시간 종료": ["Time's up", "Temps écoulé", "Zeit um", "Se acabó", "時間切れ"], "시작": ["Start", "Commencer", "Start", "Empezar", "スタート"], "시작 단계": ["Start at", "Départ", "Start bei", "Empezar en", "開始ステージ"], "실행": ["Run", "Lancer", "Start", "Ejecutar", "実行"], "아니면": ["else", "sinon", "sonst", "si no", "そうでなければ"], "아직 아무도 없어요": ["No one yet", "Personne pour l'instant", "Noch niemand da", "Aún no hay nadie", "まだ誰もいません"], "앞으로": ["Forward", "Avancer", "Vorwärts", "Avanzar", "前へ"], "앞이 막혀 있으면": ["front is blocked", "devant est bloqué", "vorne zu ist", "delante está bloqueado", "前がふさがっていたら"], "앞이 열려 있으면": ["front is open", "devant est libre", "vorne frei ist", "delante está libre", "前が空いていたら"], "언어": ["Language", "Langue", "Sprache", "Idioma", "言語"], "연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.": ["Couldn't load the connection tool. Check your internet and refresh.", "Impossible de charger l'outil de connexion. Vérifiez Internet et actualisez.", "Das Verbindungstool konnte nicht geladen werden. Prüfe das Internet und lade neu.", "No se pudo cargar la herramienta de conexión. Revisa internet y recarga.", "接続ツールを読み込めませんでした。ネット接続を確認して再読み込みしてください。"], "연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.": ["Connection timed out. Check the code and try again.", "Délai dépassé. Vérifiez le code et réessayez.", "Zeitüberschreitung. Prüfe den Code und versuch es nochmal.", "Tiempo agotado. Revisa el código e inténtalo de nuevo.", "接続がタイムアウトしました。コードを確認してもう一度試してください。"], "연결됨": ["Connected", "Connecté", "Verbunden", "Conectado", "接続中"], "연결하지 못했어요 ({0}).": ["Couldn't connect ({0}).", "Connexion impossible ({0}).", "Verbindung fehlgeschlagen ({0}).", "No se pudo conectar ({0}).", "接続できませんでした({0})。"], "오른쪽 돌기": ["Turn right", "Tourner à droite", "Rechts drehen", "Girar a la derecha", "右を向く"], "오른쪽이 막혀 있으면": ["right is blocked", "droite est bloquée", "rechts zu ist", "la derecha está bloqueada", "右がふさがっていたら"], "오른쪽이 열려 있으면": ["right is open", "droite est libre", "rechts frei ist", "la derecha está libre", "右が空いていたら"], "오프라인": ["Offline", "Hors ligne", "Offline", "Sin conexión", "オフライン"], "왼쪽 돌기": ["Turn left", "Tourner à gauche", "Links drehen", "Girar a la izquierda", "左を向く"], "왼쪽이 막혀 있으면": ["left is blocked", "gauche est bloquée", "links zu ist", "la izquierda está bloqueada", "左がふさがっていたら"], "왼쪽이 열려 있으면": ["left is open", "gauche est libre", "links frei ist", "la izquierda está libre", "左が空いていたら"], "이름": ["Name", "Nom", "Name", "Nombre", "名前"], "이름 바꾸기": ["Rename", "Renommer", "Umbenennen", "Cambiar nombre", "名前を変更"], "이름을 먼저 입력하세요.": ["Enter your name first.", "Entrez d'abord votre nom.", "Gib zuerst deinen Namen ein.", "Escribe primero tu nombre.", "先に名前を入力してください。"], "이름을 바꿨어요": ["Name changed", "Nom modifié", "Name geändert", "Nombre cambiado", "名前を変更しました"], "이름을 입력하세요": ["Enter your name", "Entrez votre nom", "Gib deinen Namen ein", "Escribe tu nombre", "名前を入力"], "전체 탈출": ["Total escapes", "Sorties au total", "Fluchten gesamt", "Salidas totales", "合計脱出"], "점수": ["Score", "Score", "Punkte", "Puntos", "スコア"], "정지": ["Stop", "Stop", "Stopp", "Parar", "停止"], "조건": ["Conditions", "Conditions", "Bedingungen", "Condiciones", "条件"], "지금 끝내기": ["End now", "Terminer", "Jetzt beenden", "Terminar ya", "今すぐ終了"], "참가": ["Join", "Rejoindre", "Beitreten", "Entrar", "参加"], "참가자": ["Players", "Joueurs", "Spieler", "Jugadores", "参加者"], "참가자를 기다리는 중": ["Waiting for players", "En attente de joueurs", "Warte auf Spieler", "Esperando jugadores", "参加者を待っています"], "참가하기": ["Join a room", "Rejoindre", "Beitreten", "Unirse", "参加する"], "처음으로": ["Home", "Accueil", "Startseite", "Inicio", "最初へ"], "탈출": ["Escaped", "Sorties", "Entkommen", "Salidas", "脱出"], "탈출 성공!": ["Escaped!", "Sorti !", "Entkommen!", "¡Escapó!", "脱出成功!"], "프로그램": ["PROGRAM", "PROGRAMME", "PROGRAMM", "PROGRAMA", "プログラム"], "플레이어": ["Player", "Joueur", "Spieler", "Jugador", "プレイヤー"], "혼자 하기": ["Solo", "Solo", "Allein spielen", "Solo", "ひとりで遊ぶ"], "🏆 우승! ": ["🏆 Winner! ", "🏆 Victoire ! ", "🏆 Sieg! ", "🏆 ¡Victoria! ", "🏆 優勝! "], "{0} · 정답 {1}개 · 최고 연속 {2}": ["{0} · {1} correct · best streak {2}", "{0} · {1} bonnes réponses · meilleure série {2}", "{0} · {1} richtig · beste Serie {2}", "{0} · {1} aciertos · mejor racha {2}", "{0} · 正解 {1}個 · 最高連続 {2}"], "{0}명 중": ["of {0}", "sur {0}", "von {0}", "de {0}", "{0}人中"], "{0}위 · {1}점 · 정답 {2}개": ["Rank {0} · {1} pts · {2} correct", "Rang {0} · {1} pts · {2} bonnes réponses", "Rang {0} · {1} Pkt. · {2} richtig", "Puesto {0} · {1} pts · {2} aciertos", "{0}位 · {1}点 · 正解 {2}個"], "← 그만하기": ["← Stop", "← Arrêter", "← Aufhören", "← Parar", "← やめる"], "가장 많이 틀린 사건": ["Most missed events", "Événements les plus ratés", "Am häufigsten verfehlt", "Eventos más fallados", "いちばん間違えた出来事"], "과학·발명": ["Science", "Sciences", "Wissenschaft", "Ciencia", "科学・発明"], "남은 카드 {0}장": ["{0} cards left", "{0} cartes restantes", "Noch {0} Karten", "Quedan {0} cartas", "残り{0}枚"], "모두": ["All", "Tout", "Alle", "Todo", "すべて"], "모든 카드를 놓았어요": ["All cards placed", "Toutes les cartes sont posées", "Alle Karten gelegt", "Todas las cartas colocadas", "全部のカードを置きました"], "목숨": ["Lives", "Vies", "Leben", "Vidas", "ライフ"], "세계사": ["World", "Monde", "Welt", "Mundo", "世界史"], "여기": ["here", "ici", "hier", "aquí", "ここ"], "연속": ["Streak", "Série", "Serie", "Racha", "連続"], "전체 정답": ["Total correct", "Bonnes réponses", "Richtig gesamt", "Aciertos totales", "合計正解"], "정답": ["Correct", "Justes", "Richtig", "Aciertos", "正解"], "정확도": ["Accuracy", "Précision", "Genauigkeit", "Precisión", "正確さ"], "최고 {0}점": ["Best {0}", "Record {0}", "Rekord {0}", "Récord {0}", "最高 {0}点"], "최고 기록!": ["New best!", "Nouveau record !", "Neuer Rekord!", "¡Nuevo récord!", "最高記録!"], "최고 연속": ["Best streak", "Meilleure série", "Beste Serie", "Mejor racha", "最高連続"], "카드": ["Cards", "Cartes", "Karten", "Cartas", "カード"], "한국사": ["Korea", "Corée", "Korea", "Corea", "韓国史"]};
+var RNAMES = {"ko": [["빠른", "날쌘", "똑똑한", "용감한", "반짝이는", "조용한", "신비한", "번개", "졸린", "배고픈", "씩씩한", "은하"], ["고양이", "로봇", "외계인", "비트", "해커", "우주인", "탐험가", "부엉이", "펭귄", "드론", "혜성", "다람쥐"]], "en": [["Swift", "Clever", "Brave", "Shiny", "Quiet", "Mystic", "Sleepy", "Hungry", "Bold", "Cosmic", "Lucky", "Turbo"], ["Cat", "Robot", "Alien", "Bit", "Hacker", "Astronaut", "Explorer", "Owl", "Penguin", "Drone", "Comet", "Squirrel"]], "fr": [["Chat", "Robot", "Alien", "Bit", "Hacker", "Astronaute", "Explorateur", "Hibou", "Pingouin", "Drone", "Comète", "Écureuil"], ["rapide", "malin", "brave", "brillant", "calme", "mystique", "endormi", "affamé", "hardi", "cosmique", "chanceux", "turbo"]], "de": [["Flinke", "Kluge", "Mutige", "Leuchtende", "Stille", "Mystische", "Müde", "Hungrige", "Kühne", "Kosmische", "Glückliche", "Turbo"], ["Katze", "Robo", "Alien", "Bit", "Hackerin", "Astronautin", "Forscherin", "Eule", "Pinguin", "Drohne", "Rakete", "Maus"]], "es": [["Gato", "Robot", "Alien", "Bit", "Hacker", "Astronauta", "Explorador", "Búho", "Pingüino", "Dron", "Cometa", "Ardilla"], ["veloz", "listo", "valiente", "brillante", "tranquilo", "místico", "dormido", "hambriento", "audaz", "cósmico", "afortunado", "turbo"]], "ja": [["すばやい", "かしこい", "勇敢な", "きらめく", "しずかな", "ふしぎな", "ねむい", "はらぺこ", "元気な", "銀河の", "ラッキー", "ターボ"], ["ネコ", "ロボ", "宇宙人", "ビット", "ハッカー", "宇宙飛行士", "探検家", "フクロウ", "ペンギン", "ドローン", "彗星", "リス"]]};
+var EV = [["k", -2333, 1, "🐻", "고조선 건국", "Founding of Gojoseon", "Fondation de Gojoseon", "Gründung von Gojoseon", "Fundación de Gojoseon", "古朝鮮の建国"], ["k", -57, 0, "🌅", "신라 건국", "Founding of Silla", "Fondation de Silla", "Gründung von Silla", "Fundación de Silla", "新羅の建国"], ["k", -37, 0, "🏹", "고구려 건국", "Founding of Goguryeo", "Fondation de Goguryeo", "Gründung von Goguryeo", "Fundación de Goguryeo", "高句麗の建国"], ["k", -18, 0, "🏯", "백제 건국", "Founding of Baekje", "Fondation de Baekje", "Gründung von Baekje", "Fundación de Baekje", "百済の建国"], ["k", 372, 0, "🪷", "고구려 불교 수용", "Goguryeo adopts Buddhism", "Le Goguryeo adopte le bouddhisme", "Goguryeo übernimmt den Buddhismus", "Goguryeo adopta el budismo", "高句麗が仏教を受け入れる"], ["k", 391, 0, "👑", "광개토대왕 즉위", "King Gwanggaeto takes the throne", "Le roi Gwanggaeto monte sur le trône", "König Gwanggaeto besteigt den Thron", "El rey Gwanggaeto sube al trono", "広開土王の即位"], ["k", 612, 0, "🌊", "살수 대첩", "Battle of Salsu", "Bataille de Salsu", "Schlacht am Salsu", "Batalla de Salsu", "薩水大捷"], ["k", 660, 0, "🍂", "백제 멸망", "Fall of Baekje", "Chute de Baekje", "Untergang von Baekje", "Caída de Baekje", "百済の滅亡"], ["k", 668, 0, "🥀", "고구려 멸망", "Fall of Goguryeo", "Chute de Goguryeo", "Untergang von Goguryeo", "Caída de Goguryeo", "高句麗の滅亡"], ["k", 676, 0, "🤝", "신라의 삼국 통일", "Silla unifies the Three Kingdoms", "Silla unifie les Trois Royaumes", "Silla vereint die Drei Reiche", "Silla unifica los Tres Reinos", "新羅の三国統一"], ["k", 698, 0, "🐎", "발해 건국", "Founding of Balhae", "Fondation de Balhae", "Gründung von Balhae", "Fundación de Balhae", "渤海の建国"], ["k", 751, 0, "🛕", "불국사 창건", "Bulguksa Temple is built", "Construction du temple Bulguksa", "Bau des Bulguksa-Tempels", "Construcción del templo Bulguksa", "仏国寺の創建"], ["k", 828, 0, "⛵", "장보고의 청해진 설치", "Jang Bogo sets up Cheonghaejin", "Jang Bogo fonde Cheonghaejin", "Jang Bogo gründet Cheonghaejin", "Jang Bogo establece Cheonghaejin", "張保皐が清海鎮を設置"], ["k", 918, 0, "🏛️", "고려 건국", "Founding of Goryeo", "Fondation de Goryeo", "Gründung von Goryeo", "Fundación de Goryeo", "高麗の建国"], ["k", 958, 0, "📜", "고려 과거제 실시", "Goryeo starts state exams", "Goryeo instaure les examens d'État", "Goryeo führt Staatsprüfungen ein", "Goryeo inicia los exámenes de Estado", "高麗で科挙を実施"], ["k", 993, 0, "🗣️", "서희의 외교 담판", "Seo Hui's diplomatic talks", "Négociations de Seo Hui", "Seo Huis diplomatische Verhandlungen", "Negociaciones de Seo Hui", "徐熙の外交談判"], ["k", 1019, 0, "⚔️", "귀주 대첩", "Battle of Gwiju", "Bataille de Gwiju", "Schlacht von Gwiju", "Batalla de Gwiju", "亀州大捷"], ["k", 1231, 0, "🐴", "몽골의 고려 침입 시작", "Mongols begin invading Goryeo", "Les Mongols envahissent Goryeo", "Die Mongolen fallen in Goryeo ein", "Los mongoles invaden Goryeo", "モンゴルの高麗侵入開始"], ["k", 1251, 0, "📚", "팔만대장경 완성", "Tripitaka Koreana completed", "Achèvement du Tripitaka Koreana", "Tripitaka Koreana fertiggestellt", "Se completa el Tripitaka Koreana", "八万大蔵経の完成"], ["k", 1377, 0, "🖨️", "직지 금속 활자 인쇄", "Jikji printed with metal type", "Le Jikji imprimé en caractères métalliques", "Jikji mit Metalllettern gedruckt", "Se imprime el Jikji con tipos metálicos", "直指を金属活字で印刷"], ["k", 1388, 0, "🔙", "위화도 회군", "Retreat from Wihwado", "Retraite de Wihwado", "Rückzug von Wihwado", "Retirada de Wihwado", "威化島回軍"], ["k", 1392, 0, "🏯", "조선 건국", "Founding of Joseon", "Fondation de Joseon", "Gründung von Joseon", "Fundación de Joseon", "朝鮮の建国"], ["k", 1441, 0, "🌧️", "측우기 제작", "Rain gauge invented", "Invention du pluviomètre", "Regenmesser erfunden", "Se inventa el pluviómetro", "測雨器の製作"], ["k", 1446, 0, "🔤", "훈민정음 반포", "Hangeul is proclaimed", "Proclamation du hangeul", "Hangeul wird verkündet", "Se proclama el hangul", "訓民正音の頒布"], ["k", 1592, 0, "🐢", "임진왜란 시작", "Imjin War begins", "Début de la guerre d'Imjin", "Beginn des Imjin-Krieges", "Comienza la guerra de Imjin", "壬辰倭乱の始まり"], ["k", 1610, 0, "💊", "동의보감 완성", "Donguibogam completed", "Achèvement du Donguibogam", "Donguibogam fertiggestellt", "Se completa el Donguibogam", "東医宝鑑の完成"], ["k", 1636, 0, "❄️", "병자호란", "Second Manchu invasion", "Seconde invasion mandchoue", "Zweite Mandschu-Invasion", "Segunda invasión manchú", "丙子胡乱"], ["k", 1776, 0, "📖", "정조 즉위", "King Jeongjo takes the throne", "Le roi Jeongjo monte sur le trône", "König Jeongjo besteigt den Thron", "El rey Jeongjo sube al trono", "正祖の即位"], ["k", 1796, 0, "🏰", "수원 화성 완공", "Hwaseong Fortress completed", "Achèvement de la forteresse de Hwaseong", "Festung Hwaseong fertiggestellt", "Se completa la fortaleza de Hwaseong", "水原華城の完成"], ["k", 1863, 0, "🧓", "흥선대원군 집권", "Heungseon Daewongun takes power", "Heungseon Daewongun prend le pouvoir", "Heungseon Daewongun übernimmt die Macht", "Heungseon Daewongun toma el poder", "興宣大院君の執権"], ["k", 1876, 0, "⚓", "강화도 조약", "Treaty of Ganghwa", "Traité de Ganghwa", "Vertrag von Ganghwa", "Tratado de Ganghwa", "江華島条約"], ["k", 1894, 0, "🌾", "동학 농민 운동", "Donghak Peasant Revolution", "Révolution paysanne Donghak", "Donghak-Bauernrevolution", "Revolución campesina Donghak", "東学農民運動"], ["k", 1897, 0, "🦅", "대한제국 수립", "Korean Empire proclaimed", "Proclamation de l'Empire coréen", "Ausrufung des Koreanischen Kaiserreichs", "Se proclama el Imperio coreano", "大韓帝国の成立"], ["k", 1910, 0, "⛓️", "국권 피탈", "Japan annexes Korea", "Annexion de la Corée par le Japon", "Japan annektiert Korea", "Japón anexiona Corea", "韓国併合"], ["k", 1919, 0, "🇰🇷", "3·1 운동", "March 1st Movement", "Mouvement du 1er Mars", "Bewegung des 1. März", "Movimiento del 1 de marzo", "三・一運動"], ["k", 1920, 0, "🌲", "청산리 대첩", "Battle of Cheongsanri", "Bataille de Cheongsanri", "Schlacht von Cheongsanri", "Batalla de Cheongsanri", "青山里戦闘"], ["k", 1945, 0, "🎉", "광복", "Liberation of Korea", "Libération de la Corée", "Befreiung Koreas", "Liberación de Corea", "光復(解放)"], ["k", 1948, 0, "🏛️", "대한민국 정부 수립", "Republic of Korea government founded", "Fondation du gouvernement de la République de Corée", "Gründung der Regierung der Republik Korea", "Se funda el gobierno de la República de Corea", "大韓民国政府の樹立"], ["k", 1950, 0, "💥", "6·25 전쟁 발발", "Korean War breaks out", "Début de la guerre de Corée", "Ausbruch des Koreakriegs", "Estalla la guerra de Corea", "朝鮮戦争の勃発"], ["k", 1960, 0, "✊", "4·19 혁명", "April 19 Revolution", "Révolution du 19 avril", "Aprilrevolution", "Revolución del 19 de abril", "四・一九革命"], ["k", 1970, 0, "🛣️", "경부고속도로 개통", "Seoul–Busan expressway opens", "Ouverture de l'autoroute Séoul–Busan", "Autobahn Seoul–Busan eröffnet", "Se abre la autopista Seúl–Busan", "京釜高速道路の開通"], ["k", 1980, 0, "🕯️", "5·18 민주화 운동", "May 18 Democratic Uprising", "Soulèvement démocratique du 18 mai", "Demokratiebewegung vom 18. Mai", "Levantamiento democrático del 18 de mayo", "五・一八民主化運動"], ["k", 1987, 0, "📣", "6월 민주 항쟁", "June Democratic Struggle", "Lutte démocratique de juin", "Demokratiebewegung im Juni", "Lucha democrática de junio", "六月民主抗争"], ["k", 1988, 0, "🏅", "서울 올림픽", "Seoul Olympics", "Jeux olympiques de Séoul", "Olympische Spiele in Seoul", "Juegos Olímpicos de Seúl", "ソウルオリンピック"], ["k", 1997, 0, "📉", "외환 위기", "Financial crisis hits Korea", "La crise financière frappe la Corée", "Finanzkrise trifft Korea", "La crisis financiera golpea a Corea", "通貨危機(IMF危機)"], ["k", 2000, 0, "🕊️", "첫 남북 정상 회담", "First inter-Korean summit", "Premier sommet intercoréen", "Erstes innerkoreanisches Gipfeltreffen", "Primera cumbre intercoreana", "初の南北首脳会談"], ["k", 2002, 0, "⚽", "한일 월드컵", "Korea–Japan World Cup", "Coupe du monde Corée–Japon", "WM in Korea und Japan", "Mundial Corea–Japón", "日韓ワールドカップ"], ["w", -2560, 1, "🔺", "쿠푸왕의 대피라미드", "Great Pyramid of Khufu", "Grande pyramide de Khéops", "Cheops-Pyramide", "Gran Pirámide de Keops", "クフ王の大ピラミッド"], ["w", -1754, 1, "⚖️", "함무라비 법전", "Code of Hammurabi", "Code de Hammurabi", "Codex Hammurapi", "Código de Hammurabi", "ハンムラビ法典"], ["w", -776, 0, "🏃", "첫 고대 올림픽", "First ancient Olympic Games", "Premiers Jeux olympiques antiques", "Erste antike Olympische Spiele", "Primeros Juegos Olímpicos antiguos", "最初の古代オリンピック"], ["w", -490, 0, "🏺", "마라톤 전투", "Battle of Marathon", "Bataille de Marathon", "Schlacht bei Marathon", "Batalla de Maratón", "マラトンの戦い"], ["w", -334, 0, "🐎", "알렉산드로스의 동방 원정", "Alexander begins his eastern campaign", "Alexandre part en campagne vers l'Est", "Alexanders Feldzug nach Osten beginnt", "Alejandro inicia su campaña al Oriente", "アレクサンドロスの東方遠征"], ["w", -221, 0, "🐉", "진시황의 중국 통일", "Qin Shi Huang unifies China", "Qin Shi Huang unifie la Chine", "Qin Shihuangdi eint China", "Qin Shi Huang unifica China", "秦の始皇帝が中国を統一"], ["w", -44, 0, "🗡️", "카이사르 암살", "Julius Caesar is assassinated", "Assassinat de Jules César", "Ermordung Julius Caesars", "Asesinato de Julio César", "カエサルの暗殺"], ["w", 476, 0, "🏚️", "서로마 제국 멸망", "Fall of the Western Roman Empire", "Chute de l'Empire romain d'Occident", "Untergang des Weströmischen Reichs", "Caída del Imperio romano de Occidente", "西ローマ帝国の滅亡"], ["w", 622, 0, "🌙", "무함마드의 헤지라", "Muhammad's Hijra", "L'Hégire de Mahomet", "Hidschra Mohammeds", "La Hégira de Mahoma", "ムハンマドのヒジュラ"], ["w", 800, 0, "👑", "카롤루스 대제 대관", "Charlemagne crowned emperor", "Couronnement de Charlemagne", "Kaiserkrönung Karls des Großen", "Coronación de Carlomagno", "カール大帝の戴冠"], ["w", 1096, 0, "🛡️", "제1차 십자군", "First Crusade", "Première croisade", "Erster Kreuzzug", "Primera cruzada", "第1回十字軍"], ["w", 1206, 0, "🏇", "칭기즈 칸 즉위", "Genghis Khan becomes Great Khan", "Gengis Khan devient Grand Khan", "Dschingis Khan wird Großkhan", "Gengis Kan se convierte en Gran Kan", "チンギス・ハンの即位"], ["w", 1215, 0, "📜", "마그나 카르타", "Magna Carta", "Magna Carta", "Magna Carta", "Carta Magna", "マグナ・カルタ"], ["w", 1347, 0, "🐀", "흑사병 유럽 확산", "Black Death reaches Europe", "La peste noire atteint l'Europe", "Der Schwarze Tod erreicht Europa", "La peste negra llega a Europa", "黒死病がヨーロッパに広がる"], ["w", 1453, 0, "🏰", "콘스탄티노폴리스 함락", "Fall of Constantinople", "Chute de Constantinople", "Fall Konstantinopels", "Caída de Constantinopla", "コンスタンティノープルの陥落"], ["w", 1492, 0, "⛵", "콜럼버스 아메리카 도착", "Columbus reaches the Americas", "Colomb atteint l'Amérique", "Kolumbus erreicht Amerika", "Colón llega a América", "コロンブスがアメリカに到達"], ["w", 1517, 0, "✝️", "루터의 종교 개혁", "Luther starts the Reformation", "Luther lance la Réforme", "Luther beginnt die Reformation", "Lutero inicia la Reforma", "ルターの宗教改革"], ["w", 1533, 0, "🏔️", "잉카 제국 멸망", "Fall of the Inca Empire", "Chute de l'Empire inca", "Untergang des Inkareichs", "Caída del Imperio inca", "インカ帝国の滅亡"], ["w", 1588, 0, "🚢", "스페인 무적함대 패배", "Defeat of the Spanish Armada", "Défaite de l'Invincible Armada", "Niederlage der Spanischen Armada", "Derrota de la Armada Invencible", "スペイン無敵艦隊の敗北"], ["w", 1688, 0, "🎩", "명예혁명", "Glorious Revolution", "Glorieuse Révolution", "Glorreiche Revolution", "Revolución Gloriosa", "名誉革命"], ["w", 1776, 0, "🗽", "미국 독립 선언", "US Declaration of Independence", "Déclaration d'indépendance des États-Unis", "Unabhängigkeitserklärung der USA", "Declaración de Independencia de EE. UU.", "アメリカ独立宣言"], ["w", 1789, 0, "🇫🇷", "프랑스 혁명", "French Revolution", "Révolution française", "Französische Revolution", "Revolución francesa", "フランス革命"], ["w", 1804, 0, "🎖️", "나폴레옹 황제 즉위", "Napoleon becomes emperor", "Napoléon devient empereur", "Napoleon wird Kaiser", "Napoleón se convierte en emperador", "ナポレオンの皇帝即位"], ["w", 1840, 0, "⛴️", "아편 전쟁", "Opium War", "Guerre de l'opium", "Opiumkrieg", "Guerra del Opio", "アヘン戦争"], ["w", 1863, 0, "⛓️", "링컨의 노예 해방 선언", "Lincoln's Emancipation Proclamation", "Proclamation d'émancipation de Lincoln", "Lincolns Emanzipationsproklamation", "Proclamación de Emancipación de Lincoln", "リンカンの奴隷解放宣言"], ["w", 1868, 0, "🎌", "메이지 유신", "Meiji Restoration", "Restauration Meiji", "Meiji-Restauration", "Restauración Meiji", "明治維新"], ["w", 1911, 0, "🏮", "신해혁명", "Xinhai Revolution", "Révolution Xinhai", "Xinhai-Revolution", "Revolución de Xinhai", "辛亥革命"], ["w", 1914, 0, "💣", "제1차 세계 대전 시작", "World War I begins", "Début de la Première Guerre mondiale", "Beginn des Ersten Weltkriegs", "Comienza la Primera Guerra Mundial", "第一次世界大戦の開始"], ["w", 1917, 0, "🚩", "러시아 혁명", "Russian Revolution", "Révolution russe", "Russische Revolution", "Revolución rusa", "ロシア革命"], ["w", 1929, 0, "📉", "세계 대공황", "Great Depression begins", "Début de la Grande Dépression", "Beginn der Weltwirtschaftskrise", "Comienza la Gran Depresión", "世界恐慌"], ["w", 1939, 0, "✈️", "제2차 세계 대전 시작", "World War II begins", "Début de la Seconde Guerre mondiale", "Beginn des Zweiten Weltkriegs", "Comienza la Segunda Guerra Mundial", "第二次世界大戦の開始"], ["w", 1945, 0, "🌐", "국제 연합(UN) 창설", "United Nations founded", "Création de l'ONU", "Gründung der Vereinten Nationen", "Se funda la ONU", "国際連合の設立"], ["w", 1947, 0, "🪔", "인도 독립", "Indian independence", "Indépendance de l'Inde", "Unabhängigkeit Indiens", "Independencia de la India", "インドの独立"], ["w", 1949, 0, "⭐", "중화인민공화국 수립", "People's Republic of China founded", "Fondation de la République populaire de Chine", "Gründung der Volksrepublik China", "Se funda la República Popular China", "中華人民共和国の成立"], ["w", 1962, 0, "🚀", "쿠바 미사일 위기", "Cuban Missile Crisis", "Crise des missiles de Cuba", "Kubakrise", "Crisis de los misiles de Cuba", "キューバ危機"], ["w", 1969, 0, "🌕", "아폴로 11호 달 착륙", "Apollo 11 Moon landing", "Apollo 11 se pose sur la Lune", "Mondlandung von Apollo 11", "Llegada del Apolo 11 a la Luna", "アポロ11号の月面着陸"], ["w", 1989, 0, "🧱", "베를린 장벽 붕괴", "Fall of the Berlin Wall", "Chute du mur de Berlin", "Fall der Berliner Mauer", "Caída del Muro de Berlín", "ベルリンの壁の崩壊"], ["w", 1991, 0, "🏳️", "소련 해체", "Dissolution of the Soviet Union", "Dissolution de l'URSS", "Auflösung der Sowjetunion", "Disolución de la Unión Soviética", "ソ連の解体"], ["w", 1994, 0, "🌈", "만델라 대통령 취임", "Mandela becomes president", "Mandela devient président", "Mandela wird Präsident", "Mandela se convierte en presidente", "マンデラの大統領就任"], ["w", 2001, 0, "🏙️", "9·11 테러", "September 11 attacks", "Attentats du 11 septembre", "Terroranschläge vom 11. September", "Atentados del 11 de septiembre", "アメリカ同時多発テロ"], ["s", -3200, 1, "✍️", "쐐기 문자의 등장", "Cuneiform writing appears", "Apparition de l'écriture cunéiforme", "Keilschrift entsteht", "Aparece la escritura cuneiforme", "楔形文字の登場"], ["s", -300, 1, "📐", "유클리드의 원론", "Euclid's Elements", "Les Éléments d'Euclide", "Euklids Elemente", "Los Elementos de Euclides", "ユークリッドの『原論』"], ["s", -240, 1, "🌍", "에라토스테네스의 지구 둘레 측정", "Eratosthenes measures the Earth", "Ératosthène mesure la Terre", "Eratosthenes vermisst die Erde", "Eratóstenes mide la Tierra", "エラトステネスが地球の大きさを測る"], ["s", 105, 0, "📄", "채륜의 종이 개량", "Cai Lun improves paper", "Cai Lun améliore le papier", "Cai Lun verbessert das Papier", "Cai Lun mejora el papel", "蔡倫が紙を改良"], ["s", 1455, 1, "📖", "구텐베르크 성경 인쇄", "Gutenberg Bible printed", "Impression de la Bible de Gutenberg", "Druck der Gutenberg-Bibel", "Se imprime la Biblia de Gutenberg", "グーテンベルク聖書の印刷"], ["s", 1543, 0, "☀️", "코페르니쿠스의 지동설", "Copernicus: the Earth orbits the Sun", "Copernic : la Terre tourne autour du Soleil", "Kopernikus: Die Erde kreist um die Sonne", "Copérnico: la Tierra gira alrededor del Sol", "コペルニクスの地動説"], ["s", 1609, 0, "🔭", "갈릴레이의 망원경 관측", "Galileo observes with a telescope", "Galilée observe au télescope", "Galilei beobachtet mit dem Fernrohr", "Galileo observa con el telescopio", "ガリレイの望遠鏡観測"], ["s", 1687, 0, "🍎", "뉴턴의 프린키피아", "Newton's Principia", "Les Principia de Newton", "Newtons Principia", "Los Principia de Newton", "ニュートンの『プリンキピア』"], ["s", 1769, 0, "⚙️", "와트의 증기 기관 개량", "Watt improves the steam engine", "Watt améliore la machine à vapeur", "Watt verbessert die Dampfmaschine", "Watt mejora la máquina de vapor", "ワットが蒸気機関を改良"], ["s", 1796, 0, "💉", "제너의 종두법", "Jenner's smallpox vaccine", "Le vaccin de Jenner contre la variole", "Jenners Pockenimpfung", "La vacuna de Jenner contra la viruela", "ジェンナーの種痘法"], ["s", 1825, 0, "🚂", "첫 증기 기관차 철도", "First steam railway", "Premier chemin de fer à vapeur", "Erste Dampfeisenbahn", "Primer ferrocarril de vapor", "最初の蒸気機関車の鉄道"], ["s", 1844, 0, "📨", "모스의 전신", "Morse telegraph message", "Message télégraphique de Morse", "Morses Telegrafennachricht", "Mensaje telegráfico de Morse", "モールスの電信"], ["s", 1859, 0, "🐢", "다윈의 종의 기원", "Darwin's On the Origin of Species", "L'Origine des espèces de Darwin", "Darwins Über die Entstehung der Arten", "El origen de las especies de Darwin", "ダーウィンの『種の起源』"], ["s", 1869, 0, "🧪", "멘델레예프의 주기율표", "Mendeleev's periodic table", "Tableau périodique de Mendeleïev", "Mendelejews Periodensystem", "Tabla periódica de Mendeléyev", "メンデレーエフの周期表"], ["s", 1876, 0, "☎️", "벨의 전화기", "Bell's telephone", "Le téléphone de Bell", "Bells Telefon", "El teléfono de Bell", "ベルの電話機"], ["s", 1879, 0, "💡", "에디슨의 전구", "Edison's light bulb", "L'ampoule d'Edison", "Edisons Glühbirne", "La bombilla de Edison", "エジソンの電球"], ["s", 1886, 0, "🚗", "벤츠의 자동차", "Benz's motor car", "L'automobile de Benz", "Benz' Motorwagen", "El automóvil de Benz", "ベンツの自動車"], ["s", 1895, 0, "🩻", "뢴트겐의 X선 발견", "Röntgen discovers X-rays", "Röntgen découvre les rayons X", "Röntgen entdeckt die Röntgenstrahlen", "Röntgen descubre los rayos X", "レントゲンがX線を発見"], ["s", 1898, 0, "☢️", "퀴리 부부의 라듐 발견", "The Curies discover radium", "Les Curie découvrent le radium", "Die Curies entdecken Radium", "Los Curie descubren el radio", "キュリー夫妻がラジウムを発見"], ["s", 1903, 0, "🛩️", "라이트 형제의 첫 비행", "Wright brothers' first flight", "Premier vol des frères Wright", "Erster Flug der Brüder Wright", "Primer vuelo de los hermanos Wright", "ライト兄弟の初飛行"], ["s", 1905, 0, "🧠", "아인슈타인의 특수 상대성 이론", "Einstein's special relativity", "Relativité restreinte d'Einstein", "Einsteins spezielle Relativitätstheorie", "Relatividad especial de Einstein", "アインシュタインの特殊相対性理論"], ["s", 1926, 0, "📺", "텔레비전 첫 공개 시연", "First public TV demonstration", "Première démonstration publique de la télévision", "Erste öffentliche Fernsehvorführung", "Primera demostración pública de televisión", "テレビの初公開実験"], ["s", 1928, 0, "🧫", "플레밍의 페니실린 발견", "Fleming discovers penicillin", "Fleming découvre la pénicilline", "Fleming entdeckt das Penicillin", "Fleming descubre la penicilina", "フレミングがペニシリンを発見"], ["s", 1946, 0, "🖥️", "에니악 컴퓨터", "ENIAC computer", "L'ordinateur ENIAC", "Der Computer ENIAC", "La computadora ENIAC", "コンピュータENIAC"], ["s", 1953, 0, "🧬", "DNA 이중 나선 구조 발견", "DNA double helix discovered", "Découverte de la double hélice d'ADN", "Entdeckung der DNA-Doppelhelix", "Se descubre la doble hélice del ADN", "DNAの二重らせん構造の発見"], ["s", 1957, 0, "🛰️", "스푸트니크 1호 발사", "Sputnik 1 launched", "Lancement de Spoutnik 1", "Start von Sputnik 1", "Lanzamiento del Sputnik 1", "スプートニク1号の打ち上げ"], ["s", 1971, 0, "📧", "첫 이메일", "First email", "Premier e-mail", "Erste E-Mail", "Primer correo electrónico", "最初の電子メール"], ["s", 1973, 0, "📞", "휴대 전화 첫 통화", "First mobile phone call", "Premier appel sur téléphone portable", "Erster Handyanruf", "Primera llamada con teléfono móvil", "携帯電話での初通話"], ["s", 1977, 0, "💾", "애플 II 개인용 컴퓨터", "Apple II personal computer", "L'ordinateur personnel Apple II", "Der Heimcomputer Apple II", "La computadora personal Apple II", "パソコンApple II"], ["s", 1990, 0, "🌌", "허블 우주 망원경 발사", "Hubble Space Telescope launched", "Lancement du télescope Hubble", "Start des Hubble-Weltraumteleskops", "Lanzamiento del telescopio Hubble", "ハッブル宇宙望遠鏡の打ち上げ"], ["s", 1991, 0, "🕸️", "월드 와이드 웹 공개", "World Wide Web goes public", "Le Web devient public", "Das World Wide Web wird öffentlich", "La World Wide Web se hace pública", "ワールド・ワイド・ウェブの公開"], ["s", 2003, 0, "🔬", "인간 게놈 지도 완성", "Human genome mapped", "Séquençage du génome humain achevé", "Menschliches Genom entschlüsselt", "Se completa el mapa del genoma humano", "ヒトゲノム解読の完了"], ["s", 2007, 0, "📱", "첫 아이폰", "First iPhone", "Premier iPhone", "Erstes iPhone", "Primer iPhone", "初代iPhone"], ["s", 2016, 0, "🤖", "알파고와 이세돌의 대국", "AlphaGo vs. Lee Sedol", "AlphaGo contre Lee Sedol", "AlphaGo gegen Lee Sedol", "AlphaGo contra Lee Sedol", "アルファ碁と李世乭の対局"]];
+var LANGS=['ko','en','fr','de','es','ja'], LIDX={en:0,fr:1,de:2,es:3,ja:4}, LKEY='arenaClashLang';
+var lang = (function(){
+  var v=null; try{ v=localStorage.getItem(LKEY); }catch(e){}
+  if(LANGS.indexOf(v)>=0) return v;
+  var c=[]; try{ c=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'']; }catch(e){}
+  for(var i=0;i<c.length;i++){ var b=String(c[i]||'').toLowerCase().split('-')[0]; if(LANGS.indexOf(b)>=0) return b; }
+  return 'en';
+})();
+function tr(k){
+  var s = k;
+  if(lang!=='ko'){ var a=I18N[k]; if(a && a[LIDX[lang]]) s=a[LIDX[lang]]; }
+  var args=arguments;
+  return s.replace(/\{(\d)\}/g, function(_,n){ var v=args[+n+1]; return v==null?'':String(v); });
+}
+var ORIG = new WeakMap(), TATTR=['placeholder','title','aria-label'];
+function translateStatic(){
+  document.documentElement.lang = lang;
+  var w=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null), n, list=[];
+  while((n=w.nextNode())) list.push(n);
+  list.forEach(function(t){
+    if(t.parentNode && /^(SCRIPT|STYLE|OPTION)$/.test(t.parentNode.nodeName)) return;
+    if(t.parentNode && t.parentNode.closest && t.parentNode.closest('#tl,#ev,#hard,#fb')) return;
+    var o = ORIG.has(t) ? ORIG.get(t) : t.nodeValue;
+    var k=o.trim(); if(!k || !I18N[k]) return;
+    ORIG.set(t, o); t.nodeValue = o.replace(k, tr(k));
+  });
+  document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(function(el){
+    TATTR.forEach(function(a){ var key='data-ko-'+a, o=el.getAttribute(key)||el.getAttribute(a); if(o && I18N[o]){ el.setAttribute(key,o); el.setAttribute(a,tr(o)); } });
+  });
+}
+// event helpers
+function evTitle(i){ var e=EV[i]; return lang==='ko' ? e[4] : e[5+LIDX[lang]]; }
+function evYear(i){ return EV[i][1]; }
+function fmtYear(i){
+  var y=EV[i][1], ap=EV[i][2], a=Math.abs(y), bc=y<0, s;
+  switch(lang){
+    case 'ko': s=(bc?'기원전 ':'')+a+'년'; if(ap) s='약 '+s; break;
+    case 'ja': s=(bc?'紀元前':'')+a+'年'; if(ap) s='約'+s; break;
+    case 'fr': s=a+(bc?' av. J.-C.':''); if(ap) s='v. '+s; break;
+    case 'de': s=a+(bc?' v. Chr.':''); if(ap) s='um '+s; break;
+    case 'es': s=a+(bc?' a. C.':''); if(ap) s='h. '+s; break;
+    default: s=a+(bc?' BC':''); if(ap) s='c. '+s;
+  }
+  return s;
+}
+function yearHtml(i){ // two lines for the timeline column
+  var y=EV[i][1], ap=EV[i][2], a=Math.abs(y), bc=y<0, top=String(a), sub='';
+  var pre={ko:'약',ja:'約',fr:'v.',de:'um',es:'h.',en:'c.'}[lang], bcs={ko:'기원전',ja:'紀元前',fr:'av. J.-C.',de:'v. Chr.',es:'a. C.',en:'BC'}[lang];
+  if(bc) sub=bcs; if(ap) sub=pre+(sub?' '+sub:'');
+  return (sub?'<small>'+esc(sub)+'</small>':'')+top;
+}
+var DECK_NAME={k:'한국사',w:'세계사',s:'과학·발명',a:'모두'};
+function deckIdx(d){ var out=[]; EV.forEach(function(e,i){ if(d==='a' || e[0]===d) out.push(i); }); return out; }
+function rng(seed){ var a=seed>>>0; return function(){ a=(a+0x6D2B79F5)|0; var t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
+function makeSeq(deck, seed){
+  var a=deckIdx(deck), r=rng(seed);
+  for(var i=a.length-1;i>0;i--){ var j=Math.floor(r()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; }
+  return a;
+}
+// placed: card indices in time order. pos = gap index 0..placed.length
+function fits(placed, pos, c){
+  var y=evYear(c);
+  if(pos<0 || pos>placed.length) return false;
+  if(pos>0 && evYear(placed[pos-1])>y) return false;
+  if(pos<placed.length && evYear(placed[pos])<y) return false;
+  return true;
+}
+function rightPos(placed, c){ var y=evYear(c), p=0; while(p<placed.length && evYear(placed[p])<=y) p++; return p; }
+function ptsFor(streak){ return 100 + Math.min(streak-1,5)*20; } // streak counts this answer
+
+function peerOpts(){
+  var o = { debug:0, config:{ iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}] } };
+  var ps = qs.get('ps');
+  if(ps){ var m = ps.match(/^([^:\/]+)(?::(\d+))?(\/.*)?$/); if(m){ o.host=m[1]; o.port=+(m[2]||443); o.path=m[3]||'/'; o.secure = location.protocol==='https:'; } }
+  return o;
+}
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+var token = lsGet('timeline.token');
+if(!token){ token = Math.random().toString(36).slice(2)+Date.now().toString(36); lsSet('timeline.token', token); }
+function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on', s.id===id); }); window.scrollTo(0,0); }
+var toastT;
+function toast(t){ var el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('on'); }, 2400); }
+var netNow=['','오프라인'];
+function setNet(state, txt){ netNow=[state,txt]; var n=$('net'); n.className='net'+(state?' '+state:''); $('netTxt').textContent=tr(txt); }
+function fmt(ms){ var s=Math.max(0,Math.ceil(ms/1000)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function cleanName(n){ n=String(n||'').replace(/\s+/g,' ').trim().slice(0,16); return n || tr('플레이어'); }
+
+// =====================================================================
+// STATE
+// =====================================================================
+var S = {
+  role:null, peer:null, code:'', name:'',
+  settings:{ time:300, deck:'k', hostPlay:0 },
+  phase:'idle', mode:null, endAt:0, totalMs:0,
+  seed:0, seq:[],
+  me:null,            // my play: {placed, i, score, correct, wrong, streak, best, last, lives, done}
+  players:{}, conn:null, board:null, tally:{}
+};
+var save = (function(){ try{ var v=JSON.parse(lsGet(SAVE_KEY)||'{}'); if(v && typeof v==='object') return v; }catch(e){} return {}; })();
+save.best = save.best || {};
+var soloDeck = ['k','w','s','a'].indexOf(save.deck)>=0 ? save.deck : 'k';
+function newPlay(){ return { placed:[S.seq[0]], i:1, score:0, correct:0, wrong:0, streak:0, best:0, last:0, lives:LIVES, done:false }; }
+// applies one answer to a play record; shared by host check and local play
+function applyAns(p, pos){
+  var c=S.seq[p.i], ok=fits(p.placed, pos, c), r={ c:c, ok:ok, pts:0, at:0 };
+  if(ok){ p.placed.splice(pos,0,c); p.streak++; p.best=Math.max(p.best,p.streak); r.pts=ptsFor(p.streak); p.score+=r.pts; p.correct++; p.last=Date.now(); r.at=pos; }
+  else { p.streak=0; p.wrong++; p.lives--; r.at=rightPos(p.placed, c); }
+  p.i++;
+  if(p.i>=S.seq.length) p.done=true;
+  return r;
+}
+
+// =====================================================================
+// HOME
+// =====================================================================
+(function(){
+  var picks=[], all=deckIdx('a'); while(picks.length<10){ var c=all[Math.floor(Math.random()*all.length)]; if(!picks.some(function(p){ return evYear(p)===evYear(c); })) picks.push(c); }
+  picks.sort(function(a,b){ return evYear(a)-evYear(b); });
+  var s=picks.map(function(i){ return EV[i][3]+' <b>'+esc(fmtYear(i))+'</b>'; }).join(' &nbsp;—&nbsp; ');
+  $('ticker').innerHTML=s+' &nbsp;—&nbsp; '+s;
+})();
+$('nameIn').value = lsGet('timeline.name') || '';
+$('diceBtn').onclick=function(){ var L=RNAMES[lang]||RNAMES.en, pick=function(a){ return a[Math.floor(Math.random()*a.length)]; }; var n; do { n=pick(L[0])+' '+pick(L[1]); } while(n.length>16); $('nameIn').value = n; };
+$('langSel').value = lang;
+$('langSel').onchange = function(){
+  lang = this.value; try{ localStorage.setItem(LKEY, lang); }catch(e){}
+  translateStatic(); setNet(netNow[0], netNow[1]); renderHome();
+  if(S.phase==='lobby'){ if(S.role==='guest') renderGuestSet(); renderChips(); }
+  if($('sGame').classList.contains('on')) { renderCur(); renderTl(); renderHud(); }
+};
+function renderHome(){
+  $('segSoloDeck').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', b.dataset.v===soloDeck); });
+  var b=save.best[soloDeck]; $('soloBest').textContent = b ? tr('최고 {0}점', b) : '';
+}
+translateStatic(); renderHome();
+if(qs.get('room')) $('codeIn').value = qs.get('room').toUpperCase().slice(0,5);
+$('segSoloDeck').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; soloDeck=b.dataset.v; save.deck=soloDeck; lsSet(SAVE_KEY, JSON.stringify(save)); renderHome(); });
+
+function needName(){
+  var n = $('nameIn').value.trim();
+  if(!n){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('이름을 먼저 입력하세요.'); $('nameIn').focus(); return null; }
+  n = cleanName(n); lsSet('timeline.name', n); $('homeMsg').textContent=''; return n;
+}
+$('codeIn').addEventListener('input', function(){ this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
+$('codeIn').addEventListener('keydown', function(e){ if(e.key==='Enter') $('joinBtn').click(); });
+$('hostBtn').onclick = function(){ var n=needName(); if(n) startHost(n); };
+$('joinBtn').onclick = function(){
+  var n=needName(); if(!n) return;
+  var c=$('codeIn').value.trim().toUpperCase();
+  if(c.length!==5){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('방 코드 5자리를 입력하세요.'); return; }
+  startGuest(n, c);
+};
+$('soloBtn').onclick = startSolo;
+function busy(on){ ['hostBtn','joinBtn','soloBtn'].forEach(function(id){ $(id).disabled=on; }); }
+function destroyPeer(){ if(S.peer){ try{ S.peer.destroy(); }catch(e){} } S.peer=null; S.conn=null; S.players={}; setNet('', '오프라인'); }
+function goHome(){ destroyPeer(); clearTimers(); S.role=null; S.phase='idle'; S.mode=null; busy(false); renderHome(); show('sHome'); }
+function noPeerLib(){ if(window.Peer) return false; $('homeMsg').className='msg'; $('homeMsg').textContent=tr('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.'); return true; }
+
+// =====================================================================
+// SOLO
+// =====================================================================
+function startSolo(){
+  destroyPeer(); clearTimers();
+  S.role='solo'; S.mode='solo'; S.phase='play'; S.settings.deck=soloDeck;
+  S.seed=(Math.random()*4294967296)>>>0; S.seq=makeSeq(soloDeck, S.seed); S.me=newPlay();
+  enterGame();
+}
+$('gQuit').onclick = function(){ if(S.mode==='solo' && S.phase==='play') endSolo(); };
+function endSolo(){
+  S.phase='result';
+  var m=S.me, d=S.settings.deck, rec = !save.best[d] || m.score>save.best[d];
+  if(rec && m.score>0){ save.best[d]=m.score; lsSet(SAVE_KEY, JSON.stringify(save)); }
+  $('raceRes').classList.add('hide'); $('soloRes').classList.remove('hide');
+  $('soloRes').innerHTML='<div class="big">'+m.score+'</div><p>'+esc(tr('{0} · 정답 {1}개 · 최고 연속 {2}', tr(DECK_NAME[d]), m.correct, m.best))+'</p>'+(rec&&m.score>0?'<span class="nb">'+esc(tr('최고 기록!'))+'</span>':'');
+  var miss=S.missList||[];
+  renderHard(miss.map(function(c){ return { c:c, m:1, n:1 }; }), true);
+  $('againBtn').classList.remove('hide'); $('resWait').textContent='';
+  show('sResult');
+}
+
+// =====================================================================
+// GAME SCREEN (solo + race)
+// =====================================================================
+var lockT=null, inputLock=false, ghost=null;
+function enterGame(){
+  S.missList=[]; ghost=null; inputLock=false;
+  document.querySelectorAll('#sGame .solo').forEach(function(el){ el.classList.toggle('hide', S.mode!=='solo'); });
+  document.querySelectorAll('#sGame .race').forEach(function(el){ el.classList.toggle('hide', S.mode!=='race'); });
+  $('endNow2').classList.toggle('hide', !(S.mode==='race' && S.role==='host'));
+  $('fb').className='fb'; $('fb').innerHTML='';
+  renderHud(); renderCur(true); renderTl(); show('sGame');
+}
+function renderHud(){
+  var m=S.me; if(!m) return;
+  $('gScore').textContent=m.score; $('gStreak').textContent=m.streak;
+  var h=''; for(var i=0;i<LIVES;i++) h+= i<m.lives?'♥':'<i>♥</i>'; $('gHearts').innerHTML=h;
+  $('gLeft').textContent = m.done ? '' : tr('남은 카드 {0}장', S.seq.length-m.i);
+}
+function renderCur(deal){
+  var m=S.me, el=$('ev');
+  if(m.done){ el.className='ev'; el.innerHTML='<div class="em">🏁</div><div class="tt">'+esc(tr('모든 카드를 놓았어요'))+'</div>'; return; }
+  var c=S.seq[m.i];
+  el.className='ev'+(deal?' in':'');
+  el.innerHTML='<div class="em">'+EV[c][3]+'</div><div class="tt">'+esc(evTitle(c))+'</div><div class="yr">????</div>';
+}
+function renderTl(newAt){
+  var m=S.me, h='', placed=m.placed, canPlay=S.phase==='play' && !m.done && !(S.mode==='solo' && m.lives<=0);
+  for(var p=0;p<=placed.length;p++){
+    if(ghost && ghost.at===p) h+='<div class="tc ghost"><div class="y">'+yearHtml(ghost.c)+'</div><div class="dot"></div><div class="bx"><span class="e">'+EV[ghost.c][3]+'</span><span>'+esc(evTitle(ghost.c))+'</span></div></div>';
+    h+='<button class="gap" data-p="'+p+'"><span>'+esc(tr('여기'))+'</span></button>';
+    if(p<placed.length){ var c=placed[p]; h+='<div class="tc'+(newAt===p?' new':'')+'"><div class="y">'+yearHtml(c)+'</div><div class="dot"></div><div class="bx"><span class="e">'+EV[c][3]+'</span><span>'+esc(evTitle(c))+'</span></div></div>'; }
+  }
+  if(m.done) h+='<div class="done">'+esc(tr('결과를 기다리는 중'))+'</div>';
+  var tl=$('tl'); tl.innerHTML=h; tl.classList.toggle('lock', !canPlay || inputLock);
+}
+$('tl').addEventListener('click', function(e){
+  var g=e.target.closest('.gap'); if(!g || inputLock || S.phase!=='play') return;
+  var m=S.me; if(!m || m.done) return;
+  place(+g.dataset.p);
+});
+function place(pos){
+  var m=S.me, i=m.i, r=applyAns(m, pos);
+  if(S.mode==='race'){
+    if(S.role==='guest') send(S.conn, { t:'ans', i:i, pos:pos });
+    else if(S.role==='host'){ tallyAns(r.c, r.ok); boardDirty=true; }
+  }
+  var fb=$('fb');
+  if(r.ok){
+    fb.className='fb ok'; fb.innerHTML='✓ '+esc(evTitle(r.c))+' · '+esc(fmtYear(r.c))+'<span class="pts">+'+r.pts+'</span>';
+    ghost=null; renderTl(r.at);
+    var nw=$('tl').querySelector('.tc.new'); if(nw) nw.scrollIntoView({block:'nearest', behavior:'smooth'});
+    renderCur(true);
+  } else {
+    S.missList.push(r.c);
+    fb.className='fb bad'; fb.innerHTML='✗ '+esc(evTitle(r.c))+' · '+esc(fmtYear(r.c));
+    $('ev').className='ev bad';
+    inputLock=true; ghost={ c:r.c, at:r.at }; renderTl();
+    var gh=$('tl').querySelector('.tc.ghost'); if(gh) gh.scrollIntoView({block:'nearest', behavior:'smooth'});
+    clearTimeout(lockT);
+    lockT=setTimeout(function(){ inputLock=false; ghost=null; if(S.phase==='play' || S.phase==='count'){ renderCur(true); renderTl(); } if(S.mode==='solo' && m.lives<=0) endSolo(); }, 1400);
+  }
+  renderHud();
+  if(S.mode==='solo' && m.done && m.lives>0) setTimeout(endSolo, 900);
+}
+
+// =====================================================================
+// RACE
+// =====================================================================
+function newCode(){ var s=''; for(var i=0;i<5;i++) s+=CODE_CH[Math.floor(Math.random()*CODE_CH.length)]; return s; }
+function startHost(name, tries){
+  if(noPeerLib()) return;
+  tries = tries||0; busy(true);
+  $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('방을 만드는 중...');
+  destroyPeer();
+  S.role='host'; S.name=name; S.code=newCode(); S.players={};
+  var p = new Peer(PREFIX+S.code, peerOpts()); S.peer=p;
+  p.on('open', function(){ $('homeMsg').textContent=''; busy(false); setNet('on','연결됨'); enterLobby(); });
+  p.on('connection', onGuestConn);
+  p.on('disconnected', function(){ if(S.peer===p && !p.destroyed){ setNet('off','다시 연결 중'); setTimeout(function(){ if(S.peer===p && !p.destroyed) p.reconnect(); }, 1000); } });
+  p.on('error', function(err){
+    if(S.peer!==p) return;
+    if(err.type==='unavailable-id' && tries<5){ startHost(name, tries+1); return; }
+    if(S.phase==='idle'){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('방을 만들지 못했어요 ({0}). 잠시 후 다시 해 보세요.', err.type); busy(false); destroyPeer(); }
+    else if(err.type==='network' || err.type==='server-error' || err.type==='socket-error'){ setNet('off','서버 연결 끊김'); }
+  });
+}
+function onGuestConn(conn){
+  conn.on('data', function(d){ handleHostMsg(conn, d); });
+  conn.on('close', function(){ dropConn(conn); });
+  conn.on('error', function(){ dropConn(conn); });
+}
+function dropConn(conn){ for(var t in S.players){ var pl=S.players[t]; if(pl.conn===conn){ pl.online=false; pl.conn=null; } } if(S.phase==='lobby') renderChips(); boardDirty=true; }
+function send(conn, m){ if(conn && conn.open){ try{ conn.send(m); }catch(e){} } }
+function broadcast(m){ for(var t in S.players){ send(S.players[t].conn, m); } }
+function onlineCount(){ var c=0; for(var t in S.players) if(S.players[t].online) c++; return c; }
+function uniqueName(name, tok){
+  var base=name, n=name, i=2, taken=function(x){ if(S.settings.hostPlay && x===S.name && tok!==token) return true; for(var t in S.players) if(t!==tok && S.players[t].name===x) return true; return false; };
+  while(taken(n)){ n=base.slice(0,14)+' '+i; i++; }
+  return n;
+}
+function tallyAns(c, ok){ var t=S.tally[c]||(S.tally[c]={n:0,m:0}); t.n++; if(!ok) t.m++; }
+function handleHostMsg(conn, d){
+  if(!d || typeof d!=='object') return;
+  if(d.t==='hello'){
+    var tok = String(d.token||'').slice(0,40) || conn.peer;
+    var pl = S.players[tok];
+    if(!pl){
+      if(Object.keys(S.players).length >= MAX_PLAYERS){
+        var freed=false;
+        if(S.phase==='lobby'){ for(var t in S.players){ if(!S.players[t].online){ delete S.players[t]; freed=true; break; } } }
+        if(!freed){ send(conn,{t:'full'}); setTimeout(function(){ conn.close(); }, 500); return; }
+      }
+      pl = S.players[tok] = { name:'', conn:null, online:true, play: S.seq.length?newPlay():null };
+    }
+    if(pl.conn && pl.conn!==conn){ try{ pl.conn.close(); }catch(e){} }
+    pl.conn=conn; pl.online=true; conn._tok=tok;
+    pl.name = uniqueName(cleanName(d.name), tok);
+    if((S.phase==='play'||S.phase==='count') && !pl.play) pl.play=newPlay();
+    send(conn, { t:'welcome', name:pl.name, settings:S.settings, phase:S.phase, remain:S.endAt-Date.now(), total:S.totalMs, seed:S.seed, play:pl.play });
+    if(S.phase==='result') send(conn, endMsg());
+    if(S.phase==='lobby') renderChips();
+    boardDirty=true;
+    return;
+  }
+  var pl2 = S.players[conn._tok]; if(!pl2) return;
+  if(d.t==='rename' && S.phase==='lobby'){ pl2.name = uniqueName(cleanName(d.name), conn._tok); send(conn, { t:'named', name:pl2.name }); renderChips(); return; }
+  if(d.t==='ans' && S.phase==='play' && pl2.play && !pl2.play.done && (d.i|0)===pl2.play.i){
+    var r=applyAns(pl2.play, d.pos|0); tallyAns(r.c, r.ok); boardDirty=true;
+  }
+}
+function enterLobby(){
+  S.phase='lobby'; S.mode=null;
+  $('lobbyCode').textContent = S.code;
+  var isHost = S.role==='host';
+  $('hostSet').classList.toggle('hide', !isHost);
+  $('guestWait').classList.toggle('hide', isHost);
+  if(isHost){
+    var url = location.origin+location.pathname+'?room='+S.code+(qs.get('ps')?'&ps='+encodeURIComponent(qs.get('ps')):'');
+    $('lobbyLink').innerHTML = esc(url.replace(/^https?:\/\//,''))+'<button id="copyLnk">'+tr('복사')+'</button>';
+    $('copyLnk').onclick=function(){ (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function(){ toast(tr('링크를 복사했어요')); }, function(){ toast(url); }); };
+    syncSegs();
+    for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else p.play=null; }
+    broadcast({ t:'lobby', settings:S.settings });
+  } else { $('lobbyLink').textContent=''; renderGuestSet(); }
+  $('renameIn').value = S.name;
+  renderChips(); show('sLobby');
+}
+function renderGuestSet(){ var s=S.settings; $('guestSet').textContent = tr('{0} · {1}', fmt(s.time*1000), tr(DECK_NAME[s.deck]||'한국사')); }
+function bindSeg(id, key, str){
+  $(id).addEventListener('click', function(e){
+    var b=e.target.closest('button'); if(!b) return;
+    S.settings[key] = str ? b.dataset.v : +b.dataset.v; syncSegs(); renderChips();
+    broadcast({ t:'lobby', settings:S.settings });
+  });
+}
+bindSeg('segTime','time'); bindSeg('segDeck','deck',true); bindSeg('segHostPlay','hostPlay');
+function syncSegs(){ [['segTime','time'],['segDeck','deck'],['segHostPlay','hostPlay']].forEach(function(a){ $(a[0]).querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', String(b.dataset.v)===String(S.settings[a[1]])); }); }); }
+var lobbyNames=[], guestCount=0;
+function renderChips(){
+  var names=[];
+  if(S.role==='host'){
+    if(S.settings.hostPlay) names.push({n:S.name, me:true});
+    for(var t in S.players){ var p=S.players[t]; if(p.online) names.push({n:p.name}); }
+    broadcast({ t:'players', names:names.map(function(x){ return x.n; }), guests:onlineCount() });
+    guestCount = onlineCount();
+    $('startBtn').disabled = names.length===0;
+  } else names = lobbyNames.map(function(n){ return {n:n, me:n===S.name}; });
+  $('pNum').textContent = guestCount;
+  $('chips').innerHTML = names.map(function(x){ return '<span class="chip'+(x.me?' me':'')+'">'+esc(x.n)+'</span>'; }).join('') || '<span class="msg info">'+tr('아직 아무도 없어요')+'</span>';
+}
+$('startBtn').onclick = function(){
+  if(S.role!=='host') return;
+  var cdMs=3000; S.seed=(Math.random()*4294967296)>>>0; S.seq=makeSeq(S.settings.deck, S.seed); S.tally={};
+  for(var t in S.players) S.players[t].play=newPlay();
+  broadcast({ t:'start', cd:cdMs, dur:S.settings.time*1000, settings:S.settings, seed:S.seed });
+  beginRace(cdMs, S.settings.time*1000);
+};
+$('leaveBtn').onclick = goHome;
+$('renameBtn').onclick = function(){
+  var n=$('renameIn').value.trim(); if(!n || S.phase!=='lobby') return;
+  n=cleanName(n);
+  if(S.role==='host'){ S.name=n; lsSet('timeline.name', n); renderChips(); toast(tr('이름을 바꿨어요')); }
+  else send(S.conn, { t:'rename', name:n });
+};
+$('renameIn').addEventListener('keydown', function(e){ if(e.key==='Enter') $('renameBtn').click(); });
+$('endNow2').onclick = $('endNowBtn').onclick = function(){ if(S.role==='host' && S.phase==='play') finishRace(); };
+
+function startGuest(name, code){
+  if(noPeerLib()) return;
+  busy(true); $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('방에 연결하는 중...');
+  destroyPeer();
+  S.role='guest'; S.name=name; S.code=code;
+  var p = new Peer(peerOpts()); S.peer=p;
+  var tm = setTimeout(function(){ if(S.peer===p && S.phase==='idle'){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.'); busy(false); destroyPeer(); } }, 15000);
+  p.on('open', function(){ connectHost(p, tm); });
+  p.on('disconnected', function(){ if(S.peer===p && !p.destroyed) setTimeout(function(){ if(S.peer===p && !p.destroyed) p.reconnect(); }, 1000); });
+  p.on('error', function(err){
+    if(S.peer!==p) return;
+    if(S.phase==='idle'){ clearTimeout(tm); $('homeMsg').className='msg'; $('homeMsg').textContent = err.type==='peer-unavailable' ? tr('방을 찾을 수 없어요. 코드를 확인하세요.') : tr('연결하지 못했어요 ({0}).', err.type); busy(false); destroyPeer(); }
+    else if(err.type==='peer-unavailable'){ setNet('off','방장과 연결 끊김'); }
+  });
+}
+var retryT=null, retries=0;
+function connectHost(p, tm){
+  var c = p.connect(PREFIX+S.code, { reliable:true });
+  c.on('open', function(){ clearTimeout(tm); retries=0; S.conn=c; setNet('on','연결됨'); send(c, { t:'hello', name:S.name, token:token }); });
+  c.on('data', function(d){ handleGuestMsg(d); });
+  c.on('close', function(){
+    if(S.conn!==c || S.peer!==p) return;
+    S.conn=null; setNet('off','방장과 연결 끊김');
+    if(S.phase!=='idle' && retries<8){ retries++; clearTimeout(retryT); retryT=setTimeout(function(){ if(S.peer===p) connectHost(p); }, 1500); }
+    else if(S.phase==='lobby'){ toast(tr('방장과 연결이 끊겼어요')); goHome(); }
+  });
+}
+function handleGuestMsg(d){
+  if(!d || typeof d!=='object') return;
+  switch(d.t){
+    case 'full': $('homeMsg').className='msg'; $('homeMsg').textContent=tr('방이 가득 찼어요 (최대 40명).'); busy(false); destroyPeer(); show('sHome'); break;
+    case 'welcome':
+      S.name=d.name; S.settings=d.settings; busy(false); $('homeMsg').textContent='';
+      if(d.phase==='play'){
+        if(S.phase!=='play'){ S.seed=d.seed>>>0; S.seq=makeSeq(S.settings.deck, S.seed); beginRace(0, Math.max(0,d.remain), d.total, d.play); }
+      } else if(d.phase==='lobby' && S.phase!=='lobby') enterLobby();
+      break;
+    case 'lobby': S.settings=d.settings; if(S.phase!=='lobby') enterLobby(); else renderGuestSet(); break;
+    case 'named': S.name=d.name; lsSet('timeline.name', d.name); $('renameIn').value=d.name; renderChips(); toast(tr('이름을 바꿨어요')); break;
+    case 'players': lobbyNames=d.names||[]; guestCount=d.guests|0; if(S.phase==='lobby') renderChips(); break;
+    case 'start': S.settings=d.settings; S.seed=d.seed>>>0; S.seq=makeSeq(S.settings.deck, S.seed); beginRace(d.cd, d.dur); break;
+    case 'board': S.board=d; renderStrip(); break;
+    case 'end': showResult(d); break;
+  }
+}
+
+var timers=[], tickT=null, boardT=null, boardDirty=false;
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearInterval(tickT); clearInterval(boardT); clearTimeout(lockT); inputLock=false; $('cd').classList.remove('on'); }
+function iPlay(){ return S.role!=='host' || !!S.settings.hostPlay; }
+function validPlay(p){ // restored state from the host
+  if(!p || !Array.isArray(p.placed)) return null;
+  return { placed:p.placed.map(Number), i:p.i|0, score:p.score|0, correct:p.correct|0, wrong:p.wrong|0, streak:p.streak|0, best:p.best|0, last:p.last||0, lives:LIVES, done:!!p.done };
+}
+function beginRace(cdMs, durMs, totalMs, resume){
+  clearTimers();
+  var now=Date.now();
+  S.endAt=now+cdMs+durMs; S.totalMs=totalMs||durMs;
+  S.mode='race'; S.board=null;
+  S.me = validPlay(resume) || newPlay();
+  S.phase = cdMs>0 ? 'count' : 'play';
+  if(iPlay()){ $('gStrip').innerHTML=''; $('gRank').textContent='-'; enterGame(); }
+  else { $('wCode').textContent=S.code; $('wBoard').innerHTML=''; show('sWatch'); }
+  if(cdMs>0){
+    $('cd').classList.add('on');
+    (function step(k){ $('cdNum').textContent=k; $('cdNum').style.animation='none'; void $('cdNum').offsetWidth; $('cdNum').style.animation=''; if(k>1) timers.push(setTimeout(function(){ step(k-1); }, 1000)); })(Math.round(cdMs/1000));
+    timers.push(setTimeout(function(){ $('cd').classList.remove('on'); S.phase='play'; if(iPlay()) renderTl(); }, cdMs));
+  }
+  tickT=setInterval(tick, 250); tick();
+  if(S.role==='host'){ boardDirty=true; boardT=setInterval(function(){ if(boardDirty){ boardDirty=false; pushBoard(); } }, 800); }
+}
+function tick(){
+  var left=S.endAt-Date.now(), txt=fmt(Math.min(left, S.totalMs)), pct=Math.max(0,Math.min(1,left/S.totalMs))*100;
+  $('gTime').textContent=txt; $('wTime').textContent=txt; $('gBar').style.width=pct+'%'; $('wBar').style.width=pct+'%';
+  var low=left<=15000; $('gTimeBox').classList.toggle('low',low); $('wTimeBox').classList.toggle('low',low);
+  if(left<=0 && S.phase==='play'){
+    if(S.role==='host') finishRace();
+    else { S.phase='wait'; $('fb').className='fb'; $('fb').textContent=tr('시간 종료'); renderTl(); }
+  }
+}
+function entries(){
+  var arr=[];
+  for(var t in S.players){ var p=S.players[t], q=p.play; if(!q) continue; if(p.online || q.score>0) arr.push({ n:p.name, s:q.score, c:q.correct, w:q.wrong, b:q.best, l:q.last||Infinity, o:p.online, t:t }); }
+  if(S.settings.hostPlay && S.me) arr.push({ n:S.name, s:S.me.score, c:S.me.correct, w:S.me.wrong, b:S.me.best, l:S.me.last||Infinity, o:true, t:token });
+  arr.sort(function(a,b){ return b.s-a.s || a.l-b.l || a.n.localeCompare(b.n); });
+  var rk=0, prev=null;
+  arr.forEach(function(e,i){ if(!prev || e.s!==prev.s || e.l!==prev.l) rk=i+1; e.r=rk; prev=e; });
+  return arr;
+}
+function rowHtml(e, max, me){
+  return '<div class="brow'+(me?' me':'')+(e.r<=3?' r'+e.r:'')+(e.o===false?' off':'')+'"><div class="bar" style="width:'+(max?Math.round(e.s/max*100):0)+'%"></div><div class="rk">'+e.r+'</div><div class="nm">'+esc(e.n)+'</div><div class="sc">'+e.s+'<small>✓'+e.c+'</small></div></div>';
+}
+function pushBoard(){
+  var r=entries(), max=r.length?r[0].s:0, top=r.slice(0,5), total=0;
+  r.forEach(function(e){ total+=e.c; });
+  r.forEach(function(e){ var p=S.players[e.t]; if(p && p.conn && p.conn.open) send(p.conn, { t:'board', top:top.map(function(x){ return { r:x.r, n:x.n, s:x.s, c:x.c, me:x.t===e.t }; }), max:max, n:r.length, me:{ r:e.r, s:e.s } }); });
+  $('wTotal').textContent=total;
+  $('wBoard').innerHTML = r.map(function(e){ return rowHtml(e, max, false); }).join('') || '<div class="msg info">'+tr('참가자를 기다리는 중')+'</div>';
+  if(S.settings.hostPlay){ var mine=r.filter(function(e){ return e.t===token; })[0]; S.board={ top:top.map(function(x){ return { r:x.r, n:x.n, s:x.s, c:x.c, me:x.t===token }; }), max:max, n:r.length, me:mine?{ r:mine.r, s:mine.s }:null }; renderStrip(); }
+}
+function renderStrip(){ var b=S.board; if(!b) return; $('gStrip').innerHTML=b.top.map(function(e){ return rowHtml(e, b.max, e.me); }).join(''); if(b.me) $('gRank').textContent=b.me.r+'/'+b.n; }
+function endMsg(){
+  var r=entries().map(function(e){ return { r:e.r, n:e.n, s:e.s, c:e.c, w:e.w, b:e.b, t:e.t }; });
+  var hard=Object.keys(S.tally).map(Number).filter(function(c){ return S.tally[c].m>0; }).map(function(c){ return { c:c, m:S.tally[c].m, n:S.tally[c].n }; });
+  hard.sort(function(a,b){ return b.m-a.m || (b.m/b.n)-(a.m/a.n); });
+  return { t:'end', ranking:r, hard:hard.slice(0,6) };
+}
+function finishRace(){ clearTimers(); S.phase='result'; var m=endMsg(); broadcast(m); showResult(m); }
+function renderHard(list, solo){
+  $('hardWrap').classList.toggle('hide', !list.length);
+  $('hard').innerHTML = list.map(function(h){
+    var c=h.c; if(!EV[c]) return '';
+    return '<div class="h"><span class="e">'+EV[c][3]+'</span><div><div class="t">'+esc(evTitle(c))+'</div><div class="y">'+esc(fmtYear(c))+'</div></div>'+(solo?'':'<div class="m">'+h.m+'<small>'+esc(tr('{0}명 중', h.n))+'</small></div>')+'</div>';
+  }).join('');
+}
+function showResult(d){
+  clearTimers(); S.phase='result';
+  $('raceRes').classList.remove('hide'); $('soloRes').classList.add('hide');
+  var r=d.ranking||[];
+  var p=function(i, cls){ var e=r[i]; if(!e) return '<div class="pod '+cls+'" style="visibility:hidden"><div class="blkp"></div></div>'; return '<div class="pod '+cls+'"><div class="who">'+esc(e.n)+'</div><div class="pts">'+tr('{0}점', e.s)+'</div><div class="blkp">'+e.r+'</div></div>'; };
+  $('podium').innerHTML = p(1,'p2')+p(0,'p1')+p(2,'p3');
+  var mine = r.filter(function(e){ return e.t===token || (S.role==='guest' && e.n===S.name); })[0];
+  $('myRes').innerHTML = mine ? (mine.r===1?tr('🏆 우승! '):'')+tr('{0}위 · {1}점 · 정답 {2}개', '<b>'+mine.r+'</b>', '<b>'+mine.s+'</b>', mine.c) : '';
+  $('resBody').innerHTML = r.map(function(e){ var acc=(e.c+e.w)?Math.round(e.c/(e.c+e.w)*100)+'%':'-'; return '<tr'+(mine&&e===mine?' class="me"':'')+'><td class="n">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="n">'+e.s+'</td><td class="n">'+e.c+'</td><td>'+acc+'</td><td class="n">'+e.b+'</td></tr>'; }).join('');
+  renderHard(d.hard||[], false);
+  $('againBtn').classList.toggle('hide', S.role!=='host');
+  $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
+  show('sResult');
+}
+$('againBtn').onclick = function(){ if(S.role==='host') enterLobby(); else if(S.role==='solo') startSolo(); };
+$('homeBtn').onclick = goHome;
+window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.phase!=='idle' && onlineCount()>0){ e.preventDefault(); e.returnValue=''; } });
+
+window.__tl = { S:S, EV:EV, makeSeq:makeSeq, rightPos:rightPos, place:function(p){ place(p); }, right:function(){ return rightPos(S.me.placed, S.seq[S.me.i]); } };
+})();
+</script>
+</body>
+</html>
