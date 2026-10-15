@@ -88,6 +88,12 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   header .right{display:flex; align-items:center;}
   .langSel{background:var(--panel); color:var(--dim); border:1px solid var(--line); border-radius:8px; padding:6px 9px; font:inherit; font-size:14px; cursor:pointer; margin-left:16px;}
   .langSel:hover{color:var(--text); border-color:var(--fry);}
+  .swr{margin:0 auto 0 20px;}
+  .sw{display:inline-flex; padding:3px; border-radius:99px; border:1px solid var(--line); background:var(--panel);}
+  .sw a{font-family:'Oswald',sans-serif; font-weight:600; font-size:13.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--dim); text-decoration:none; padding:4px 13px; border-radius:99px; transition:color .15s,background .15s;}
+  .sw a:hover{color:var(--text);}
+  .sw a.on{background:linear-gradient(90deg,var(--fry),var(--fry2)); color:#1c1405;}
+  @media(max-width:520px){ header{flex-wrap:wrap;} .swr{order:3; flex:1 0 100%; margin:14px 0 0;} }
   .hero{padding:58px 0 34px;}
   .hero .eyebrow{display:inline-block; font-size:13px; font-weight:700; letter-spacing:.14em; color:var(--fry); text-transform:uppercase;}
   .hero h1{font-family:'Oswald','Noto Sans KR',sans-serif; font-weight:700; font-size:clamp(40px,7vw,76px); line-height:1.02; margin:10px 0 0; text-transform:uppercase; letter-spacing:.01em;}
@@ -157,7 +163,8 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <div class="wrap">
   <header>
     <a class="logo" href="./"><span class="fry">🍟</span><span>FRENCHFRIES<b>777</b></span></a>
-    <div class="right"><nav><a href="#games">게임</a><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">GitHub</a></nav><span data-lang-slot></span><span data-ff-account></span></div>
+    <div class="swr"><span class="sw" data-notr><a href="https://frenchfries777mc.github.io/games/">Games</a><a class="on" href="./" aria-current="page">Educations</a></span></div>
+    <div class="right"><nav><a href="#games">게임</a><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">GitHub</a></nav><span data-lang-slot></span><span data-ff-account data-ff-nohub></span></div>
   </header>
 
   <section class="hero">
