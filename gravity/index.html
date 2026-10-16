@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <title>중력 서커스</title>
-<meta name="description" content="행성마다 다른 중력 속에서 대포로 곡예사를 쏘아 그물에 착지시키는 힘과 중력 게임">
+<meta name="description" content="중력, 탄성력, 마찰력, 부력의 크기를 맞춰 서커스 곡예를 성공시키는 중학교 1학년 힘 게임">
 <meta name="theme-color" content="#16203b">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -125,8 +125,10 @@
   .flash.on{animation:flash 1.2s ease forwards;}
   .flash.miss{color:#ff8a7a;}
   @keyframes flash{0%{opacity:0; transform:translate(-50%,-50%) scale(.6);} 15%{opacity:1; transform:translate(-50%,-50%) scale(1.08);} 30%{transform:translate(-50%,-50%) scale(1);} 80%{opacity:1;} 100%{opacity:0;}}
-  .controls{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto; gap:12px; margin-top:14px; align-items:center;}
-  @media(max-width:600px){ .controls{grid-template-columns:minmax(0,1fr) minmax(0,1fr);} .controls .fire{grid-column:1/-1;} }
+  .controls{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:12px; margin-top:14px; align-items:center;}
+  .bill .orb{display:grid; place-items:center; font-size:38px;}
+  .bill .goal{margin:0 0 14px; font-weight:700; color:var(--red);}
+  @media(max-width:600px){ .controls{grid-template-columns:minmax(0,1fr);} }
   .dial{background:var(--cream); color:var(--ink); border-radius:12px; padding:8px 10px; display:grid; grid-template-columns:40px 1fr 40px; align-items:center; gap:6px; text-align:center;}
   .dial small{display:block; font-size:12px; color:var(--mute); font-weight:700;}
   .dial b{font-family:'Alfa Slab One',serif; font-weight:400; font-size:24px; color:var(--navy);}
@@ -214,15 +216,15 @@
 <section class="screen on" id="sHome">
   <div class="poster">
     <div class="stars">★ ★ ★ ★ ★</div>
-    <p class="pre">THE GREATEST SHOW IN THE SOLAR SYSTEM</p>
+    <p class="pre">FOUR FORCES · ONE BIG TOP</p>
     <h1>중력 서커스</h1>
     <div class="en">GRAVITY CIRCUS</div>
-    <p class="lead">달, 화성, 목성... 무대마다 중력이 달라요. 대포 각도와 속력을 맞춰 곡예사를 그물에 착지시키세요.</p>
+    <p class="lead">중력, 탄성력, 마찰력, 부력. 무대마다 다른 힘이 숨어 있어요. 힘의 크기를 딱 맞춰 곡예를 성공시키세요.</p>
     <div class="nameRow"><label for="nameIn">이름</label><input id="nameIn" maxlength="16" placeholder="이름을 입력하세요" autocomplete="off"><button id="diceBtn" title="무작위 이름" aria-label="무작위 이름">🎲</button></div>
     <div class="tent"></div>
   </div>
   <div class="tickets">
-    <button class="ticket" id="soloBtn"><span class="t">혼자 공연</span><span class="d">무대 8개를 돌며 최고 점수에 도전해요.</span><span class="no">ADMIT ONE</span></button>
+    <button class="ticket" id="soloBtn"><span class="t">혼자 공연</span><span class="d">네 가지 힘의 무대 8개에 도전해요.</span><span class="no">ADMIT ONE</span></button>
     <button class="ticket r" id="hostBtn"><span class="t">공연장 열기</span><span class="d">방 코드로 친구를 불러요. 최대 40명.</span><span class="no">VIP · 40</span></button>
     <div class="ticket c" id="joinBox"><span class="t">입장하기</span><span class="d">받은 방 코드를 입력하세요.</span><span class="code"><input id="codeIn" maxlength="5" placeholder="코드" aria-label="방 코드" autocomplete="off"><span id="joinBtn" role="button" tabindex="0">입장</span></span><span class="no">GUEST</span></div>
   </div>
@@ -238,7 +240,7 @@
       <div class="link" id="lobbyLink"></div>
       <div id="hostSet" style="margin-top:16px">
         <p class="lbl">무대 수</p>
-        <div class="seg" id="segStages"><button data-v="5">5개</button><button data-v="8">8개</button><button data-v="12">12개</button></div>
+        <div class="seg" id="segStages"><button data-v="4">4개</button><button data-v="8">8개</button><button data-v="12">12개</button></div>
         <p class="lbl">제한 시간</p>
         <div class="seg" id="segTime"><button data-v="180">3분</button><button data-v="300">5분</button><button data-v="480">8분</button></div>
         <p class="lbl">방장도 공연</p>
@@ -271,10 +273,9 @@
         <div class="facts" id="facts"></div>
         <div class="flash" id="flash"></div>
       </div>
-      <div class="controls">
-        <div class="dial"><button data-d="ang" data-v="-1" aria-label="각도 줄이기">−</button><div><small>각도</small><b id="angV">45°</b></div><button data-d="ang" data-v="1" aria-label="각도 늘리기">＋</button><input type="range" id="angR" min="10" max="80" step="0.5" value="45" aria-label="각도"></div>
-        <div class="dial"><button data-d="spd" data-v="-1" aria-label="속력 줄이기">−</button><div><small>속력</small><b id="spdV">15.0</b></div><button data-d="spd" data-v="1" aria-label="속력 늘리기">＋</button><input type="range" id="spdR" min="2" max="30" step="0.1" value="15" aria-label="속력"></div>
-        <button class="fire" id="fireBtn">발사!</button>
+      <div class="controls one">
+        <div class="dial"><button data-v="-1" aria-label="줄이기">−</button><div><small id="dialL">값</small><b id="valV">0</b></div><button data-v="1" aria-label="늘리기">＋</button><input type="range" id="valR" min="0" max="100" step="1" value="0" aria-label="값"></div>
+        <button class="fire" id="fireBtn">도전!</button>
       </div>
       <div class="note" id="note"></div>
     </div>
@@ -301,10 +302,10 @@
     <div id="rRankBox"><h3>순위</h3><div class="tblWrap"><table class="tbl"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>무대</th></tr></thead><tbody id="rRank"></tbody></table></div></div>
     <div id="rMine">
       <h3>무대별 기록</h3>
-      <div class="tblWrap"><table class="tbl"><thead><tr><th>#</th><th>행성</th><th>중력</th><th>곡예사</th><th>송풍기</th><th>발사</th><th>점수</th></tr></thead><tbody id="rStages"></tbody></table></div>
-      <h3>같은 힘으로 쏘면 얼마나 멀리 갈까?</h3>
+      <div class="tblWrap"><table class="tbl"><thead><tr><th>#</th><th>무대</th><th>힘</th><th>조건</th><th>도전</th><th>점수</th></tr></thead><tbody id="rStages"></tbody></table></div>
+      <h3>같은 힘으로 들 수 있는 질량</h3>
       <div class="bars" id="rBars"></div>
-      <p class="cap">속력 20 m/s, 각도 45°로 쐈을 때 날아가는 거리예요. 중력이 약할수록 더 멀리 가요.</p>
+      <p class="cap">1000 N의 힘으로 들어 올릴 수 있는 질량이에요. 중력이 약한 곳일수록 무게가 작아져서 더 무거운 것도 들 수 있어요.</p>
     </div>
   </div>
   <p class="msg info" id="resWait"></p>
@@ -316,14 +317,8 @@
   <div class="act" id="iAct">ACT 1</div>
   <div class="orb" id="iOrb"></div>
   <h2 id="iPlanet">지구</h2>
-  <table>
-    <tr><td>중력 <small>(1kg을 당기는 힘)</small></td><td id="iG"></td></tr>
-    <tr><td>출연</td><td id="iWho"></td></tr>
-    <tr><td>질량 <small>(어디서나 같아요)</small></td><td id="iM"></td></tr>
-    <tr><td>무게 <small>(여기서 체중계 눈금)</small></td><td id="iW"></td></tr>
-    <tr><td>송풍기 힘</td><td id="iF"></td></tr>
-    <tr><td>그물까지 거리</td><td id="iD"></td></tr>
-  </table>
+  <table id="iTab"></table>
+  <p class="goal" id="iGoal"></p>
   <button class="go" id="iGo">공연 시작</button>
 </div></div>
 <div class="cd" id="cd"><b id="cdNum">3</b></div>
@@ -333,25 +328,13 @@
 'use strict';
 var I18N={
 "(1kg을 당기는 힘)":["(pull on 1 kg)","(force sur 1 kg)","(Zug auf 1 kg)","(fuerza sobre 1 kg)","(1kgを引く力)"],
-"(어디서나 같아요)":["(same everywhere)","(partout la même)","(überall gleich)","(igual en todas partes)","(どこでも同じ)"],
-"(여기서 체중계 눈금)":["(scale reading here)","(lecture de la balance ici)","(Waage zeigt hier)","(lo que marca la báscula aquí)","(ここでの体重計の目盛り)"],
 "12개":["12","12","12","12","12"],
 "3분":["3 min","3 min","3 Min.","3 min","3分"],
-"5개":["5","5","5","5","5"],
 "5분":["5 min","5 min","5 Min.","5 min","5分"],
 "8개":["8","8","8","8","8"],
 "8분":["8 min","8 min","8 Min.","8 min","8分"],
-"{0} m 더 멀리 갔어요":["{0} m too far","{0} m trop loin","{0} m zu weit","{0} m demasiado lejos","{0} m 飛びすぎ"],
-"{0} m 모자라요":["{0} m too short","{0} m trop court","{0} m zu kurz","Faltaron {0} m","{0} m 足りない"],
-"{0}의 중력은 지구의 {1}배예요. 같은 각도와 속력이면 지구보다 {2}배 멀리 날아가요.":["Gravity on {0} is {1}× Earth's. With the same angle and speed you fly {2}× as far as on Earth.","La gravité sur {0} vaut {1}× celle de la Terre. Même angle, même vitesse : on vole {2}× plus loin que sur Terre.","Die Schwerkraft auf {0} ist {1}× so stark wie auf der Erde. Gleicher Winkel, gleiche Geschwindigkeit: {2}× so weit wie auf der Erde.","La gravedad en {0} es {1}× la de la Tierra. Con el mismo ángulo y velocidad vuelas {2}× más lejos que en la Tierra.","{0}の重力は地球の{1}倍。同じ角度と速さなら地球の{2}倍遠くまで飛ぶ。"],
-"각도":["Angle","Angle","Winkel","Ángulo","角度"],
-"각도 늘리기":["Raise angle","Augmenter l'angle","Winkel erhöhen","Subir ángulo","角度を上げる"],
-"각도 줄이기":["Lower angle","Baisser l'angle","Winkel senken","Bajar ángulo","角度を下げる"],
-"각도와 속력을 정하고 발사하세요. 무대 위를 끌면 각도가 바뀌어요.":["Set the angle and speed, then fire. Drag on the stage to change the angle.","Réglez l'angle et la vitesse, puis tirez. Glissez sur la scène pour changer l'angle.","Stell Winkel und Geschwindigkeit ein und feuere. Zieh auf der Bühne, um den Winkel zu ändern.","Ajusta el ángulo y la velocidad y dispara. Arrastra sobre el escenario para cambiar el ángulo.","角度と速さを決めて発射。ステージをドラッグすると角度が変わる。"],
-"같은 힘으로 쏘면 얼마나 멀리 갈까?":["How far does the same shot go?","Jusqu'où va le même tir ?","Wie weit fliegt derselbe Schuss?","¿Hasta dónde llega el mismo disparo?","同じ力で撃つとどこまで飛ぶ？"],
 "곡예사":["Acrobat","Acrobate","Akrobat","Acróbata","曲芸師"],
 "곡예사를 기다리는 중":["Waiting for acrobats","En attente d'acrobates","Warte auf Akrobaten","Esperando acróbatas","曲芸師を待っています"],
-"공기 저항이 없다면 무거운 것과 가벼운 것은 똑같이 떨어져요. 곡예사가 바뀌어도 같은 각도와 속력이면 같은 곳에 떨어져요.":["Without air resistance, heavy and light things fall the same way. Any performer lands in the same spot with the same angle and speed.","Sans résistance de l'air, lourd et léger tombent pareil. Même angle, même vitesse : tout artiste atterrit au même endroit.","Ohne Luftwiderstand fallen schwere und leichte Dinge gleich. Bei gleichem Winkel und Tempo landet jeder Artist an derselben Stelle.","Sin resistencia del aire, lo pesado y lo ligero caen igual. Con el mismo ángulo y velocidad, cualquier artista cae en el mismo sitio.","空気抵抗がなければ重い物も軽い物も同じように落ちる。同じ角度と速さなら誰でも同じ場所に着地する。"],
 "공연 끝! 결과를 기다리는 중":["Show's over! Waiting for results","Fin du spectacle ! En attente des résultats","Vorstellung vorbei! Warte auf Ergebnisse","¡Fin del show! Esperando resultados","公演終了！結果を待っています"],
 "공연 시작":["Start the show","Lever de rideau","Vorstellung starten","Empieza el show","公演開始"],
 "공연 프로그램":["Show programme","Programme","Programmheft","Programa","公演プログラム"],
@@ -362,8 +345,6 @@ var I18N={
 "공연장을 찾을 수 없어요. 코드를 확인하세요.":["Big top not found. Check the code.","Chapiteau introuvable. Vérifiez le code.","Zelt nicht gefunden. Prüfe den Code.","No se encontró la carpa. Revisa el código.","会場が見つかりません。コードを確認して。"],
 "공연장이 가득 찼어요 (최대 40명).":["The big top is full (max 40).","Le chapiteau est plein (40 max).","Das Zelt ist voll (max. 40).","La carpa está llena (máx. 40).","会場が満員です（最大40人）。"],
 "관객석":["Audience","Public","Publikum","Público","観客席"],
-"그물":["Net","Filet","Netz","Red","ネット"],
-"그물까지 거리":["Distance to the net","Distance du filet","Abstand zum Netz","Distancia a la red","ネットまでの距離"],
 "금성":["Venus","Vénus","Venus","Venus","金星"],
 "꼬마 곡예사":["Little acrobat","Petit acrobate","Kleiner Akrobat","Pequeño acróbata","ちびっこ曲芸師"],
 "나가기":["Leave","Quitter","Verlassen","Salir","退出"],
@@ -373,24 +354,18 @@ var I18N={
 "다시 공연":["Play again","Rejouer","Nochmal","Otra vez","もう一度"],
 "다시 연결 중":["Reconnecting","Reconnexion","Verbinde neu","Reconectando","再接続中"],
 "달":["Moon","Lune","Mond","Luna","月"],
-"달, 화성, 목성... 무대마다 중력이 달라요. 대포 각도와 속력을 맞춰 곡예사를 그물에 착지시키세요.":["The Moon, Mars, Jupiter... every stage has different gravity. Set the cannon's angle and speed to land your acrobat in the net.","Lune, Mars, Jupiter... chaque scène a sa gravité. Réglez l'angle et la vitesse du canon pour poser l'acrobate dans le filet.","Mond, Mars, Jupiter... jede Bühne hat eine andere Schwerkraft. Stell Winkel und Tempo der Kanone ein, damit der Akrobat im Netz landet.","Luna, Marte, Júpiter... cada escenario tiene otra gravedad. Ajusta el ángulo y la velocidad del cañón para que el acróbata caiga en la red.","月、火星、木星…ステージごとに重力が違う。大砲の角度と速さを合わせて曲芸師をネットに着地させよう。"],
 "링크를 복사했어요":["Link copied","Lien copié","Link kopiert","Enlace copiado","リンクをコピーしました"],
 "마친 사람":["Finished","Terminé","Fertig","Terminaron","完了した人"],
 "명왕성":["Pluto","Pluton","Pluto","Plutón","冥王星"],
-"명중!":["ON TARGET!","DANS LE FILET !","TREFFER!","¡EN LA RED!","命中！"],
 "모든 무대를 마쳤어요! 다른 곡예사들을 기다리는 중":["All acts done! Waiting for the other acrobats","Tous les numéros sont faits ! En attente des autres","Alle Nummern geschafft! Warte auf die anderen","¡Todos los actos hechos! Esperando a los demás","全ステージ完了！ほかの曲芸師を待っています"],
 "목성":["Jupiter","Jupiter","Jupiter","Júpiter","木星"],
 "무게":["Weight","Poids","Gewicht","Peso","重さ"],
 "무대":["Act","Numéro","Nummer","Acto","ステージ"],
-"무대 8개를 돌며 최고 점수에 도전해요.":["Tour 8 stages and go for a high score.","8 scènes pour viser le meilleur score.","8 Bühnen für den Highscore.","8 escenarios para buscar el récord.","8つのステージで最高得点に挑戦。"],
 "무대 {0}개 · 제한 시간 {1}":["{0} acts · time limit {1}","{0} numéros · limite {1}","{0} Nummern · Zeitlimit {1}","{0} actos · límite {1}","ステージ{0}つ · 制限時間 {1}"],
-"무대 {0}개 · 착지 성공 {1}번":["{0} acts · {1} landings","{0} numéros · {1} atterrissages","{0} Nummern · {1} Landungen","{0} actos · {1} aterrizajes","ステージ{0}つ · 着地成功{1}回"],
 "무대 수":["Acts","Numéros","Nummern","Actos","ステージ数"],
 "무대별 기록":["Act by act","Numéro par numéro","Nummer für Nummer","Acto por acto","ステージ別記録"],
 "무작위 이름":["Random name","Nom aléatoire","Zufälliger Name","Nombre aleatorio","ランダムな名前"],
 "받은 방 코드를 입력하세요.":["Enter the room code you got.","Entrez le code reçu.","Gib den Raumcode ein.","Escribe el código que recibiste.","もらったルームコードを入力。"],
-"발사":["Shots","Tirs","Schüsse","Disparos","発射"],
-"발사!":["FIRE!","FEU !","FEUER!","¡FUEGO!","発射！"],
 "방 코드":["Room code","Code de la salle","Raumcode","Código de sala","ルームコード"],
 "방 코드 5자리를 입력하세요.":["Enter the 5-character room code.","Entrez le code à 5 caractères.","Gib den 5-stelligen Raumcode ein.","Escribe el código de 5 caracteres.","5文字のルームコードを入力して。"],
 "방 코드로 친구를 불러요. 최대 40명.":["Invite friends with a room code. Up to 40.","Invitez vos amis avec un code. 40 max.","Lade Freunde per Raumcode ein. Bis zu 40.","Invita a tus amigos con un código. Hasta 40.","ルームコードで友だちを呼ぶ。最大40人。"],
@@ -400,22 +375,12 @@ var I18N={
 "방장이 다시 시작하면 대기실로 이동해요.":["You'll go to the lobby when the host starts again.","Vous irez au salon quand l'hôte relancera.","Du kommst in die Lobby, wenn der Host neu startet.","Irás a la sala cuando el anfitrión vuelva a empezar.","ホストが再開すると待合室に移動します。"],
 "방장이 시작하기를 기다리는 중":["Waiting for the host to start","En attente de l'hôte","Warte auf den Start durch den Host","Esperando a que empiece el anfitrión","ホストの開始を待っています"],
 "복사":["Copy","Copier","Kopieren","Copiar","コピー"],
-"비행 시간 {0}초 · 최고 높이 {1} m · 착지 {2} m":["Flight {0} s · peak {1} m · landed at {2} m","Vol {0} s · sommet {1} m · atterri à {2} m","Flug {0} s · Gipfel {1} m · gelandet bei {2} m","Vuelo {0} s · altura máx. {1} m · cayó a {2} m","飛行時間 {0}秒 · 最高 {1} m · 着地 {2} m"],
-"빗나감":["MISSED","RATÉ","DANEBEN","FALLASTE","はずれ"],
 "서버 연결 끊김":["Server lost","Serveur perdu","Server getrennt","Servidor perdido","サーバー切断"],
-"속력":["Speed","Vitesse","Tempo","Velocidad","速さ"],
-"속력 20 m/s, 각도 45°로 쐈을 때 날아가는 거리예요. 중력이 약할수록 더 멀리 가요.":["Distance for a shot at 20 m/s and 45°. The weaker the gravity, the farther it goes.","Distance pour un tir à 20 m/s et 45°. Plus la gravité est faible, plus ça va loin.","Weite bei 20 m/s und 45°. Je schwächer die Schwerkraft, desto weiter.","Distancia de un disparo a 20 m/s y 45°. Cuanto más débil la gravedad, más lejos.","速さ20 m/s、角度45°で撃ったときの距離。重力が弱いほど遠くへ飛ぶ。"],
-"속력 늘리기":["Faster","Plus vite","Schneller","Más rápido","速くする"],
-"속력 줄이기":["Slower","Moins vite","Langsamer","Más lento","遅くする"],
-"송풍기":["Fan","Ventilateur","Gebläse","Ventilador","送風機"],
-"송풍기 힘":["Fan force","Force du ventilateur","Gebläsekraft","Fuerza del ventilador","送風機の力"],
-"송풍기가 같은 힘으로 밀어도 질량이 클수록 덜 밀려요. {0}은(는) 1초마다 {1} m/s씩 옆으로 빨라졌어요.":["The fan pushes with the same force, but more mass means less drift. The {0} gained {1} m/s sideways every second.","Le ventilateur pousse avec la même force, mais plus la masse est grande, moins on dérive. {0} a gagné {1} m/s de côté chaque seconde.","Das Gebläse drückt immer gleich stark, aber mehr Masse heißt weniger Abdrift. {0} wurde jede Sekunde um {1} m/s seitlich schneller.","El ventilador empuja con la misma fuerza, pero a más masa, menos desvío. {0} ganó {1} m/s de lado cada segundo.","送風機が同じ力で押しても質量が大きいほど押されにくい。{0}は1秒ごとに横へ{1} m/sずつ速くなった。"],
 "순위":["Rank","Rang","Platz","Puesto","順位"],
 "순위표":["Leaderboard","Classement","Rangliste","Clasificación","順位表"],
 "아기 코끼리":["Baby elephant","Éléphanteau","Elefantenbaby","Elefantito","子ゾウ"],
 "아직 아무도 없어요":["Nobody here yet","Personne pour l'instant","Noch niemand da","Aún no hay nadie","まだ誰もいません"],
 "언어":["Language","Langue","Sprache","Idioma","言語"],
-"없음":["None","Aucun","Keins","Ninguno","なし"],
 "연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.":["Couldn't load the connection library. Check your internet and reload.","Impossible de charger l'outil de connexion. Vérifiez Internet et rechargez.","Verbindungsbibliothek nicht geladen. Prüfe das Internet und lade neu.","No se pudo cargar la conexión. Revisa internet y recarga.","接続ツールを読み込めません。ネット接続を確認して再読み込みして。"],
 "연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.":["Connection timed out. Check the code and try again.","Délai dépassé. Vérifiez le code et réessayez.","Zeitüberschreitung. Prüfe den Code und versuche es erneut.","Se agotó el tiempo. Revisa el código e inténtalo de nuevo.","接続がタイムアウト。コードを確認してもう一度。"],
 "연결됨":["Connected","Connecté","Verbunden","Conectado","接続済み"],
@@ -436,7 +401,6 @@ var I18N={
 "중력":["Gravity","Gravité","Schwerkraft","Gravedad","重力"],
 "중력 서커스":["Gravity Circus","Cirque de la Gravité","Schwerkraft-Zirkus","Circo de la Gravedad","重力サーカス"],
 "지구":["Earth","Terre","Erde","Tierra","地球"],
-"지구 {0} N":["Earth {0} N","Terre {0} N","Erde {0} N","Tierra {0} N","地球 {0} N"],
 "지금 끝내기":["End now","Terminer","Jetzt beenden","Terminar ya","今すぐ終了"],
 "지켜보기":["Watch","Regarder","Zuschauen","Mirar","見守る"],
 "질량":["Mass","Masse","Masse","Masa","質量"],
@@ -444,13 +408,82 @@ var I18N={
 "처음으로":["Home","Accueil","Start","Inicio","最初へ"],
 "코드":["Code","Code","Code","Código","コード"],
 "타이탄":["Titan","Titan","Titan","Titán","タイタン"],
-"토성":["Saturn","Saturne","Saturn","Saturno","土星"],
 "함께 하기":["Play","Jouer","Mitspielen","Jugar","一緒にやる"],
 "행성":["World","Astre","Himmelskörper","Astro","天体"],
 "혼자 공연":["Solo show","Spectacle solo","Solo-Show","Show en solitario","ひとりで公演"],
-"화성":["Mars","Mars","Mars","Marte","火星"]
+"화성":["Mars","Mars","Mars","Marte","火星"],
+"(1 cm 누를 때 탄성력)":["(elastic force per 1 cm)", "(force élastique par cm)", "(Federkraft pro 1 cm)", "(fuerza elástica por 1 cm)", "(1 cm押したときの弾性力)"],
+"(지구에서 받는 중력)":["(gravity on Earth)", "(gravité sur Terre)", "(Schwerkraft auf der Erde)", "(gravedad en la Tierra)", "(地球で受ける重力)"],
+"1000 N의 힘으로 들어 올릴 수 있는 질량이에요. 중력이 약한 곳일수록 무게가 작아져서 더 무거운 것도 들 수 있어요.":["Mass you can lift with a 1000 N force. Where gravity is weaker, things weigh less, so you can lift more mass.", "Masse qu'on soulève avec une force de 1000 N. Là où la gravité est faible, le poids diminue et on soulève plus de masse.", "Masse, die man mit 1000 N heben kann. Wo die Schwerkraft schwächer ist, wiegt alles weniger, also hebt man mehr Masse.", "Masa que puedes levantar con 1000 N de fuerza. Donde la gravedad es débil, el peso baja y levantas más masa.", "1000 Nの力で持ち上げられる質量。重力が弱い所ほど重さが小さくなり、もっと重い物も持ち上げられる。"],
+"4개":["4", "4", "4", "4", "4"],
+"{0} m까지 올라갔어요. 그네는 {1} m":["Reached {0} m. The trapeze is at {1} m", "Monté à {0} m. Le trapèze est à {1} m", "{0} m erreicht. Das Trapez hängt bei {1} m", "Llegó a {0} m. El trapecio está a {1} m", "{0} mまで上がった。ブランコは {1} m"],
+"{0} m에서 멈췄어요. 깃발은 {1} m":["Stopped at {0} m. The flag is at {1} m", "Arrêté à {0} m. Le drapeau est à {1} m", "Bei {0} m gestoppt. Die Fahne steht bei {1} m", "Se detuvo a {0} m. La bandera está a {1} m", "{0} mで止まった。旗は {1} m"],
+"{0}에서 마찰력은 {1}이었어요. 거친 면일수록, 무거울수록 마찰력이 커요. 마찰력은 움직이는 방향과 반대로 작용해요.":["On {0} the friction was {1}. Rougher surfaces and heavier loads mean more friction. Friction acts opposite to the motion.", "Sur {0}, le frottement valait {1}. Plus la surface est rugueuse et la charge lourde, plus le frottement est grand. Il s'oppose au mouvement.", "Auf {0} betrug die Reibung {1}. Rauere Flächen und schwerere Lasten bedeuten mehr Reibung. Reibung wirkt gegen die Bewegung.", "En {0} la fricción fue de {1}. Superficies más ásperas y cargas más pesadas dan más fricción. Actúa contra el movimiento.", "{0}での摩擦力は{1}。面がざらざらなほど、重いほど摩擦力は大きい。摩擦力は動く向きと反対に働く。"],
+"{0}의 중력은 지구의 {1}배라서 같은 힘으로 {2} kg까지 들 수 있어요. 지구에서는 {3} kg. 질량은 그대로이고 무게만 달라져요.":["Gravity on {0} is {1}× Earth's, so the same force lifts up to {2} kg. On Earth: {3} kg. Mass stays the same; only weight changes.", "La gravité sur {0} vaut {1}× celle de la Terre : la même force soulève jusqu'à {2} kg. Sur Terre : {3} kg. La masse reste, seul le poids change.", "Die Schwerkraft auf {0} ist {1}× so stark wie auf der Erde, also hebt dieselbe Kraft bis zu {2} kg. Auf der Erde: {3} kg. Die Masse bleibt, nur das Gewicht ändert sich.", "La gravedad en {0} es {1}× la de la Tierra, así que la misma fuerza levanta hasta {2} kg. En la Tierra: {3} kg. La masa no cambia; solo el peso.", "{0}の重力は地球の{1}倍なので、同じ力で{2} kgまで持ち上がる。地球では{3} kg。質量は同じで重さだけが変わる。"],
+"가라앉아요! 부력 {0}이 중력 {1}보다 작아요.":["Sinking! Buoyancy {0} is less than gravity {1}.", "Ça coule ! La poussée {0} est plus faible que la gravité {1}.", "Sinkt! Auftrieb {0} ist kleiner als die Schwerkraft {1}.", "¡Se hunde! El empuje {0} es menor que la gravedad {1}.", "沈む！浮力{0}が重力{1}より小さい。"],
+"값":["Value", "Valeur", "Wert", "Valor", "値"],
+"같은 힘으로 들 수 있는 질량":["Mass the same force can lift", "Masse soulevée par la même force", "Masse, die dieselbe Kraft hebt", "Masa que levanta la misma fuerza", "同じ力で持ち上げられる質量"],
+"공기주머니":["Air bag", "Sac d'air", "Luftsack", "Bolsa de aire", "空気袋"],
+"공기주머니 부피":["Air bag volume", "Volume du sac d'air", "Luftsackvolumen", "Volumen de la bolsa", "空気袋の体積"],
+"공기주머니 부피를 맞춰 곡예사가 물속 고리에 떠 있게 해요.":["Set the air bag volume so the performer hovers at the ring underwater.", "Réglez le sac d'air pour que l'artiste flotte au niveau de l'anneau.", "Stell das Luftsackvolumen so ein, dass der Artist am Ring schwebt.", "Ajusta la bolsa de aire para que el artista flote en el aro bajo el agua.", "空気袋の体積を合わせて、曲芸師を水中の輪に浮かせよう。"],
+"그네":["Trapeze", "Trapèze", "Trapez", "Trapecio", "ブランコ"],
+"그네 높이":["Trapeze height", "Hauteur du trapèze", "Trapezhöhe", "Altura del trapecio", "ブランコの高さ"],
+"깃발":["Flag", "Drapeau", "Fahne", "Bandera", "旗"],
+"깃발까지 거리":["Distance to the flag", "Distance du drapeau", "Abstand zur Fahne", "Distancia a la bandera", "旗までの距離"],
+"꿈쩍도 안 해요! 미는 힘이 마찰력 {0}보다 커야 움직여요.":["It won't budge! The push must be bigger than the friction {0}.", "Ça ne bouge pas ! La poussée doit dépasser le frottement {0}.", "Rührt sich nicht! Die Schubkraft muss größer sein als die Reibung {0}.", "¡No se mueve! El empuje debe superar la fricción {0}.", "びくともしない！押す力が摩擦力{0}より大きくないと動かない。"],
+"나무 바닥":["Wooden floor", "Parquet", "Holzboden", "Suelo de madera", "木の床"],
+"너무 무거워요! 바벨 무게 {0}이 드는 힘 {1}보다 커요.":["Too heavy! The barbell's weight {0} is more than the lifting force {1}.", "Trop lourd ! Le poids {0} dépasse la force {1}.", "Zu schwer! Das Gewicht {0} ist größer als die Hebekraft {1}.", "¡Demasiado pesado! El peso {0} supera la fuerza {1}.", "重すぎる！バーベルの重さ{0}が持ち上げる力{1}より大きい。"],
+"네 가지 힘의 무대 8개에 도전해요.":["Take on 8 acts with four forces.", "8 numéros, quatre forces.", "8 Nummern mit vier Kräften.", "8 actos con cuatro fuerzas.", "4つの力の8ステージに挑戦。"],
+"누르는 길이":["Squeeze", "Compression", "Stauchung", "Compresión", "押す長さ"],
+"늘리기":["More", "Plus", "Mehr", "Más", "増やす"],
+"도전":["Tries", "Essais", "Versuche", "Intentos", "挑戦"],
+"도전!":["GO!", "GO !", "LOS!", "¡YA!", "挑戦！"],
+"드는 힘":["Lifting force", "Force de levage", "Hebekraft", "Fuerza de levantamiento", "持ち上げる力"],
+"드는 힘 {0}":["Lift {0}", "Levage {0}", "Hebekraft {0}", "Fuerza {0}", "持ち上げる力 {0}"],
+"들긴 했지만 더 무거운 바벨도 들 수 있어요. 무게 {0} / 드는 힘 {1}":["Lifted, but a heavier barbell would work too. Weight {0} / lift {1}", "Soulevé, mais une barre plus lourde passerait. Poids {0} / force {1}", "Gehoben, aber eine schwerere Hantel ginge auch. Gewicht {0} / Kraft {1}", "Levantado, pero podría con una más pesada. Peso {0} / fuerza {1}", "持ち上げたけど、もっと重いバーベルもいける。重さ{0} / 力{1}"],
+"떠올라요! 부력 {0}이 중력 {1}보다 커요.":["Rising! Buoyancy {0} is more than gravity {1}.", "Ça remonte ! La poussée {0} dépasse la gravité {1}.", "Steigt! Auftrieb {0} ist größer als die Schwerkraft {1}.", "¡Sube! El empuje {0} supera la gravedad {1}.", "浮き上がる！浮力{0}が重力{1}より大きい。"],
+"마찰력":["Friction", "Frottement", "Reibung", "Fricción", "摩擦力"],
+"마찰력 {0}":["Friction {0}", "Frottement {0}", "Reibung {0}", "Fricción {0}", "摩擦力 {0}"],
+"모래":["Sand", "Sable", "Sand", "Arena", "砂"],
+"몸과 장비의 부력":["Buoyancy of body and gear", "Poussée du corps et de l'équipement", "Auftrieb von Körper und Ausrüstung", "Empuje del cuerpo y equipo", "体と装備の浮力"],
+"무게 {0}":["Weight {0}", "Poids {0}", "Gewicht {0}", "Peso {0}", "重さ {0}"],
+"무대 {0}개 · 성공 {1}번":["{0} acts · {1} successes", "{0} numéros · {1} réussites", "{0} Nummern · {1} Erfolge", "{0} actos · {1} éxitos", "ステージ{0}つ · 成功{1}回"],
+"물에 잠긴 부피가 1 L 늘면 부력이 9.8 N 커져요. 부력과 중력의 크기가 같으면 물속에 떠 있어요.":["Each extra litre underwater adds 9.8 N of buoyancy. When buoyancy equals gravity, you hover.", "Chaque litre immergé en plus ajoute 9,8 N de poussée. Quand poussée et gravité sont égales, on flotte entre deux eaux.", "Jeder Liter mehr unter Wasser bringt 9,8 N Auftrieb. Sind Auftrieb und Schwerkraft gleich, schwebt man.", "Cada litro más bajo el agua suma 9,8 N de empuje. Si empuje y gravedad son iguales, flotas.", "水に沈んだ体積が1 L増えるごとに浮力は9.8 N大きくなる。浮力と重力が同じなら水中に浮かぶ。"],
+"물탱크 잠수":["Water tank dive", "Plongée en cuve", "Wassertank-Tauchgang", "Buceo en tanque", "水槽ダイブ"],
+"미는 힘":["Push", "Poussée", "Schubkraft", "Empuje", "押す力"],
+"미는 힘 {0}":["Push {0}", "Poussée {0}", "Schub {0}", "Empuje {0}", "押す力 {0}"],
+"바닥":["Floor", "Sol", "Boden", "Suelo", "床"],
+"바벨":["Barbell", "Barre", "Hantel", "Barra", "バーベル"],
+"바벨 무게":["Barbell weight", "Poids de la barre", "Hantelgewicht", "Peso de la barra", "バーベルの重さ"],
+"바벨 질량":["Barbell mass", "Masse de la barre", "Hantelmasse", "Masa de la barra", "バーベルの質量"],
+"배운 점":["Takeaway", "À retenir", "Merke", "Aprendizaje", "学んだこと"],
+"번쩍! 바벨 무게 {0} / 드는 힘 {1}":["Up it goes! Weight {0} / lift {1}", "Hop ! Poids {0} / force {1}", "Hoch damit! Gewicht {0} / Kraft {1}", "¡Arriba! Peso {0} / fuerza {1}", "ひょい！重さ{0} / 力{1}"],
+"부력":["Buoyancy", "Poussée", "Auftrieb", "Empuje", "浮力"],
+"부력 {0}":["Buoyancy {0}", "Poussée {0}", "Auftrieb {0}", "Empuje {0}", "浮力 {0}"],
+"성공!":["NICE!", "RÉUSSI !", "GESCHAFFT!", "¡BIEN!", "成功！"],
+"실패":["MISSED", "RATÉ", "DANEBEN", "FALLO", "失敗"],
+"썰매 밀기":["Sled push", "Poussée de luge", "Schlittenschub", "Empujar el trineo", "そり押し"],
+"썰매를 1 m 밀고 놓아서 {0} m 깃발에 멈추게 해요.":["Push the sled for 1 m and let go so it stops at the {0} m flag.", "Poussez la luge sur 1 m puis lâchez-la pour qu'elle s'arrête au drapeau à {0} m.", "Schieb den Schlitten 1 m und lass los, damit er an der Fahne bei {0} m hält.", "Empuja el trineo 1 m y suéltalo para que pare en la bandera a {0} m.", "そりを1 m押して離し、{0} mの旗で止めよう。"],
+"얼음":["Ice", "Glace", "Eis", "Hielo", "氷"],
+"용수철":["Spring", "Ressort", "Feder", "Resorte", "ばね"],
+"용수철 점프":["Spring jump", "Saut sur ressort", "Federsprung", "Salto de resorte", "ばねジャンプ"],
+"용수철을 눌러 곡예사가 {0} m 높이의 그네에 닿게 해요.":["Squeeze the spring so the performer reaches the trapeze at {0} m.", "Comprimez le ressort pour que l'artiste atteigne le trapèze à {0} m.", "Drück die Feder so, dass der Artist das Trapez bei {0} m erreicht.", "Comprime el resorte para que el artista llegue al trapecio a {0} m.", "ばねを押して、曲芸師を{0} mの高さのブランコに届かせよう。"],
+"잠수 장비(납)":["Diving weights (lead)", "Lest (plomb)", "Tauchblei", "Lastre (plomo)", "潜水用のおもり(鉛)"],
+"조건":["Setup", "Conditions", "Bedingungen", "Condiciones", "条件"],
+"줄이기":["Less", "Moins", "Weniger", "Menos", "減らす"],
+"중력 {0}":["Gravity {0}", "Gravité {0}", "Schwerkraft {0}", "Gravedad {0}", "重力 {0}"],
+"중력, 탄성력, 마찰력, 부력. 무대마다 다른 힘이 숨어 있어요. 힘의 크기를 딱 맞춰 곡예를 성공시키세요.":["Gravity, elastic force, friction, buoyancy. Each act hides a different force. Get its size just right to land the stunt.", "Gravité, force élastique, frottement, poussée. Chaque numéro cache une force. Trouvez la bonne valeur pour réussir.", "Schwerkraft, Federkraft, Reibung, Auftrieb. Jede Nummer hat ihre Kraft. Triff ihre Größe genau, damit das Kunststück klappt.", "Gravedad, fuerza elástica, fricción, empuje. Cada acto esconde una fuerza. Acierta su tamaño para lograr el número.", "重力、弾性力、摩擦力、浮力。ステージごとに違う力が隠れている。力の大きさをぴったり合わせて曲芸を成功させよう。"],
+"지구라면 들 수 있는 질량":["Mass liftable on Earth", "Masse soulevable sur Terre", "Hebbare Masse auf der Erde", "Masa levantable en la Tierra", "地球なら持ち上げられる質量"],
+"차력사가 드는 힘":["Strongman's lifting force", "Force de l'hercule", "Hebekraft des Kraftmenschen", "Fuerza del forzudo", "力持ちが持ち上げる力"],
+"차력사가 들 수 있는 가장 무거운 바벨을 골라요. 너무 무거우면 실패!":["Pick the heaviest barbell the strongman can lift. Too heavy and it fails!", "Choisissez la barre la plus lourde que l'hercule peut soulever. Trop lourde et c'est raté !", "Wähl die schwerste Hantel, die der Kraftmensch heben kann. Zu schwer heißt daneben!", "Elige la barra más pesada que el forzudo puede levantar. ¡Si pesa demasiado, fallas!", "力持ちが持ち上げられるいちばん重いバーベルを選ぼう。重すぎたら失敗！"],
+"카펫":["Carpet", "Tapis", "Teppich", "Alfombra", "カーペット"],
+"탄성력":["Elastic force", "Force élastique", "Federkraft", "Fuerza elástica", "弾性力"],
+"탄성력 {0}":["Elastic {0}", "Élastique {0}", "Federkraft {0}", "Elástica {0}", "弾性力 {0}"],
+"탄성력은 누른 길이에 비례해요. 1 cm에 {0} N이니 {1} cm 누르면 {2} N. 탄성력은 누른 방향과 반대인 위쪽으로 작용해요.":["Elastic force grows with how far you squeeze. {0} N per cm, so {1} cm gives {2}. It pushes up, opposite to the squeeze.", "La force élastique grandit avec la compression. {0} N par cm, donc {1} cm donnent {2}. Elle pousse vers le haut, à l'opposé.", "Die Federkraft wächst mit der Stauchung. {0} N pro cm, also ergeben {1} cm {2}. Sie drückt nach oben, entgegen dem Drücken.", "La fuerza elástica crece con la compresión. {0} N por cm, así que {1} cm dan {2}. Empuja hacia arriba, al revés.", "弾性力は押した長さに比例する。1 cmで{0} Nなので{1} cm押すと{2}。押した向きと反対の上向きに働く。"],
+"행성 역도":["Planet weightlifting", "Haltérophilie planétaire", "Planeten-Gewichtheben", "Halterofilia planetaria", "惑星ウエイトリフティング"],
+"힘":["Force", "Force", "Kraft", "Fuerza", "力"]
 };
-var MAX_PLAYERS = 40, PREFIX = 'ff-gravity-', CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', VMAX = 30, SHOTS = 3, SOLO_STAGES = 8;
+var MAX_PLAYERS = 40, PREFIX = 'ff-gravity-', CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', SHOTS = 3, SOLO_STAGES = 8;
 var $ = function(id){ return document.getElementById(id); };
 var qs = new URLSearchParams(location.search);
 
@@ -507,14 +540,14 @@ function num(x, d){ return (+x).toLocaleString(lang==='ko'?'ko-KR':lang, { maxim
 
 (function(){ var h=''; for(var i=0;i<80;i++) h+='<i></i>'; $('bunting').innerHTML=h; })();
 
-// ---------- the solar system circus ----------
+// ---------- the circus: four acts, one force each (middle school grade 1 "forces") ----------
+var GE = 9.8;
 var PLANETS = {
   earth:  { n:'지구',   g:9.8,  sky:['#5f9ad6','#cfe4f5'], ground:'#5d8a3a', ground2:'#4a7230', orb:'radial-gradient(circle at 35% 30%,#9fdcff,#2f75c2 55%,#1b4a85)' },
   moon:   { n:'달',     g:1.6,  sky:['#03040a','#11141f'], ground:'#a3a3a3', ground2:'#7d7d7d', orb:'radial-gradient(circle at 35% 30%,#f2f2f2,#a9a9a9 55%,#6d6d6d)', stars:1 },
   mars:   { n:'화성',   g:3.7,  sky:['#c98058','#f0c8a6'], ground:'#b4552f', ground2:'#93401f', orb:'radial-gradient(circle at 35% 30%,#ffb48a,#c4512b 55%,#7c2b12)' },
   venus:  { n:'금성',   g:8.9,  sky:['#c99a3e','#f3dea0'], ground:'#a77a35', ground2:'#8a6127', orb:'radial-gradient(circle at 35% 30%,#fff1c2,#e0b155 55%,#9c7024)' },
   jupiter:{ n:'목성',   g:24.8, sky:['#a87a52','#ecd5ad'], ground:'#7f5d40', ground2:'#684b33', orb:'repeating-linear-gradient(170deg,#e9c9a0 0 10px,#b9875a 10px 16px,#f2dcc0 16px 24px)', bands:1 },
-  saturn: { n:'토성',   g:10.4, sky:['#b9a06a','#efe2b8'], ground:'#9a8558', ground2:'#7f6c45', orb:'radial-gradient(circle at 35% 30%,#fff3cf,#d8bd7a 55%,#9a7f42)', rings:1 },
   titan:  { n:'타이탄', g:1.4,  sky:['#9c5f22','#d9a35a'], ground:'#5f4122', ground2:'#4c341b', orb:'radial-gradient(circle at 35% 30%,#ffcf86,#c98a36 55%,#7a4e18)', haze:1 },
   pluto:  { n:'명왕성', g:0.62, sky:['#07080f','#1b1f33'], ground:'#cdbfae', ground2:'#a99a87', orb:'radial-gradient(circle at 35% 30%,#fff5e6,#cdb59a 55%,#8c7660)', stars:1 }
 };
@@ -524,39 +557,81 @@ var PERF = {
   strong:{ n:'차력사',     m:120, r:13, c:'#7a3fb0' },
   ele:   { n:'아기 코끼리', m:450, r:18, c:'#8d96a3' }
 };
-var PKEYS = Object.keys(PLANETS), FKEYS = Object.keys(PERF);
+var SURF = {
+  ice:   { n:'얼음',   mu:0.05, c:'#cfe9f7', c2:'#a9d4ec' },
+  wood:  { n:'나무 바닥', mu:0.2,  c:'#c08a52', c2:'#a2703e' },
+  carpet:{ n:'카펫',   mu:0.35, c:'#9a2f4a', c2:'#7d233b' },
+  sand:  { n:'모래',   mu:0.6,  c:'#e2c588', c2:'#c9aa6a' }
+};
+var ACTS = {
+  grav:   { n:'행성 역도',   f:'중력',   icon:'🏋️' },
+  spring: { n:'용수철 점프', f:'탄성력', icon:'🌀' },
+  fric:   { n:'썰매 밀기',   f:'마찰력', icon:'🛷' },
+  buoy:   { n:'물탱크 잠수', f:'부력',   icon:'🫧' }
+};
+var ORDER = ['grav','spring','fric','buoy'];
+var PKEYS = Object.keys(PLANETS).filter(function(k){ return k!=='earth'; }), FKEYS = Object.keys(PERF), SKEYS = Object.keys(SURF);
 
 function makeStages(seed, count){
-  var r=rng(seed), out=[], prev='', bag=[];
+  var r=rng(seed), out=[], pick=function(a){ return a[Math.floor(r()*a.length)]; }, round=function(x,s){ return Math.round(x/s)*s; };
+  var pbag=[];
   for(var i=0;i<count;i++){
-    var pk = i===0 ? 'earth' : i===1 ? 'moon' : i===2 ? 'jupiter' : null;
-    if(!pk){
-      // draw from a shuffled bag so every world shows up before any repeats
-      if(!bag.length){ bag=PKEYS.slice(); for(var j=bag.length-1;j>0;j--){ var q=Math.floor(r()*(j+1)), x=bag[j]; bag[j]=bag[q]; bag[q]=x; } }
-      pk=bag.shift(); if(pk===prev && bag.length){ bag.push(pk); pk=bag.shift(); }
+    var t=ORDER[i%4], st={ t:t };
+    if(t==='grav'){
+      // the strongman can always lift with the same force; the barbell's mass is what changes
+      if(!pbag.length){ pbag=PKEYS.slice(); for(var j=pbag.length-1;j>0;j--){ var q=Math.floor(r()*(j+1)), x=pbag[j]; pbag[j]=pbag[q]; pbag[q]=x; } }
+      st.pk = i===0 ? 'moon' : pbag.shift();
+      st.L = pick([600, 750, 900, 1000, 1200]);
+      var best=st.L/PLANETS[st.pk].g;
+      st.min=0; st.max=Math.ceil(best*1.6/10)*10; st.step = st.max>800 ? 1 : st.max>200 ? 0.5 : 0.1;
+    } else if(t==='spring'){
+      // jump height from a squeezed spring: ½·k·x² = m·g·h  (k in N/cm, x in cm)
+      for(var tries=0;tries<40;tries++){
+        st.fk=pick(['kid','acro','strong']); st.k=pick([150,250,400,600]); st.H=round(2+r()*5,0.1);
+        st.need=Math.sqrt(PERF[st.fk].m*GE*st.H/(0.005*st.k));
+        if(st.need>=14 && st.need<=52) break;
+      }
+      st.min=0; st.max=60; st.step=0.1;
+    } else if(t==='fric'){
+      // push 1 m, then let go: the sled stops at F/f metres from the start (f = μ·m·g)
+      st.fk=pick(FKEYS); st.s=pick(SKEYS); st.D=round(3+r()*7,0.5);
+      st.f=Math.round(SURF[st.s].mu*PERF[st.fk].m*GE);
+      st.min=0; st.max=Math.ceil(st.f*12/10)*10; st.step=Math.max(1, Math.round(st.f/60));
+    } else {
+      // hover in water: buoyancy (body + gear + air bag volume, 1 kg per litre) equals weight
+      st.fk=pick(['kid','acro','strong','ele']); st.gear=pick([4,6,8,10,12,16]);
+      var m=PERF[st.fk].m;
+      st.need = (m+st.gear) - m/1.05 - st.gear/11.3;
+      st.min=0; st.max=Math.ceil(st.need*2.2); st.step=0.1;
     }
-    prev=pk;
-    var fk = i===0 ? 'acro' : FKEYS[Math.floor(r()*FKEYS.length)];
-    var g=PLANETS[pk].g, maxR=VMAX*VMAX/g, F=0;
-    // a circus fan from the 4th act on: its push is sized so a 30 kg kid would drift about 8-20 % of the distance
-    if(i>=3 && r()<0.65){ F=Math.max(1, Math.round(30*(0.08+r()*0.12)*g)) * (r()<0.5?-1:1); }
-    // a fan blowing back toward the cannon gets a closer net so it can always be reached
-    var D=Math.round(maxR*(0.3+r()*(F<0?0.3:0.48)));
-    out.push({ pk:pk, fk:fk, D:D, F:F });
+    out.push(st);
   }
   return out;
 }
-function simulate(v, deg, st){
-  var g=PLANETS[st.pk].g, m=PERF[st.fk].m, ax=st.F/m, a=deg*Math.PI/180;
-  var vx=v*Math.cos(a), vy=v*Math.sin(a), T0=Math.max(0.2, 2*vy/g), dt=T0/700;
-  var x=0, y=0, t=0, pts=[[0,0,0]], top=0;
-  for(var k=0;k<5000;k++){
-    var nx=x+vx*dt+0.5*ax*dt*dt, ny=y+vy*dt-0.5*g*dt*dt;
-    vx+=ax*dt; vy-=g*dt; t+=dt;
-    if(ny<0){ var f=y/(y-ny); nx=x+(nx-x)*f; t=t-dt+dt*f; pts.push([nx,0,t]); x=nx; y=0; break; }
-    x=nx; y=ny; top=Math.max(top,y); pts.push([x,y,t]);
+// what happens for a chosen value: { q: 0..1 closeness score basis, ok: 100/70/0, msg }
+function judge(st, v){
+  if(st.t==='grav'){
+    var g=PLANETS[st.pk].g, W=v*g, rel=W/st.L;
+    if(rel>1) return { pts:0, kind:'heavy', W:W };
+    return { pts: rel>=0.97 ? 100 : rel>=0.9 ? 70 : 0, kind: rel>=0.9 ? 'lift' : 'light', W:W };
   }
-  return { pts:pts, land:x, T:t, top:top };
+  if(st.t==='spring'){
+    var m=PERF[st.fk].m, F=st.k*v, h=0.005*st.k*v*v/(m*GE), e=Math.abs(h-st.H)/st.H;
+    return { pts: e<=0.03 ? 100 : e<=0.08 ? 70 : 0, kind: h>st.H ? 'high' : 'low', h:h, F:F };
+  }
+  if(st.t==='fric'){
+    if(v<=st.f) return { pts:0, kind:'stuck', d:0 };
+    var d=v/st.f, e2=Math.abs(d-st.D)/st.D;
+    return { pts: e2<=0.03 ? 100 : e2<=0.08 ? 70 : 0, kind: d>st.D ? 'far' : 'near', d:d };
+  }
+  var mm=PERF[st.fk].m, Wt=(mm+st.gear)*GE, B=(mm/1.05 + st.gear/11.3 + v)*GE, net=B-Wt, e3=Math.abs(net)/Wt;
+  return { pts: e3<=0.01 ? 100 : e3<=0.03 ? 70 : 0, kind: net>0 ? 'up' : 'down', B:B, W:Wt, net:net };
+}
+function idealValue(st){
+  if(st.t==='grav') return st.L/PLANETS[st.pk].g;
+  if(st.t==='spring') return st.need;
+  if(st.t==='fric') return st.f*st.D;
+  return st.need;
 }
 
 // ---------- home ----------
@@ -584,7 +659,7 @@ var S = {
   settings:{ stages:8, time:300, hostPlay:1 },
   phase:'idle', endAt:0, totalMs:0, seed:1,
   stages:[], cur:0, shot:0, score:0, hits:0, rec:[], trails:[], done:false, doneAt:0,
-  ang:45, spd:15, flying:null,
+  val:0, unit:'', anim:null,
   players:{}, conn:null, board:null
 };
 
@@ -799,7 +874,7 @@ function startSolo(name){ destroyPeer(); S.role='solo'; S.name=name; S.seed=(Mat
 
 // ---------- round ----------
 var timers=[], tickT=null, sendT=null, boardT=null, boardDirty=false, dirtyScore=false;
-function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearInterval(tickT); clearInterval(sendT); clearInterval(boardT); $('cd').classList.remove('on'); S.flying=null; }
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearInterval(tickT); clearInterval(sendT); clearInterval(boardT); $('cd').classList.remove('on'); S.anim=null; }
 function iPlay(){ return S.role!=='host' || !!S.settings.hostPlay; }
 function timed(){ return S.role!=='solo'; }
 
@@ -847,56 +922,89 @@ function hud(){
   $('gScore').textContent=S.score;
   var h=''; for(var i=0;i<SHOTS;i++) h+='<i class="'+(i<S.shot?'used':'')+'"></i>'; $('gShots').innerHTML=h;
 }
-function weight(m, g){ return Math.round(m*g); }
+function N(x){ return num(Math.round(x),0)+' N'; }
+function goalText(st){
+  if(st.t==='grav') return tr('차력사가 들 수 있는 가장 무거운 바벨을 골라요. 너무 무거우면 실패!');
+  if(st.t==='spring') return tr('용수철을 눌러 곡예사가 {0} m 높이의 그네에 닿게 해요.', num(st.H,1));
+  if(st.t==='fric') return tr('썰매를 1 m 밀고 놓아서 {0} m 깃발에 멈추게 해요.', num(st.D,1));
+  return tr('공기주머니 부피를 맞춰 곡예사가 물속 고리에 떠 있게 해요.');
+}
+function introRows(st){
+  var rows=[], P, F;
+  if(st.t==='grav'){
+    P=PLANETS[st.pk];
+    rows.push([tr('행성'), tr(P.n)], [tr('중력')+' <small>'+esc(tr('(1kg을 당기는 힘)'))+'</small>', num(P.g,2)+' N/kg'], [tr('차력사가 드는 힘'), N(st.L)], [tr('지구라면 들 수 있는 질량'), num(st.L/GE,1)+' kg']);
+  } else if(st.t==='spring'){
+    F=PERF[st.fk];
+    rows.push([tr('출연'), tr(F.n)], [tr('질량'), F.m+' kg'], [tr('무게')+' <small>'+esc(tr('(지구에서 받는 중력)'))+'</small>', N(F.m*GE)], [tr('용수철')+' <small>'+esc(tr('(1 cm 누를 때 탄성력)'))+'</small>', num(st.k,0)+' N'], [tr('그네 높이'), num(st.H,1)+' m']);
+  } else if(st.t==='fric'){
+    F=PERF[st.fk];
+    rows.push([tr('출연'), tr(F.n)+' · '+F.m+' kg'], [tr('바닥'), tr(SURF[st.s].n)], [tr('마찰력'), N(st.f)], [tr('깃발까지 거리'), num(st.D,1)+' m']);
+  } else {
+    F=PERF[st.fk];
+    rows.push([tr('출연'), tr(F.n)+' · '+F.m+' kg'], [tr('잠수 장비(납)'), st.gear+' kg'], [tr('무게')+' <small>'+esc(tr('(지구에서 받는 중력)'))+'</small>', N((F.m+st.gear)*GE)], [tr('몸과 장비의 부력'), N((F.m/1.05+st.gear/11.3)*GE)]);
+  }
+  return rows;
+}
 function fillIntro(){
-  var st=stage(), P=PLANETS[st.pk], F=PERF[st.fk];
-  $('iAct').textContent='ACT '+(S.cur+1)+' / '+S.stages.length;
-  $('iOrb').style.background=P.orb;
-  $('iPlanet').textContent=tr(P.n);
-  $('iG').textContent=num(P.g,2)+' N/kg';
-  $('iWho').textContent=tr(F.n);
-  $('iM').textContent=F.m+' kg';
-  $('iW').innerHTML=num(weight(F.m,P.g),0)+' N <small>('+esc(tr('지구 {0} N', num(weight(F.m,9.8),0)))+')</small>';
-  $('iF').textContent= st.F ? (st.F>0?'→ ':'← ')+Math.abs(st.F)+' N' : tr('없음');
-  $('iD').textContent=num(st.D,0)+' m';
+  var st=stage(), A=ACTS[st.t];
+  $('iAct').textContent='ACT '+(S.cur+1)+' / '+S.stages.length+' · '+tr(A.f);
+  var orb=$('iOrb');
+  if(st.t==='grav'){ orb.style.background=PLANETS[st.pk].orb; orb.textContent=''; }
+  else { orb.style.background=st.t==='spring'?'#e9b23a':st.t==='fric'?'#c9302c':'#3a86c8'; orb.textContent=A.icon; }
+  $('iPlanet').textContent=tr(A.n);
+  $('iTab').innerHTML=introRows(st).map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+esc(r[1])+'</td></tr>'; }).join('');
+  $('iGoal').textContent=goalText(st);
 }
 function openIntro(){
   if(S.phase==='result' || S.phase==='wait' || S.phase==='idle') return;
-  S.shot=0; S.trails=[]; hud(); fillIntro(); renderFacts();
+  S.shot=0; S.trails=[]; S.anim=null; hud();
+  var st=stage();
+  var dl={ grav:['바벨 질량','kg'], spring:['누르는 길이','cm'], fric:['미는 힘','N'], buoy:['공기주머니 부피','L'] }[st.t];
+  $('dialL').textContent=tr(dl[0]); S.unit=dl[1];
+  var R=$('valR'); R.min=st.min; R.max=st.max; R.step=st.step;
+  // start away from the answer: a relaxed spring and an empty air bag start at 0
+  setVal(st.t==='fric' ? Math.round(st.max/6/st.step)*st.step : st.t==='grav' ? (st.max-st.min)/3 : 0);
+  fillIntro(); renderFacts();
   $('fireBtn').disabled=true;
-  $('note').innerHTML=esc(tr('각도와 속력을 정하고 발사하세요. 무대 위를 끌면 각도가 바뀌어요.'));
+  $('note').innerHTML=esc(goalText(st));
   $('intro').classList.add('on');
   draw();
 }
 $('iGo').onclick=function(){ $('intro').classList.remove('on'); $('fireBtn').disabled=false; draw(); };
+function chip(label, val){ return '<span>'+esc(label)+' <b>'+esc(val)+'</b></span>'; }
 function renderFacts(){
-  var st=stage(), P=PLANETS[st.pk], F=PERF[st.fk];
-  $('facts').innerHTML='<span>'+esc(tr(P.n))+' · <b>g '+num(P.g,2)+'</b></span><span>'+esc(tr(F.n))+' <b>'+F.m+' kg</b></span><span>'+esc(tr('무게'))+' <b>'+num(weight(F.m,P.g),0)+' N</b></span>'
-    +(st.F?'<span>'+esc(tr('송풍기'))+' <b>'+(st.F>0?'→ ':'← ')+Math.abs(st.F)+' N</b></span>':'')+'<span>'+esc(tr('그물'))+' <b>'+num(st.D,0)+' m</b></span>';
+  var st=stage(), v=S.val, F=PERF[st.fk||'acro'], h='';
+  if(st.t==='grav'){ var P=PLANETS[st.pk]; h=chip(tr(P.n), 'g '+num(P.g,2))+chip(tr('드는 힘'), N(st.L))+chip(tr('바벨'), num(v,1)+' kg')+chip(tr('바벨 무게'), N(v*P.g)); }
+  else if(st.t==='spring') h=chip(tr(F.n), F.m+' kg')+chip(tr('중력'), N(F.m*GE))+chip(tr('탄성력'), N(st.k*v))+chip(tr('그네'), num(st.H,1)+' m');
+  else if(st.t==='fric') h=chip(tr(SURF[st.s].n), '')+chip(tr('마찰력'), N(st.f))+chip(tr('미는 힘'), N(v))+chip(tr('깃발'), num(st.D,1)+' m');
+  else { var j=judge(st, v); h=chip(tr(F.n), (F.m+st.gear)+' kg')+chip(tr('중력'), N(j.W))+chip(tr('부력'), N(j.B))+chip(tr('공기주머니'), num(v,1)+' L'); }
+  $('facts').innerHTML=h;
 }
 
-// aim controls
-function setAim(a, v){
-  S.ang=Math.max(10, Math.min(80, Math.round(a*2)/2)); S.spd=Math.max(2, Math.min(VMAX, Math.round(v*10)/10));
-  $('angV').textContent=num(S.ang,1)+'°'; $('spdV').textContent=S.spd.toFixed(1);
-  $('angR').value=S.ang; $('spdR').value=S.spd;
-  if(!S.flying) draw();
+// one dial for the act's single setting
+function fmtVal(v){ var st=stage(); return (st.step>=1 ? num(v,0) : st.step>=0.5 ? num(v,1) : num(v,1)); }
+function setVal(v){
+  var st=stage(); if(!st) return;
+  v=Math.max(st.min, Math.min(st.max, Math.round(v/st.step)*st.step));
+  S.val=+v.toFixed(3);
+  $('valV').textContent=fmtVal(S.val)+' '+S.unit; $('valR').value=S.val;
+  renderFacts();
+  if(!S.anim) draw();
 }
-$('angR').oninput=function(){ setAim(+this.value, S.spd); };
-$('spdR').oninput=function(){ setAim(S.ang, +this.value); };
+$('valR').oninput=function(){ setVal(+this.value); };
 document.querySelectorAll('.dial button').forEach(function(b){
   var rep=null;
-  function step(){ if(b.dataset.d==='ang') setAim(S.ang + (+b.dataset.v)*0.5, S.spd); else setAim(S.ang, S.spd + (+b.dataset.v)*0.1); }
-  b.addEventListener('pointerdown', function(e){ e.preventDefault(); step(); var n=0; rep=setInterval(function(){ if(++n>4) step(); }, 70); });
+  function step(n){ var st=stage(); setVal(S.val + (+b.dataset.v)*st.step*(n>14?10:1)); }
+  b.addEventListener('pointerdown', function(e){ e.preventDefault(); step(0); var n=0; rep=setInterval(function(){ n++; if(n>4) step(n); }, 70); });
   ['pointerup','pointerleave','pointercancel'].forEach(function(ev){ b.addEventListener(ev, function(){ clearInterval(rep); }); });
 });
 document.addEventListener('keydown', function(e){
   if(!$('sGame').classList.contains('on')) return;
   if($('intro').classList.contains('on')){ if(e.key==='Enter'){ e.preventDefault(); $('iGo').click(); } return; }
-  if(e.key==='ArrowUp'){ e.preventDefault(); setAim(S.ang+0.5, S.spd); }
-  else if(e.key==='ArrowDown'){ e.preventDefault(); setAim(S.ang-0.5, S.spd); }
-  else if(e.key==='ArrowRight'){ e.preventDefault(); setAim(S.ang, S.spd+0.1); }
-  else if(e.key==='ArrowLeft'){ e.preventDefault(); setAim(S.ang, S.spd-0.1); }
+  var st=stage();
+  if(e.key==='ArrowUp' || e.key==='ArrowRight'){ e.preventDefault(); setVal(S.val+st.step*(e.shiftKey?10:1)); }
+  else if(e.key==='ArrowDown' || e.key==='ArrowLeft'){ e.preventDefault(); setVal(S.val-st.step*(e.shiftKey?10:1)); }
   else if(e.key===' ' || e.key==='Enter'){ e.preventDefault(); $('fireBtn').click(); }
 });
 
@@ -904,177 +1012,240 @@ document.addEventListener('keydown', function(e){
 var cv=$('cv'), cx=cv.getContext('2d'), W=0, H=0, DPR=Math.min(2, window.devicePixelRatio||1);
 function resize(){ var r=cv.getBoundingClientRect(); if(!r.width) return; W=r.width; H=r.height; cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR); cx.setTransform(DPR,0,0,DPR,0,0); draw(); }
 window.addEventListener('resize', resize);
-function view(){ var st=stage(), x0=W*0.11, gy=H*0.84, s=(W*0.70)/st.D; return { x0:x0, gy:gy, s:s, sx:function(x){ return x0+x*s; }, sy:function(y){ return gy-y*s; } }; }
-var dragging=false;
-function aimFrom(e){
-  var r=cv.getBoundingClientRect(), V=view(), px=e.clientX-r.left, py=e.clientY-r.top;
-  var a=Math.atan2(V.gy-14-py, px-V.x0)*180/Math.PI; if(a<0 || px<V.x0-10) return;
-  setAim(a, S.spd);
-}
-cv.addEventListener('pointerdown', function(e){ if(S.flying || $('fireBtn').disabled) return; dragging=true; try{ cv.setPointerCapture(e.pointerId); }catch(_){} aimFrom(e); });
-cv.addEventListener('pointermove', function(e){ if(dragging) aimFrom(e); });
-cv.addEventListener('pointerup', function(){ dragging=false; });
-cv.addEventListener('pointercancel', function(){ dragging=false; });
-
 var starsBg=[]; for(var i=0;i<90;i++) starsBg.push([Math.random(), Math.random()*0.7, Math.random()*1.4+0.3]);
-var windT=0;
-function drawBackdrop(V, P){
-  var g=cx.createLinearGradient(0,0,0,V.gy); g.addColorStop(0,P.sky[0]); g.addColorStop(1,P.sky[1]);
+
+function planetBackdrop(P, gy){
+  var g=cx.createLinearGradient(0,0,0,gy); g.addColorStop(0,P.sky[0]); g.addColorStop(1,P.sky[1]);
   cx.fillStyle=g; cx.fillRect(0,0,W,H);
-  if(P.stars){ cx.fillStyle='#fff'; starsBg.forEach(function(s){ cx.globalAlpha=0.4+0.6*Math.abs(Math.sin(s[0]*40+performance.now()/900)); cx.fillRect(s[0]*W, s[1]*V.gy, s[2], s[2]); }); cx.globalAlpha=1; }
-  var k=stage().pk;
-  if(k==='moon'){ cx.fillStyle='#3a7bd5'; cx.beginPath(); cx.arc(W*0.78, H*0.2, H*0.07, 0, 7); cx.fill(); cx.fillStyle='#6cbf5a'; cx.beginPath(); cx.arc(W*0.77, H*0.19, H*0.03, 0, 7); cx.fill(); }
-  if(k==='pluto'){ cx.fillStyle='#fff6d0'; cx.beginPath(); cx.arc(W*0.8, H*0.18, 2.5, 0, 7); cx.fill(); }
-  if(P.bands){ for(var b=0;b<6;b++){ cx.fillStyle='rgba(120,70,30,'+(0.08+0.05*(b%2))+')'; cx.fillRect(0, b*V.gy/6+(b%2)*8, W, V.gy/14); } }
-  if(P.rings){ cx.strokeStyle='rgba(255,240,200,.55)'; cx.lineWidth=H*0.035; cx.beginPath(); cx.ellipse(W*0.5, H*0.05, W*0.7, H*0.12, -0.12, 0, Math.PI); cx.stroke(); }
-  if(k==='mars' || k==='venus' || k==='titan'){ cx.fillStyle=P.ground2; cx.globalAlpha=.5; cx.beginPath(); cx.moveTo(0,V.gy); for(var x=0;x<=W;x+=W/8) cx.quadraticCurveTo(x+W/16, V.gy-H*0.07, x+W/8, V.gy); cx.fill(); cx.globalAlpha=1; }
-  if(k==='earth'){ cx.fillStyle='#7fae55'; cx.beginPath(); cx.moveTo(0,V.gy); cx.quadraticCurveTo(W*0.25,V.gy-H*0.12,W*0.5,V.gy); cx.quadraticCurveTo(W*0.75,V.gy-H*0.16,W,V.gy); cx.fill(); }
-  // ground
-  cx.fillStyle=P.ground; cx.fillRect(0,V.gy,W,H-V.gy);
-  cx.fillStyle=P.ground2; for(var c=0;c<9;c++){ var cxp=(c*137%100)/100*W, cyp=V.gy+8+(c*53%30)/30*(H-V.gy-14); if(k==='moon'||k==='pluto'||k==='mars'){ cx.beginPath(); cx.ellipse(cxp, cyp, 10+(c%3)*6, 3+(c%2)*2, 0, 0, 7); cx.fill(); } else cx.fillRect(cxp, cyp, 14, 2); }
+  if(P.stars){ cx.fillStyle='#fff'; starsBg.forEach(function(s){ cx.globalAlpha=0.4+0.6*Math.abs(Math.sin(s[0]*40)); cx.fillRect(s[0]*W, s[1]*gy, s[2], s[2]); }); cx.globalAlpha=1; }
+  if(P===PLANETS.moon){ cx.fillStyle='#3a7bd5'; cx.beginPath(); cx.arc(W*0.8, H*0.22, H*0.07, 0, 7); cx.fill(); cx.fillStyle='#6cbf5a'; cx.beginPath(); cx.arc(W*0.79, H*0.21, H*0.03, 0, 7); cx.fill(); }
+  if(P.bands){ for(var b=0;b<6;b++){ cx.fillStyle='rgba(120,70,30,'+(0.08+0.05*(b%2))+')'; cx.fillRect(0, b*gy/6+(b%2)*8, W, gy/14); } }
   if(P.haze){ cx.fillStyle='rgba(230,160,70,.18)'; cx.fillRect(0,0,W,H); }
+  cx.fillStyle=P.ground; cx.fillRect(0,gy,W,H-gy);
+  cx.fillStyle=P.ground2; for(var c=0;c<9;c++){ cx.beginPath(); cx.ellipse((c*137%100)/100*W, gy+8+(c*53%30)/30*(H-gy-14), 10+(c%3)*6, 3+(c%2)*2, 0, 0, 7); cx.fill(); }
 }
-function drawCannon(V){
-  var a=S.ang*Math.PI/180, x=V.x0, y=V.gy-14;
-  cx.save(); cx.translate(x,y); cx.rotate(-a);
-  cx.fillStyle='#c9302c'; cx.strokeStyle='#2a1d14'; cx.lineWidth=2;
-  cx.beginPath(); cx.moveTo(-10,-11); cx.lineTo(48,-8); cx.lineTo(48,8); cx.lineTo(-10,11); cx.closePath(); cx.fill(); cx.stroke();
-  cx.fillStyle='#e9b23a'; cx.fillRect(10,-10,6,20); cx.fillRect(36,-9,5,18);
-  cx.fillStyle='#2a1d14'; cx.beginPath(); cx.ellipse(48,0,3,8,0,0,7); cx.fill();
-  cx.restore();
-  cx.fillStyle='#e9b23a'; cx.strokeStyle='#2a1d14'; cx.lineWidth=2;
-  cx.beginPath(); cx.arc(x, y+2, 13, 0, 7); cx.fill(); cx.stroke();
-  cx.beginPath(); cx.moveTo(x-11,y+2); cx.lineTo(x+11,y+2); cx.moveTo(x,y-9); cx.lineTo(x,y+13); cx.stroke();
+function tentBackdrop(gy){
+  // inside the big top: striped canvas walls, a spotlight and the ring floor
+  for(var x=0;x<W;x+=36){ cx.fillStyle=(x/36)%2 ? '#7d1d1a' : '#a8312b'; cx.fillRect(x,0,36,gy); }
+  var g=cx.createRadialGradient(W*0.5,gy*0.55,10,W*0.5,gy*0.55,W*0.55); g.addColorStop(0,'rgba(255,240,200,.38)'); g.addColorStop(1,'rgba(0,0,0,.35)');
+  cx.fillStyle=g; cx.fillRect(0,0,W,gy);
+  cx.fillStyle='#3b2416'; cx.fillRect(0,gy,W,H-gy);
+  cx.fillStyle='#e9b23a'; cx.fillRect(0,gy,W,5);
 }
-function drawNet(V){
-  var st=stage(), w=st.D*0.045, l=V.sx(st.D-w), r=V.sx(st.D+w), y=V.gy-18, pw=Math.max(16, r-l);
-  if(r-l<16){ var c=V.sx(st.D); l=c-8; r=c+8; }
-  cx.fillStyle='rgba(233,178,58,.35)'; var il=V.sx(st.D-w*0.35), ir=V.sx(st.D+w*0.35); cx.fillRect(Math.min(il, V.sx(st.D)-2), y-2, Math.max(4, ir-il), 6);
-  cx.strokeStyle='#2a1d14'; cx.lineWidth=3;
-  cx.beginPath(); cx.moveTo(l, V.gy); cx.lineTo(l, y-6); cx.moveTo(r, V.gy); cx.lineTo(r, y-6); cx.stroke();
-  cx.strokeStyle='#f7ecd4'; cx.lineWidth=1;
-  cx.beginPath(); cx.moveTo(l, y-6); cx.quadraticCurveTo((l+r)/2, y+10, r, y-6); cx.stroke();
-  for(var i=1;i<6;i++){ var xx=l+(r-l)*i/6; cx.beginPath(); cx.moveTo(xx, y-6+Math.sin(i/6*Math.PI)*0); cx.lineTo(xx, y+Math.sin(i/6*Math.PI)*8); cx.stroke(); }
-  // flag
-  cx.fillStyle='#c9302c'; cx.beginPath(); cx.moveTo(r, y-6); cx.lineTo(r, y-30); cx.lineTo(r+16, y-24); cx.lineTo(r, y-18); cx.fill();
-  cx.strokeStyle='#2a1d14'; cx.lineWidth=2; cx.beginPath(); cx.moveTo(r, y-6); cx.lineTo(r, y-30); cx.stroke();
-  // distance ruler
-  cx.fillStyle='rgba(255,255,255,.75)'; cx.font='600 12px "Noto Sans KR",sans-serif'; cx.textAlign='center';
-  cx.fillText(num(st.D,0)+' m', (l+r)/2, V.gy+18);
-  cx.fillText('0', V.x0, V.gy+18);
-}
-function drawFan(V){
-  var F=stage().F; if(!F) return;
-  var dir=F>0?1:-1, x=dir>0?W*0.075:W*0.925, y=V.gy-H*0.45;
-  cx.save(); cx.translate(x,y);
-  cx.fillStyle='#2a1d14'; cx.fillRect(-3,0,6,H*0.45);
-  cx.fillStyle='#e9b23a'; cx.beginPath(); cx.arc(0,0,16,0,7); cx.fill();
-  cx.strokeStyle='#2a1d14'; cx.lineWidth=2; cx.stroke();
-  cx.rotate(performance.now()/90*dir);
-  cx.fillStyle='#c9302c'; for(var i=0;i<3;i++){ cx.rotate(Math.PI*2/3); cx.beginPath(); cx.ellipse(0,-8,4,8,0,0,7); cx.fill(); }
-  cx.restore();
-  windT=(windT+1)%1000;
-  cx.strokeStyle='rgba(255,255,255,.35)'; cx.lineWidth=2;
-  for(var k=0;k<7;k++){ var px=((windT*3*dir + k*W/7)%W+W)%W, py=H*0.18+((k*71)%60)/60*(V.gy-H*0.3); cx.beginPath(); cx.moveTo(px,py); cx.lineTo(px+28*dir,py); cx.stroke(); }
-}
-function drawPerformer(x, y, vx, vy, fk){
-  var F=PERF[fk], r=F.r;
-  cx.save(); cx.translate(x,y); cx.rotate(Math.atan2(-vy, vx));
-  if(fk==='ele'){
-    cx.fillStyle=F.c; cx.strokeStyle='#2a1d14'; cx.lineWidth=2;
-    cx.beginPath(); cx.ellipse(0,0,r,r*0.75,0,0,7); cx.fill(); cx.stroke();
-    cx.beginPath(); cx.ellipse(-3,-2,r*0.45,r*0.55,0,0,7); cx.fillStyle='#a8b0bb'; cx.fill(); cx.stroke();
-    cx.beginPath(); cx.moveTo(r*0.8,2); cx.quadraticCurveTo(r*1.5,4,r*1.3,r*0.9); cx.lineWidth=4; cx.strokeStyle=F.c; cx.stroke();
-    cx.fillStyle='#2a1d14'; cx.beginPath(); cx.arc(r*0.5,-3,2,0,7); cx.fill();
-    cx.fillStyle='#c9302c'; cx.beginPath(); cx.moveTo(-2,-r*0.75); cx.lineTo(4,-r*1.3); cx.lineTo(8,-r*0.7); cx.fill();
-  } else {
-    cx.fillStyle=F.c; cx.strokeStyle='#2a1d14'; cx.lineWidth=2;
-    cx.beginPath(); cx.ellipse(-2,0,r*1.2,r*0.62,0,0,7); cx.fill(); cx.stroke();
-    cx.fillStyle='#f3cfa6'; cx.beginPath(); cx.arc(r*1.05,0,r*0.55,0,7); cx.fill(); cx.stroke();
-    cx.fillStyle='#e9b23a'; cx.beginPath(); cx.arc(r*1.05,0,r*0.58,Math.PI*0.5,Math.PI*1.5,true); cx.fill();
-    cx.fillStyle='#fff'; for(var s=0;s<3;s++){ cx.beginPath(); cx.arc(-r*0.8+s*r*0.6, 0, 1.6, 0, 7); cx.fill(); }
-    if(fk==='strong'){ cx.strokeStyle='#2a1d14'; cx.lineWidth=2; cx.beginPath(); cx.moveTo(r*1.2,r*0.15); cx.lineTo(r*1.45,r*0.25); cx.stroke(); }
+function arrow(x, y, len, dir, color, label, side){
+  // a force arrow: starts at its point of action, length shows size, label shows N
+  if(len<2) return;
+  var dx=dir==='r'?1:dir==='l'?-1:0, dy=dir==='d'?1:dir==='u'?-1:0, ex=x+dx*len, ey=y+dy*len;
+  cx.save(); cx.strokeStyle=color; cx.fillStyle=color; cx.lineWidth=5; cx.lineCap='round';
+  cx.beginPath(); cx.moveTo(x,y); cx.lineTo(ex-dx*10,ey-dy*10); cx.stroke();
+  cx.beginPath(); cx.moveTo(ex,ey); cx.lineTo(ex-dx*14-dy*8, ey-dy*14-dx*8); cx.lineTo(ex-dx*14+dy*8, ey-dy*14+dx*8); cx.closePath(); cx.fill();
+  cx.beginPath(); cx.arc(x,y,4,0,7); cx.fill();
+  if(label){
+    cx.font='800 13px "Noto Sans KR",sans-serif'; var tw=cx.measureText(label).width;
+    // keep the label off the side drapes (5% each): flip it to the other side of the arrow when it won't fit
+    var mg=W*0.05+8;
+    if(!dx){ if(side==='l' && x-tw-14<mg) side='r'; else if(side!=='l' && x+12+tw>W-mg) side='l'; }
+    var lx = dx ? (x+ex)/2 - tw/2 : x + (side==='l' ? -tw-14 : 12);
+    lx = Math.max(mg, Math.min(W-tw-mg, lx));
+    var ly = dx ? y - 12 : (y+ey)/2 + 4;
+    cx.fillStyle='rgba(22,32,59,.85)'; cx.fillRect(lx-5, ly-14, tw+10, 20);
+    cx.fillStyle=color; cx.fillText(label, lx, ly);
   }
   cx.restore();
 }
-function drawTrail(V, pts, alpha, dashed){
-  cx.save(); cx.globalAlpha=alpha; cx.strokeStyle='#fff'; cx.lineWidth=2; if(dashed) cx.setLineDash([3,6]);
-  cx.beginPath(); pts.forEach(function(p,i){ var x=V.sx(p[0]), y=V.sy(p[1]); if(i) cx.lineTo(x,y); else cx.moveTo(x,y); }); cx.stroke(); cx.restore();
+var C_UP='#7ee0a1', C_DOWN='#ff8a7a', C_SIDE='#ffd166';
+function fpx(F, Fref){ return 18 + 110*Math.min(1.4, F/Fref); }
+
+function drawPerformer(x, y, fk, rot){
+  var F=PERF[fk], r=F.r;
+  cx.save(); cx.translate(x,y); cx.rotate(rot||0);
+  cx.strokeStyle='#2a1d14'; cx.lineWidth=2;
+  if(fk==='ele'){
+    cx.fillStyle=F.c; cx.beginPath(); cx.ellipse(0,-r*0.75,r,r*0.75,0,0,7); cx.fill(); cx.stroke();
+    cx.fillStyle='#a8b0bb'; cx.beginPath(); cx.ellipse(-r*0.2,-r*0.85,r*0.4,r*0.5,0,0,7); cx.fill(); cx.stroke();
+    cx.strokeStyle=F.c; cx.lineWidth=5; cx.beginPath(); cx.moveTo(r*0.85,-r*0.6); cx.quadraticCurveTo(r*1.4,-r*0.4,r*1.2,0); cx.stroke();
+    cx.fillStyle='#2a1d14'; cx.beginPath(); cx.arc(r*0.55,-r,2,0,7); cx.fill();
+    cx.fillStyle='#c9302c'; cx.beginPath(); cx.moveTo(-r*0.1,-r*1.45); cx.lineTo(r*0.2,-r*2); cx.lineTo(r*0.45,-r*1.4); cx.fill();
+  } else {
+    var b=r*1.6;
+    cx.fillStyle=F.c; cx.beginPath(); cx.roundRect ? cx.roundRect(-r*0.6,-b,r*1.2,b*0.75,4) : cx.rect(-r*0.6,-b,r*1.2,b*0.75); cx.fill(); cx.stroke();
+    cx.fillStyle='#2a1d14'; cx.fillRect(-r*0.5,-b*0.27,r*0.35,b*0.27); cx.fillRect(r*0.15,-b*0.27,r*0.35,b*0.27);
+    cx.fillStyle='#f3cfa6'; cx.beginPath(); cx.arc(0,-b-r*0.55,r*0.55,0,7); cx.fill(); cx.stroke();
+    cx.fillStyle='#e9b23a'; cx.beginPath(); cx.arc(0,-b-r*0.6,r*0.58,Math.PI,0); cx.fill();
+    if(fk==='strong'){ cx.strokeStyle='#2a1d14'; cx.beginPath(); cx.moveTo(-r*0.3,-b-r*0.3); cx.lineTo(r*0.3,-b-r*0.3); cx.stroke(); }
+  }
+  cx.restore();
+}
+
+function drawGrav(st, an){
+  var P=PLANETS[st.pk], gy=H*0.84; planetBackdrop(P, gy);
+  var x=W*0.5, v=an?an.v:S.val, g=P.g, Wt=v*g;
+  var lift = an ? an.lift(an.u) : 0; // 0 = barbell just over the head, 1 = arms locked out
+  // strongman
+  var r=Math.max(15, Math.min(30, H*0.055)), b=r*1.6, sx=x, sy=gy, squash = an && an.kind==='heavy' ? Math.sin(Math.min(1,an.u*1.6)*Math.PI)*0.25 : 0;
+  cx.save(); cx.translate(sx,sy); cx.scale(1,1-squash);
+  cx.strokeStyle='#2a1d14'; cx.lineWidth=2;
+  cx.fillStyle='#2a1d14'; cx.fillRect(-r*0.6,-b*0.4,r*0.45,b*0.4); cx.fillRect(r*0.15,-b*0.4,r*0.45,b*0.4);
+  cx.fillStyle=PERF.strong.c; cx.beginPath(); cx.ellipse(0,-b*0.85,r*0.95,b*0.5,0,0,7); cx.fill(); cx.stroke();
+  cx.fillStyle='#f3cfa6'; cx.beginPath(); cx.arc(0,-b*1.5,r*0.6,0,7); cx.fill(); cx.stroke();
+  cx.beginPath(); cx.moveTo(-r*0.35,-b*1.38); cx.quadraticCurveTo(0,-b*1.3,r*0.35,-b*1.38); cx.stroke();
+  cx.restore();
+  var barY = sy - b*2 - lift*b*0.9, half=Math.min(W*0.22, r*5);
+  cx.strokeStyle='#f3cfa6'; cx.lineWidth=Math.max(5,r*0.35); cx.beginPath(); cx.moveTo(sx-r*0.8, sy-b*1.1); cx.lineTo(sx-half*0.4, barY); cx.moveTo(sx+r*0.8, sy-b*1.1); cx.lineTo(sx+half*0.4, barY); cx.stroke();
+  cx.strokeStyle='#d9d9d9'; cx.lineWidth=5; cx.beginPath(); cx.moveTo(sx-half-14, barY); cx.lineTo(sx+half+14, barY); cx.stroke();
+  // plates grow with the barbell's mass (not its weight: the same barbell looks the same on every planet)
+  var k=Math.max(1, Math.min(6, Math.round(Math.log(1+v/10)*1.7))), ph=14+Math.min(40, Math.sqrt(v)*1.1);
+  for(var i=0;i<k;i++){ cx.fillStyle=i%2?'#2a1d14':'#c9302c'; cx.fillRect(sx-half-i*7, barY-ph/2, 6, ph); cx.fillRect(sx+half+i*7-6, barY-ph/2, 6, ph); }
+  cx.fillStyle='#fff'; cx.font='700 12px "Noto Sans KR",sans-serif'; cx.textAlign='center'; cx.fillText(num(v,1)+' kg', sx, barY-ph/2-8); cx.textAlign='left';
+  // both arrows share one scale so their lengths compare, and the weight arrow never sinks into the ground
+  var ref=Math.max(st.L, Wt), sc=Math.min(1, (gy-barY-8)/fpx(Math.max(st.L,Wt), ref));
+  arrow(sx+half+24, barY, fpx(Wt, ref)*sc, 'd', C_DOWN, tr('무게 {0}', N(Wt)));
+  arrow(sx-half-24, barY, fpx(st.L, ref)*sc, 'u', C_UP, tr('드는 힘 {0}', N(st.L)), 'l');
+}
+function drawSpring(st, an){
+  var gy=H*0.88; tentBackdrop(gy);
+  var top=H*0.12, span=gy-top-40, worldH=Math.max(st.H*1.35, 3), s=span/worldH, px=W*0.38;
+  // ruler
+  cx.fillStyle='rgba(255,255,255,.75)'; cx.font='600 11px "Noto Sans KR",sans-serif';
+  for(var m=0;m<=worldH;m++){ var yy=gy-40-m*s; cx.fillRect(W*0.08, yy, 10, 2); cx.fillText(m+' m', W*0.08+14, yy+4); }
+  // trapeze at the target height
+  var ty=gy-40-st.H*s;
+  cx.strokeStyle='#e9b23a'; cx.lineWidth=2; cx.beginPath(); cx.moveTo(px-30, 0); cx.lineTo(px-30, ty); cx.moveTo(px+30,0); cx.lineTo(px+30,ty); cx.stroke();
+  cx.strokeStyle='#f7ecd4'; cx.lineWidth=6; cx.beginPath(); cx.moveTo(px-34, ty); cx.lineTo(px+34, ty); cx.stroke();
+  cx.fillStyle='#e9b23a'; cx.font='700 12px "Noto Sans KR",sans-serif'; cx.fillText(num(st.H,1)+' m', px+42, ty+4);
+  // spring: squeezed by the chosen length
+  var v=an?an.v:S.val, sq=an&&an.u>0.12?0:Math.min(1, v/st.max), springH=40*(1-sq*0.75), baseY=gy, padY=baseY-springH;
+  cx.strokeStyle='#cfd6e6'; cx.lineWidth=3; cx.beginPath();
+  for(var i=0;i<=10;i++){ var yy2=baseY-i*springH/10, xx=px+(i%2?14:-14); if(i===0||i===10) xx=px; if(i) cx.lineTo(xx,yy2); else cx.moveTo(xx,yy2); }
+  cx.stroke();
+  cx.fillStyle='#c9302c'; cx.fillRect(px-26, padY-6, 52, 8);
+  var py=padY-6;
+  if(an && an.u>0.12){ var u=(an.u-0.12)/0.88, hh=an.h*4*u*(1-u); py = padY-6 - hh*s; }
+  drawPerformer(px, py, st.fk);
+  var F=st.k*v, Wt=PERF[st.fk].m*GE, ref=Math.max(Wt, st.k*st.need);
+  if(!an || an.u<=0.12) arrow(px+40, padY, fpx(F, ref), 'u', C_UP, tr('탄성력 {0}', N(F)));
+  arrow(px-40, py-PERF[st.fk].r*1.4, fpx(Wt, ref), 'd', C_DOWN, tr('중력 {0}', N(Wt)), 'l');
+}
+function drawFric(st, an){
+  var gy=H*0.7; tentBackdrop(gy);
+  var S0=SURF[st.s], x0=W*0.1, s=(W*0.82)/11;
+  cx.fillStyle=S0.c; cx.fillRect(0,gy,W,H*0.12);
+  cx.fillStyle=S0.c2; for(var i=0;i<40;i++){ cx.fillRect((i*97%100)/100*W, gy+3+(i*37%10)/10*(H*0.12-6), st.s==='sand'?3:16, st.s==='sand'?3:1.5); }
+  // distance marks and the flag
+  cx.fillStyle='rgba(255,255,255,.8)'; cx.font='600 11px "Noto Sans KR",sans-serif'; cx.textAlign='center';
+  for(var m=0;m<=11;m++){ cx.fillRect(x0+m*s-1, gy+H*0.12, 2, 8); cx.fillText(m+'', x0+m*s, gy+H*0.12+20); }
+  cx.textAlign='left';
+  var fx=x0+st.D*s, zw=Math.max(4, st.D*0.03*s*2);
+  cx.fillStyle='rgba(233,178,58,.45)'; cx.fillRect(fx-zw/2, gy, zw, H*0.12);
+  cx.strokeStyle='#2a1d14'; cx.lineWidth=3; cx.beginPath(); cx.moveTo(fx, gy); cx.lineTo(fx, gy-70); cx.stroke();
+  cx.fillStyle='#c9302c'; cx.beginPath(); cx.moveTo(fx, gy-70); cx.lineTo(fx+26, gy-61); cx.lineTo(fx, gy-52); cx.fill();
+  cx.fillStyle='#fff'; cx.font='700 12px "Noto Sans KR",sans-serif'; cx.fillText(num(st.D,1)+' m', fx+6, gy-76);
+  // sled position
+  var pos=0, pushing=true, v=an?an.v:S.val;
+  if(an){ pos=an.pos(an.u); pushing=an.u<an.pushEnd; }
+  var sx=x0+pos*s, sw=Math.max(54, PERF[st.fk].r*4.2);
+  cx.fillStyle='#6b3d1f'; cx.fillRect(sx-sw/2, gy-12, sw, 10);
+  cx.strokeStyle='#e9b23a'; cx.lineWidth=3; cx.beginPath(); cx.moveTo(sx-sw/2-4, gy-2); cx.lineTo(sx+sw/2+4, gy-2); cx.quadraticCurveTo(sx+sw/2+12, gy-2, sx+sw/2+10, gy-12); cx.stroke();
+  drawPerformer(sx, gy-12, st.fk);
+  // the pusher clown follows until the 1 m mark
+  var cxp = pushing ? sx-sw/2-12 : x0+1*s-sw/2-12;
+  cx.save(); cx.translate(cxp, gy); cx.rotate(pushing?0.35:0);
+  cx.fillStyle='#e9b23a'; cx.fillRect(-8,-34,16,26); cx.fillStyle='#2a1d14'; cx.fillRect(-7,-8,5,8); cx.fillRect(2,-8,5,8);
+  cx.fillStyle='#f7ecd4'; cx.beginPath(); cx.arc(0,-42,8,0,7); cx.fill(); cx.fillStyle='#c9302c'; cx.beginPath(); cx.arc(5,-42,3,0,7); cx.fill();
+  cx.restore();
+  var moving = an && an.kind!=='stuck' && an.u<1, ref=Math.max(v, st.f), fy=gy-PERF[st.fk].r*1.2-14;
+  if(pushing && (!an || an.u<1)) arrow(sx-sw/2-2, fy-18, fpx(v, ref), 'r', C_SIDE, tr('미는 힘 {0}', N(v)));
+  var fr = an && an.kind==='stuck' ? v : st.f;
+  if(!an || moving || an.kind==='stuck') arrow(sx+sw/2, gy-4, fpx(fr, ref), 'l', C_DOWN, tr('마찰력 {0}', N(fr)));
+}
+function drawBuoy(st, an){
+  var gy=H*0.92; tentBackdrop(gy);
+  var tx=W*0.28, tw=W*0.44, ttop=H*0.12, th=gy-ttop, depth=4, s=th/depth;
+  cx.fillStyle='rgba(58,134,200,.55)'; cx.fillRect(tx, ttop+12, tw, th-12);
+  cx.fillStyle='rgba(255,255,255,.18)'; for(var i=0;i<6;i++){ cx.beginPath(); cx.arc(tx+20+((i*61+Math.floor(performance.now()/50))%Math.max(1,tw-40)), gy-((i*97+performance.now()/12)%th), 3, 0, 7); cx.fill(); }
+  cx.strokeStyle='#cfe9f7'; cx.lineWidth=4; cx.strokeRect(tx, ttop, tw, th);
+  // hover ring in the middle
+  var ry=ttop+12+(th-12)/2;
+  cx.strokeStyle='#e9b23a'; cx.lineWidth=4; cx.beginPath(); cx.ellipse(tx+tw/2, ry, 46, 12, 0, 0, 7); cx.stroke();
+  var v=an?an.v:S.val, j=judge(st, v), y=ry;
+  if(an) y = Math.max(ttop+30, Math.min(gy-20, ry + an.dy(an.u)*s));
+  var x=tx+tw/2, r=PERF[st.fk].r;
+  // air bag grows with its volume
+  var bag=6+Math.sqrt(v)*4.5;
+  cx.strokeStyle='#2a1d14'; cx.lineWidth=1.5; cx.beginPath(); cx.moveTo(x, y-r*2.6); cx.lineTo(x, y-r*2.6-14); cx.stroke();
+  cx.fillStyle='#f7ecd4'; cx.beginPath(); cx.arc(x, y-r*2.6-14-bag, bag, 0, 7); cx.fill(); cx.stroke();
+  drawPerformer(x, y, st.fk);
+  cx.fillStyle='#333'; cx.fillRect(x-r*0.9, y-r*1.2, r*1.8, 6);
+  var ref=Math.max(j.B, j.W);
+  arrow(x+tw*0.28, y-r, fpx(j.B, ref), 'u', C_UP, tr('부력 {0}', N(j.B)));
+  arrow(x-tw*0.28, y-r, fpx(j.W, ref), 'd', C_DOWN, tr('중력 {0}', N(j.W)), 'l');
 }
 function draw(){
   if(!W || !S.stages.length) return;
-  var V=view(), st=stage(), P=PLANETS[st.pk];
-  drawBackdrop(V, P); drawFan(V); drawNet(V);
-  S.trails.forEach(function(tr0){ drawTrail(V, tr0.pts, 0.45, true); var lx=V.sx(tr0.land); cx.fillStyle='rgba(255,255,255,.7)'; cx.fillRect(lx-1, V.gy-6, 2, 12); });
-  var fl=S.flying;
-  if(fl){
-    var shown=fl.pts.slice(0, fl.i+1); drawTrail(V, shown, 0.9, false);
-    var p=fl.pts[fl.i], q=fl.pts[Math.max(0,fl.i-1)];
-    var x=V.sx(p[0]), y=V.sy(p[1]);
-    if(y < 6){ cx.fillStyle='#e9b23a'; cx.beginPath(); cx.moveTo(x,4); cx.lineTo(x-8,18); cx.lineTo(x+8,18); cx.fill(); cx.fillStyle='#fff'; cx.font='700 12px "Noto Sans KR",sans-serif'; cx.textAlign='center'; cx.fillText(num(p[1],0)+' m', x, 32); }
-    else drawPerformer(x, y, p[0]-q[0]||1, p[1]-q[1], st.fk);
-  } else if(!$('fireBtn').disabled){
-    // aim line: launch direction only, its length shows the speed
-    var a=S.ang*Math.PI/180, L=24+S.spd/VMAX*W*0.2, sx0=V.x0+Math.cos(a)*50, sy0=V.gy-14-Math.sin(a)*50;
-    cx.save(); cx.strokeStyle='rgba(255,255,255,.85)'; cx.lineWidth=3; cx.setLineDash([8,6]);
-    cx.beginPath(); cx.moveTo(sx0,sy0); cx.lineTo(sx0+Math.cos(a)*L, sy0-Math.sin(a)*L); cx.stroke(); cx.restore();
-    drawPerformer(V.x0+Math.cos(a)*30, V.gy-14-Math.sin(a)*30, Math.cos(a), Math.sin(a), st.fk);
-  }
-  drawCannon(V);
-  if(st.F && !fl && !$('fireBtn').disabled) requestAnimationFrame(function(){ if(!S.flying) draw(); });
+  var st=stage(), an=S.anim;
+  if(st.t==='grav') drawGrav(st, an); else if(st.t==='spring') drawSpring(st, an); else if(st.t==='fric') drawFric(st, an); else drawBuoy(st, an);
 }
 
-// ---------- fire! ----------
+// ---------- try the act ----------
 $('fireBtn').onclick=function(){
-  if(S.flying || this.disabled || S.phase!=='play') return;
+  if(S.anim || this.disabled || S.phase!=='play') return;
   this.disabled=true;
-  var st=stage(), res=simulate(S.spd, S.ang, st);
-  var anim=Math.max(1100, Math.min(3200, res.T*350)), t0=performance.now();
-  S.flying={ pts:res.pts, i:0 };
+  var st=stage(), v=S.val, j=judge(st, v), dur=1800, an={ v:v, kind:j.kind, u:0, j:j };
+  if(st.t==='grav'){ an.lift = j.kind==='heavy' ? function(u){ return Math.sin(Math.min(1,u*1.6)*Math.PI)*0.25; } : function(u){ return Math.min(1, u*1.6); }; }
+  if(st.t==='spring'){ an.h=j.h; dur=1200+Math.min(1400, Math.sqrt(j.h)*500); }
+  if(st.t==='fric'){
+    an.pushEnd=0.25;
+    an.pos = j.kind==='stuck' ? function(){ return 0; } : function(u){ if(u<0.25) return (u/0.25)*(u/0.25); var w=(u-0.25)/0.75; return 1+(j.d-1)*(1-(1-w)*(1-w)); };
+    dur=2200;
+  }
+  if(st.t==='buoy'){ var a=j.net/(PERF[st.fk].m+st.gear); an.dy=function(u){ var t=u*2.6; return -0.5*a*t*t; }; dur=2600; }
+  S.anim=an; var t0=performance.now();
   (function frame(now){
-    if(!S.flying) return;
-    var k=Math.min(1,(now-t0)/anim), tt=k*res.T, i=S.flying.i;
-    while(i<res.pts.length-1 && res.pts[i+1][2]<=tt) i++;
-    S.flying.i=i; draw();
-    if(k<1) requestAnimationFrame(frame); else land(res);
+    if(S.anim!==an) return;
+    an.u=Math.min(1,(now-t0)/dur); draw();
+    if(an.u<1) requestAnimationFrame(frame); else land(st, an);
   })(t0);
 };
-function land(res){
-  S.flying=null;
-  var st=stage(), w=st.D*0.045, err=res.land-st.D, a=Math.abs(err), pts=0, label, mult=[1,0.7,0.5][S.shot];
-  if(a<=w*0.35){ pts=100; label='완벽!'; } else if(a<=w){ pts=70; label='명중!'; } else label='빗나감';
-  S.trails.push({ pts:res.pts, land:res.land });
+function resultLine(st, j){
+  if(st.t==='grav') return j.kind==='heavy' ? tr('너무 무거워요! 바벨 무게 {0}이 드는 힘 {1}보다 커요.', N(j.W), N(st.L))
+    : j.kind==='light' ? tr('들긴 했지만 더 무거운 바벨도 들 수 있어요. 무게 {0} / 드는 힘 {1}', N(j.W), N(st.L))
+    : tr('번쩍! 바벨 무게 {0} / 드는 힘 {1}', N(j.W), N(st.L));
+  if(st.t==='spring') return tr('{0} m까지 올라갔어요. 그네는 {1} m', num(j.h,2), num(st.H,1));
+  if(st.t==='fric') return j.kind==='stuck' ? tr('꿈쩍도 안 해요! 미는 힘이 마찰력 {0}보다 커야 움직여요.', N(st.f)) : tr('{0} m에서 멈췄어요. 깃발은 {1} m', num(j.d,2), num(st.D,1));
+  return j.kind==='up' ? tr('떠올라요! 부력 {0}이 중력 {1}보다 커요.', N(j.B), N(j.W)) : tr('가라앉아요! 부력 {0}이 중력 {1}보다 작아요.', N(j.B), N(j.W));
+}
+function land(st, an){
+  var j=an.j, pts=j.pts, mult=[1,0.7,0.5][S.shot], gain=Math.round(pts*mult);
   S.shot++;
-  var gain=Math.round(pts*mult);
+  var label = pts===100 ? '완벽!' : pts ? '성공!' : '실패';
   var fl=$('flash'); fl.className='flash'+(pts?'':' miss'); fl.textContent=tr(label)+(gain?' +'+gain:''); void fl.offsetWidth; fl.classList.add('on');
-  draw();
-  var line = tr('비행 시간 {0}초 · 최고 높이 {1} m · 착지 {2} m', num(res.T,1), num(res.top,0), num(res.land,0));
-  if(!pts) line += ' · <b>'+esc(err>0?tr('{0} m 더 멀리 갔어요', num(a,1)):tr('{0} m 모자라요', num(a,1)))+'</b>';
+  var line=esc(resultLine(st, j));
   var finished = pts>0 || S.shot>=SHOTS;
   if(finished){
     S.score+=gain; if(pts) S.hits++;
-    S.rec.push({ pk:st.pk, fk:st.fk, F:st.F, D:st.D, shots:S.shot, pts:gain });
-    line += '<br>'+esc(lesson(st));
+    S.rec.push({ st:st, shots:S.shot, pts:gain, v:an.v });
+    line += '<br><b>'+esc(tr('배운 점'))+'</b> '+esc(lesson(st));
     S.cur++; dirtyScore=true; if(S.role==='host') boardDirty=true;
   }
   $('note').innerHTML=line;
   hud();
   if(finished){
-    if(S.cur>=S.stages.length){ S.done=true; S.doneAt=Date.now(); if(S.role==='guest') report(); timers.push(setTimeout(function(){ if(S.role==='solo') finishRound(); else { waitOthers(); if(S.role==='host'){ boardDirty=true; checkAllDone(); } } }, 1800)); }
-    else timers.push(setTimeout(openIntro, 2600));
-  } else $('fireBtn').disabled=false;
+    if(S.cur>=S.stages.length){ S.done=true; S.doneAt=Date.now(); if(S.role==='guest') report(); timers.push(setTimeout(function(){ if(S.role==='solo') finishRound(); else { waitOthers(); if(S.role==='host'){ boardDirty=true; checkAllDone(); } } }, 2600)); }
+    else timers.push(setTimeout(openIntro, 3600));
+  } else { timers.push(setTimeout(function(){ S.anim=null; draw(); $('fireBtn').disabled=false; }, 900)); }
 }
 function lesson(st){
-  var P=PLANETS[st.pk], F=PERF[st.fk];
-  if(st.F) return tr('송풍기가 같은 힘으로 밀어도 질량이 클수록 덜 밀려요. {0}은(는) 1초마다 {1} m/s씩 옆으로 빨라졌어요.', tr(F.n), num(Math.abs(st.F)/F.m, 2));
-  if(st.pk==='earth') return tr('공기 저항이 없다면 무거운 것과 가벼운 것은 똑같이 떨어져요. 곡예사가 바뀌어도 같은 각도와 속력이면 같은 곳에 떨어져요.');
-  return tr('{0}의 중력은 지구의 {1}배예요. 같은 각도와 속력이면 지구보다 {2}배 멀리 날아가요.', tr(P.n), num(P.g/9.8, 2), num(9.8/P.g, 2));
+  if(st.t==='grav'){ var P=PLANETS[st.pk]; return tr('{0}의 중력은 지구의 {1}배라서 같은 힘으로 {2} kg까지 들 수 있어요. 지구에서는 {3} kg. 질량은 그대로이고 무게만 달라져요.', tr(P.n), num(P.g/GE,2), num(st.L/P.g,1), num(st.L/GE,1)); }
+  if(st.t==='spring') return tr('탄성력은 누른 길이에 비례해요. 1 cm에 {0} N이니 {1} cm 누르면 {2} N. 탄성력은 누른 방향과 반대인 위쪽으로 작용해요.', num(st.k,0), num(st.need,1), N(st.k*st.need));
+  if(st.t==='fric') return tr('{0}에서 마찰력은 {1}이었어요. 거친 면일수록, 무거울수록 마찰력이 커요. 마찰력은 움직이는 방향과 반대로 작용해요.', tr(SURF[st.s].n), N(st.f));
+  return tr('물에 잠긴 부피가 1 L 늘면 부력이 9.8 N 커져요. 부력과 중력의 크기가 같으면 물속에 떠 있어요.');
 }
 function waitOthers(){
   $('fireBtn').disabled=true; $('intro').classList.remove('on');
   $('note').innerHTML=esc(tr('모든 무대를 마쳤어요! 다른 곡예사들을 기다리는 중'));
   draw();
 }
+
 
 // ---------- boards ----------
 function hostEntries(){
@@ -1112,21 +1283,28 @@ function finishRound(){
 }
 
 // ---------- result ----------
+function cond(st){
+  if(st.t==='grav') return tr(PLANETS[st.pk].n)+' · g '+num(PLANETS[st.pk].g,2);
+  if(st.t==='spring') return tr(PERF[st.fk].n)+' · '+num(st.k,0)+' N/cm';
+  if(st.t==='fric') return tr(SURF[st.s].n)+' · '+tr(PERF[st.fk].n);
+  return tr(PERF[st.fk].n)+' + '+st.gear+' kg';
+}
 function showResult(r){
   clearTimers(); S.phase='result'; $('intro').classList.remove('on');
   var played=iPlay();
   $('rWho').textContent = S.name+' · '+new Date().toLocaleDateString(lang==='ko'?'ko-KR':lang);
   $('rTotal').textContent = played ? S.score : '';
-  $('rSub').textContent = played ? tr('무대 {0}개 · 착지 성공 {1}번', S.rec.length, S.hits) : '';
+  $('rSub').textContent = played ? tr('무대 {0}개 · 성공 {1}번', S.rec.length, S.hits) : '';
   $('rRankBox').classList.toggle('hide', !r);
   if(r) $('rRank').innerHTML=r.map(function(e){ var me=e.t===token || (S.role==='guest' && e.n===S.name); return '<tr'+(me?' class="me"':'')+'><td class="num">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="num">'+e.s+'</td><td>'+e.st+'/'+S.settings.stages+'</td></tr>'; }).join('');
   $('rMine').classList.toggle('hide', !played || !S.rec.length);
-  $('rStages').innerHTML=S.rec.map(function(x,i){ var P=PLANETS[x.pk], F=PERF[x.fk]; return '<tr><td>'+(i+1)+'</td><td>'+esc(tr(P.n))+'</td><td>'+num(P.g,2)+'</td><td>'+esc(tr(F.n))+' '+F.m+'kg</td><td>'+(x.F?Math.abs(x.F)+' N':'-')+'</td><td>'+x.shots+'</td><td class="num">'+x.pts+'</td></tr>'; }).join('');
-  var seen={}, list=[]; S.rec.forEach(function(x){ if(!seen[x.pk]){ seen[x.pk]=1; list.push(x.pk); } });
-  if(!seen.earth) list.unshift('earth');
+  $('rStages').innerHTML=S.rec.map(function(x,i){ var A=ACTS[x.st.t]; return '<tr><td>'+(i+1)+'</td><td>'+esc(tr(A.n))+'</td><td>'+esc(tr(A.f))+'</td><td>'+esc(cond(x.st))+'</td><td>'+x.shots+'</td><td class="num">'+x.pts+'</td></tr>'; }).join('');
+  // the same lifting force on every world the player visited
+  var seen={earth:1}, list=['earth'];
+  S.rec.forEach(function(x){ if(x.st.t==='grav' && !seen[x.st.pk]){ seen[x.st.pk]=1; list.push(x.st.pk); } });
   list.sort(function(a,b){ return PLANETS[b].g-PLANETS[a].g; });
-  var maxR=Math.max.apply(null, list.map(function(k){ return 400/PLANETS[k].g; }));
-  $('rBars').innerHTML=list.map(function(k){ var R=400/PLANETS[k].g; return '<div class="bar"><span>'+esc(tr(PLANETS[k].n))+'</span><div class="t"><i style="width:'+Math.max(2,R/maxR*100)+'%"></i></div><span class="v">'+num(R,0)+' m</span></div>'; }).join('');
+  var maxM=Math.max.apply(null, list.map(function(k){ return 1000/PLANETS[k].g; }));
+  $('rBars').innerHTML=list.map(function(k){ var M=1000/PLANETS[k].g; return '<div class="bar"><span>'+esc(tr(PLANETS[k].n))+'</span><div class="t"><i style="width:'+Math.max(2,M/maxM*100)+'%"></i></div><span class="v">'+num(M,0)+' kg</span></div>'; }).join('');
   $('againBtn').classList.toggle('hide', S.role==='guest');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
   show('sResult');
@@ -1134,8 +1312,7 @@ function showResult(r){
 $('againBtn').onclick=function(){ if(S.role==='solo') startSolo(S.name); else if(S.role==='host') enterLobby(); };
 $('homeBtn').onclick=goHome;
 window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.phase!=='idle' && onlineCount()>0){ e.preventDefault(); e.returnValue=''; } });
-setAim(45, 15);
-window.__gv=S; window.__gvAim=function(){ var st=stage(), best=null; [45,40,50,35,55,30,60].forEach(function(a){ var lo=2, hi=VMAX; for(var k=0;k<30;k++){ var m=(lo+hi)/2; if(simulate(m,a,st).land<st.D) lo=m; else hi=m; } var e=Math.abs(simulate(lo,a,st).land-st.D); if(!best||e<best[0]) best=[e,a,lo]; }); setAim(best[1],best[2]); return best; };
+window.__gv=S; window.__gvAim=function(){ var st=stage(); setVal(Math.floor(idealValue(st)/st.step)*st.step); return S.val; };
 })();
 </script>
 </body>
