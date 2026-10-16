@@ -413,8 +413,12 @@ function videoPlayer(kind, fps, res) {
 }
 
 /* ---------- world generation ---------- */
-const SYL = ["케", "플", "라", "오", "르", "테", "니", "브", "실", "바", "텔", "루", "스", "마", "카", "에", "코", "보", "타", "미", "아", "델", "이", "온", "주", "노", "하", "가", "렌", "포"];
-function planetName(used) { let n; do { n = pick(SYL) + pick(SYL) + (rnd() < .4 ? pick(SYL) : "") + " " + pick(["b", "c", "d", "e"]); } while (used.has(n)); used.add(n); return n; }
+const PNAMES = ["트렌터", "터미너스", "아나크레온", "스미르노", "산태니", "칼간", "시리우스", "타젠더", "로셈", "코렐", "시낵스", "헬리콘"];
+function planetName(used) {
+  let free = PNAMES.filter(n => !used.has(n));
+  if (!free.length) free = PNAMES.filter(n => !(used.cur && used.cur.has(n)));
+  const n = pick(free); used.add(n); if (used.cur) used.cur.add(n); return n;
+}
 // numeric signals, each sent as 8 bits
 const SIG = [
   { k: "temp", t: "온도", u: "℃" }, { k: "grav", t: "중력", u: "" }, { k: "oxy", t: "산소", u: "%" },
@@ -490,7 +494,7 @@ function newRun(seed, code) {
 function startSector() {
   if (G.code) rnd = seeded(hashStr(G.code) + G.sector * 1013);
   G.sec = { dec: 0, ok: 0, ex: null, scans: { photo: [], sound: [], video: [] }, bits: 0, reply: null };
-  const used = new Set(G.colonies.map(c => c.planet.name));
+  const used = new Set(G.colonies.map(c => c.planet.name)); used.cur = new Set();
   G.list = Array.from({ length: 5 + (G.upg.range ? 2 : 0) }, (_, i) => makePlanet(`P${G.sector}${i}`, used));
   G.idx = -1; G.storeMax = 4000 + (G.upg.store ? 3000 : 0);
   nextPlanet();
