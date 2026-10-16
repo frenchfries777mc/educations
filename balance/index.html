@@ -91,6 +91,15 @@
   .legend{display:flex; flex-wrap:wrap; gap:8px 20px; margin-top:18px; font-size:13px; color:var(--ink2);}
   .legend b{color:var(--amb); font-family:'Space Mono',monospace;}
 
+  /* ---------- stage select ---------- */
+  .stgList{display:grid; grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr)); gap:14px; margin-top:6px;}
+  .stg{display:grid; grid-template-columns:52px minmax(0,1fr); gap:14px; align-items:start; text-align:left; border:1.5px solid var(--ink); background:rgba(0,0,0,.12); padding:14px; transition:background .15s, transform .12s;}
+  .stg:hover{background:rgba(255,181,71,.12); transform:translateY(-2px);}
+  .stg .no{font-family:'Space Mono',monospace; font-weight:700; font-size:22px; color:var(--amb); border:1.5px solid var(--amb); text-align:center; padding:6px 0;}
+  .stg .t{display:block; font-family:'Do Hyeon',sans-serif; font-size:24px; line-height:1.15;}
+  .stg .d{display:block; font-size:13px; color:var(--ink2); margin:4px 0 8px;}
+  .stg .m{display:block; font-family:'Space Mono','Nanum Gothic Coding',monospace; font-size:12px; color:var(--amb);}
+
   /* ---------- lobby ---------- */
   .twin{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:28px;}
   @media(max-width:760px){ .twin{grid-template-columns:minmax(0,1fr);} }
@@ -261,6 +270,15 @@
   <div class="msg" id="homeMsg"></div>
 </section>
 
+<!-- STAGES -->
+<section class="screen" id="sStages">
+  <div class="sheet">
+    <h3><span class="tag">STAGE SELECT</span>스테이지 고르기</h3>
+    <div class="stgList" id="stgList"></div>
+    <div class="rowEnd"><button class="pill" id="stgBack">처음으로</button></div>
+  </div>
+</section>
+
 <!-- LOBBY -->
 <section class="screen" id="sLobby">
   <div class="twin">
@@ -269,6 +287,8 @@
       <div class="bigCode" id="lobbyCode">-----</div>
       <div class="link" id="lobbyLink"></div>
       <div id="hostSet" style="margin-top:16px">
+        <p class="lbl">스테이지</p>
+        <div class="seg" id="segStage"><button data-v="1">1 기초 평형</button><button data-v="2">2 줄다리기와 마찰</button><button data-v="3">3 무게와 부력</button><button data-v="4">4 탄성력 실험실</button><button data-v="5">5 종합 설계</button></div>
         <p class="lbl">도면 수</p>
         <div class="seg" id="segStages"><button data-v="5">5장</button><button data-v="10">10장</button><button data-v="15">15장</button></div>
         <p class="lbl">제한 시간</p>
@@ -340,7 +360,7 @@
     </div>
   </div>
   <p class="msg info" id="resWait"></p>
-  <div class="resBtns"><button class="go" id="againBtn">다시 설계</button><button class="go line" id="homeBtn">처음으로</button></div>
+  <div class="resBtns"><button class="go" id="againBtn">다시 설계</button><button class="go line hide" id="stagesBtn">스테이지 고르기</button><button class="go line" id="homeBtn">처음으로</button></div>
 </section>
 </div>
 
@@ -359,13 +379,19 @@
 'use strict';
 var I18N={
 "1 kg의 무게":["Weight of 1 kg", "Poids de 1 kg", "Gewicht von 1 kg", "Peso de 1 kg", "1 kgの重さ"],
+"1 기초 평형":["1 Balance basics", "1 Bases", "1 Grundlagen", "1 Básico", "1 基本"],
 "10장":["10", "10", "10", "10", "10枚"],
 "15장":["15", "15", "15", "15", "15枚"],
 "1칸 = {0}":["1 cell = {0}", "1 case = {0}", "1 Kästchen = {0}", "1 casilla = {0}", "1マス = {0}"],
+"2 줄다리기와 마찰":["2 Tug & friction", "2 Corde et frottement", "2 Tauziehen & Reibung", "2 Soga y rozamiento", "2 綱引きと摩擦"],
+"3 무게와 부력":["3 Weight & buoyancy", "3 Poids et poussée", "3 Gewicht & Auftrieb", "3 Peso y empuje", "3 重さと浮力"],
 "3분":["3 min", "3 min", "3 Min.", "3 min", "3分"],
+"4 탄성력 실험실":["4 Elastic lab", "4 Labo élastique", "4 Federkraft-Labor", "4 Lab elástico", "4 弾性力ラボ"],
+"5 종합 설계":["5 Mixed design", "5 Mixte", "5 Gemischt", "5 Mixto", "5 総合"],
 "5분":["5 min", "5 min", "5 Min.", "5 min", "5分"],
 "5장":["5", "5", "5", "5", "5枚"],
 "8분":["8 min", "8 min", "8 Min.", "8 min", "8分"],
+"{0} · 도면 {1}장 · 제한 시간 {2}":["{0} · {1} drawings · time limit {2}", "{0} · {1} plans · durée {2}", "{0} · {1} Pläne · Zeitlimit {2}", "{0} · {1} planos · tiempo {2}", "{0} · 図面{1}枚 · 制限時間 {2}"],
 "{0}명":["{0}", "{0}", "{0}", "{0}", "{0}人"],
 "{0}번":["{0}×", "{0}×", "{0}×", "{0}×", "{0}回"],
 "{0}칸":["{0} cells", "{0} cases", "{0} Kästchen", "{0} casillas", "{0}マス"],
@@ -377,6 +403,7 @@ var I18N={
 "과목":["Subject", "Matière", "Fach", "Asignatura", "教科"],
 "그린 힘":["Force drawn", "Force dessinée", "Gezeichnete Kraft", "Fuerza dibujada", "描いた力"],
 "그릴 힘: {0}":["Draw: {0}", "À dessiner : {0}", "Zeichne: {0}", "Dibuja: {0}", "描く力: {0}"],
+"기초 평형":["Balance basics", "Bases de l'équilibre", "Gleichgewicht: Grundlagen", "Equilibrio básico", "つり合いの基本"],
 "나가기":["Leave", "Quitter", "Verlassen", "Salir", "退出"],
 "남은 검토":["Tries left", "Essais restants", "Versuche übrig", "Intentos restantes", "残り審査"],
 "남은 시간":["Time left", "Temps restant", "Restzeit", "Tiempo restante", "残り時間"],
@@ -389,6 +416,7 @@ var I18N={
 "당기는 힘":["Pulling force", "Force de traction", "Zugkraft", "Fuerza de tracción", "引く力"],
 "도면":["Drawing", "Plan", "Plan", "Plano", "図面"],
 "도면 10장에 힘을 그려 넣어요.":["Draw the forces on 10 drawings.", "Dessinez les forces sur 10 plans.", "Zeichne die Kräfte in 10 Pläne ein.", "Dibuja las fuerzas en 10 planos.", "10枚の図面に力を描き込もう。"],
+"도면 {0}장":["{0} drawings", "{0} plans", "{0} Pläne", "{0} planos", "図面{0}枚"],
 "도면 {0}장 · 승인 {1}장":["{0} drawings · {1} approved", "{0} plans · {1} validés", "{0} Pläne · {1} genehmigt", "{0} planos · {1} aprobados", "図面{0}枚 · 承認{1}枚"],
 "도면 {0}장 · 제한 시간 {1}":["{0} drawings · time limit {1}", "{0} plans · durée {1}", "{0} Pläne · Zeitlimit {1}", "{0} planos · tiempo {1}", "図面{0}枚 · 制限時間 {1}"],
 "도면 수":["Drawings", "Plans", "Pläne", "Planos", "図面の数"],
@@ -405,6 +433,7 @@ var I18N={
 "무게":["Weight", "Poids", "Gewichtskraft", "Peso", "重さ"],
 "무게 = 질량 × 9.8 N/kg. 배와 짐의 질량 합 {0} kg의 무게가 {1}이고, 부력이 이와 같아야 떠 있어요.":["Weight = mass × 9.8 N/kg. The boat and cargo total {0} kg, which weighs {1}; buoyancy must equal that to float.", "Poids = masse × 9,8 N/kg. Bateau et cargaison font {0} kg, soit {1} ; la poussée doit l'égaler pour flotter.", "Gewichtskraft = Masse × 9,8 N/kg. Boot und Ladung wiegen zusammen {0} kg, also {1}; der Auftrieb muss genauso groß sein.", "Peso = masa × 9,8 N/kg. Barco y carga suman {0} kg, que pesan {1}; el empuje debe igualarlo para flotar.", "重さ = 質量 × 9.8 N/kg。船と荷物の質量の合計{0} kgの重さは{1}で、浮力がこれと同じなら浮く。"],
 "무게 = 질량 × 9.8 N/kg. 질량 {0}이면 무게는 {1}이고, 실이 당기는 힘도 {1}이에요. 무게중심 바로 위 고리 B에 걸어요.":["Weight = mass × 9.8 N/kg. A mass of {0} weighs {1}, so the string pulls with {1} too. Use hook B, right above the centre of mass.", "Poids = masse × 9,8 N/kg. Une masse de {0} pèse {1}, donc le fil tire avec {1}. Crochet B, juste au-dessus du centre de gravité.", "Gewichtskraft = Masse × 9,8 N/kg. {0} wiegen {1}, also zieht der Faden mit {1}. Haken B, direkt über dem Schwerpunkt.", "Peso = masa × 9,8 N/kg. Una masa de {0} pesa {1}, así que el hilo tira con {1}. Gancho B, justo sobre el centro de gravedad.", "重さ = 質量 × 9.8 N/kg。質量{0}なら重さは{1}で、糸が引く力も{1}。重心の真上のフックBにかけよう。"],
+"무게와 부력":["Weight & buoyancy", "Poids et poussée", "Gewicht und Auftrieb", "Peso y empuje", "重さと浮力"],
 "무작위 이름":["Random name", "Nom au hasard", "Zufallsname", "Nombre al azar", "ランダムな名前"],
 "물에 떠 있는 물체는 부력과 무게가 평형을 이뤄요. 부력 {0} = 무게 합 {1}.":["A floating object has buoyancy and weight in balance. Buoyancy {0} = total weight {1}.", "Un objet qui flotte : poussée et poids s'équilibrent. Poussée {0} = poids total {1}.", "Bei einem schwimmenden Körper sind Auftrieb und Gewichtskraft im Gleichgewicht. Auftrieb {0} = Gesamtgewicht {1}.", "En un objeto que flota, empuje y peso están en equilibrio. Empuje {0} = peso total {1}.", "水に浮く物体では浮力と重さがつり合う。浮力 {0} = 重さの合計 {1}。"],
 "물에 뜬 배":["Floating boat", "Bateau qui flotte", "Schwimmendes Boot", "Barco a flote", "水に浮く船"],
@@ -450,11 +479,14 @@ var I18N={
 "설계팀":["Team", "Équipe", "Team", "Equipo", "設計チーム"],
 "순위":["Rank", "Rang", "Platz", "Puesto", "順位"],
 "순위표":["Ranking", "Classement", "Rangliste", "Clasificación", "順位表"],
+"스테이지":["Stage", "Niveau", "Stufe", "Etapa", "ステージ"],
+"스테이지 고르기":["Choose a stage", "Choisir un niveau", "Stufe wählen", "Elegir etapa", "ステージを選ぶ"],
 "승인":["Approved", "Validé", "Genehmigt", "Aprobado", "承認"],
 "시간 끝! 결과를 기다리는 중":["Time's up! Waiting for results", "Temps écoulé ! En attente des résultats", "Zeit um! Warte auf Ergebnisse", "¡Se acabó el tiempo! Esperando resultados", "時間切れ! 結果を待っています"],
 "실이 당기는 힘":["String's pull", "Traction du fil", "Fadenkraft", "Tensión del hilo", "糸が引く力"],
 "실이 당기는 힘 {0}은 무게와 크기가 같고 방향이 반대예요. 무게중심 바로 위 고리 B에 걸어야 두 힘이 같은 작용선 위에 있어요.":["The string's pull {0} equals the weight and points the opposite way. Only hook B, right above the centre of mass, puts both forces on the same line.", "La traction {0} égale le poids et lui est opposée. Seul le crochet B, juste au-dessus du centre de gravité, met les deux forces sur la même droite.", "Die Fadenkraft {0} ist so groß wie das Gewicht und entgegengesetzt. Nur Haken B direkt über dem Schwerpunkt bringt beide Kräfte auf dieselbe Linie.", "La tensión {0} iguala al peso y es opuesta. Solo el gancho B, justo encima del centro de gravedad, pone ambas fuerzas en la misma línea.", "糸が引く力 {0} は重さと同じ大きさで反対向き。重心の真上のフックBにかけると、2つの力が同じ作用線上にくる。"],
 "아래":["Down", "Bas", "Runter", "Abajo", "下"],
+"아직 기록 없음":["No record yet", "Pas encore de record", "Noch kein Rekord", "Sin récord aún", "まだ記録なし"],
 "아직 아무도 없어요":["Nobody yet", "Personne pour l'instant", "Noch niemand", "Aún no hay nadie", "まだ誰もいません"],
 "언어":["Language", "Langue", "Sprache", "Idioma", "言語"],
 "얼음 위 판자":["Plank on ice", "Planche sur la glace", "Brett auf Eis", "Tabla sobre hielo", "氷の上の板"],
@@ -472,7 +504,9 @@ var I18N={
 "왼쪽 팀":["Left team", "Équipe de gauche", "Linkes Team", "Equipo izquierdo", "左チーム"],
 "왼쪽 힘의 합 {0}, 오른쪽 힘의 합 {1}. 같은 방향의 힘은 더하고, 반대 방향의 힘은 빼요. {2} 쪽으로 {3}을 더하면 합력이 0이 돼요.":["Left total {0}, right total {1}. Add forces in the same direction, subtract opposite ones. Adding {3} to the {2} makes the net force 0.", "Total à gauche {0}, à droite {1}. On additionne les forces de même sens et on soustrait les opposées. Ajouter {3} vers la {2} rend la résultante nulle.", "Links gesamt {0}, rechts gesamt {1}. Gleiche Richtung addieren, Gegenrichtung abziehen. {3} nach {2} macht die Gesamtkraft 0.", "Total izquierda {0}, derecha {1}. Las fuerzas del mismo sentido se suman y las opuestas se restan. Añadir {3} hacia la {2} hace la resultante 0.", "左の力の合計 {0}、右の力の合計 {1}。同じ向きの力は足し、反対向きは引く。{2}向きに{3}を加えると合力が0になる。"],
 "용수철 상수":["Spring constant", "Raideur du ressort", "Federkonstante", "Constante del muelle", "ばね定数"],
+"용수철 상수와 늘어난 길이로 탄성력을 구해요.":["Find the elastic force from the spring constant and the stretch.", "Trouvez la force élastique avec la raideur et l'allongement.", "Berechne die Federkraft aus Federkonstante und Dehnung.", "Halla la fuerza elástica con la constante y el alargamiento.", "ばね定数と伸びから弾性力を求めよう。"],
 "용수철에 매달린 추":["Weight on a spring", "Masse au bout d'un ressort", "Gewicht an der Feder", "Pesa en un muelle", "ばねにつるしたおもり"],
+"워밍업 3장 뒤 모든 종류가 계산 문제로 나와요.":["After 3 warm-ups, every kind comes as a calculation.", "Après 3 échauffements, tous les types demandent un calcul.", "Nach 3 Aufwärmplänen kommt jede Art als Rechenaufgabe.", "Tras 3 de calentamiento, todos los tipos exigen cálculo.", "ウォームアップ3枚のあと、すべての種類が計算問題になる。"],
 "위":["Up", "Haut", "Hoch", "Arriba", "上"],
 "위에서 본 모습 · 얼음 위":["Top view · on ice", "Vue de dessus · sur la glace", "Draufsicht · auf Eis", "Vista superior · sobre hielo", "上から見た図 · 氷の上"],
 "이름":["Name", "Nom", "Name", "Nombre", "名前"],
@@ -488,16 +522,20 @@ var I18N={
 "점수":["Score", "Score", "Punkte", "Puntos", "スコア"],
 "정답":["Answer", "Réponse", "Lösung", "Respuesta", "正解"],
 "제한 시간":["Time limit", "Durée", "Zeitlimit", "Tiempo límite", "制限時間"],
+"종합 설계":["Mixed design", "Conception mixte", "Gemischter Entwurf", "Diseño mixto", "総合設計"],
 "주어진 힘은 화살표 길이로 읽어요":["Read the given forces from arrow length", "Lisez les forces à la longueur des flèches", "Lies die Kräfte an der Pfeillänge ab", "Lee las fuerzas por la longitud de las flechas", "与えられた力は矢印の長さで読もう"],
 "줄다리기 고리":["Tug-of-war ring", "Anneau de tir à la corde", "Tauziehen-Ring", "Anilla de la soga", "綱引きの輪"],
+"줄다리기와 마찰":["Tug-of-war & friction", "Tir à la corde et frottement", "Tauziehen und Reibung", "Soga y rozamiento", "綱引きと摩擦"],
 "줄이 당기는 힘":["Rope's pull", "Traction de la corde", "Seilkraft", "Tensión de la cuerda", "ひもが引く力"],
 "중1 과학 · 힘의 평형":["Grade 7 science · Balanced forces", "Sciences 5e · Équilibre des forces", "Physik Kl. 7 · Kräftegleichgewicht", "Ciencias 1.º ESO · Equilibrio de fuerzas", "中1理科 · 力のつり合い"],
 "지금 끝내기":["End now", "Terminer", "Jetzt beenden", "Terminar ya", "今すぐ終える"],
 "지우기":["Clear", "Effacer", "Löschen", "Borrar", "消す"],
 "지켜보기":["Watch", "Observer", "Zuschauen", "Observar", "見守る"],
+"질량(kg)에 9.8 N/kg를 곱해 무게를 구해요.":["Multiply the mass (kg) by 9.8 N/kg to get the weight.", "Multipliez la masse (kg) par 9,8 N/kg pour obtenir le poids.", "Masse (kg) mal 9,8 N/kg ergibt die Gewichtskraft.", "Multiplica la masa (kg) por 9,8 N/kg para hallar el peso.", "質量(kg)に9.8 N/kgをかけて重さを求めよう。"],
 "짐의 무게":["Cargo's weight", "Poids de la cargaison", "Gewicht der Ladung", "Peso de la carga", "荷物の重さ"],
 "짐의 질량":["Cargo's mass", "Masse de la cargaison", "Masse der Ladung", "Masa de la carga", "荷物の質量"],
 "처음으로":["Home", "Accueil", "Start", "Inicio", "最初へ"],
+"최고 {0} / {1}":["Best {0} / {1}", "Meilleur {0} / {1}", "Bestwert {0} / {1}", "Mejor {0} / {1}", "最高 {0} / {1}"],
 "추":["Weight", "Poids", "Gewicht", "Pesa", "おもり"],
 "추가 용수철에 매달려 가만히 있어요. 용수철이 추를 당기는 탄성력을 그려요.":["The weight hangs still on a spring. Draw the elastic force the spring pulls it with.", "La masse reste immobile au bout du ressort. Dessinez la force élastique du ressort.", "Das Gewicht hängt ruhig an der Feder. Zeichne die Federkraft, mit der sie es hält.", "La pesa cuelga quieta de un muelle. Dibuja la fuerza elástica con que la sujeta.", "おもりがばねにつるされて静止している。ばねがおもりを引く弾性力を描こう。"],
 "추의 무게":["Weight's weight", "Poids de la masse", "Gewichtskraft des Gewichts", "Peso de la pesa", "おもりの重さ"],
@@ -505,8 +543,10 @@ var I18N={
 "코드":["Code", "Code", "Code", "Código", "コード"],
 "크기가 같고 방향이 반대여도 작용선이 다르면 물체가 돌아가요. 왼쪽 줄과 같은 높이 {0}에 걸어야 해요.":["Same size and opposite direction still spins the object if the lines differ. Hook {0}, level with the left rope, is the one.", "Même grandeur et sens opposé, mais droites différentes : l'objet tourne. Il faut le point {0}, au niveau de la corde de gauche.", "Gleich groß und entgegengesetzt, aber auf verschiedenen Linien: Der Körper dreht sich. Richtig ist {0}, auf Höhe des linken Seils.", "Mismo tamaño y sentido opuesto, pero con líneas distintas el objeto gira. Hay que usar {0}, a la altura de la cuerda izquierda.", "大きさが同じで向きが反対でも、作用線が違うと物体は回る。左のひもと同じ高さの{0}にかけよう。"],
 "크기가 같다":["Equal in size", "Même grandeur", "Gleich groß", "Mismo tamaño", "大きさが同じ"],
+"크기는 같고 방향은 반대. 주어진 N으로 힘을 그려요.":["Equal size, opposite direction. Draw forces from the given newtons.", "Même grandeur, sens opposé. Dessinez les forces à partir des newtons donnés.", "Gleich groß, entgegengesetzt. Zeichne die Kräfte aus den gegebenen Newton.", "Mismo tamaño, sentido opuesto. Dibuja las fuerzas con los newtons dados.", "大きさが同じで向きが反対。与えられたNで力を描こう。"],
 "크기와 방향은 맞지만 작용선이 달라서 물체가 돌아가요.":["Size and direction are right, but the line of action differs, so it spins.", "Grandeur et sens corrects, mais la droite d'action diffère : l'objet tourne.", "Größe und Richtung stimmen, aber die Wirkungslinie nicht, also dreht es sich.", "Tamaño y sentido bien, pero la línea de acción es otra, así que gira.", "大きさと向きは合っているけど、作用線が違うので回ってしまう。"],
 "탄성력":["Elastic force", "Force élastique", "Federkraft", "Fuerza elástica", "弾性力"],
+"탄성력 실험실":["Elastic force lab", "Labo de force élastique", "Federkraft-Labor", "Laboratorio de fuerza elástica", "弾性力ラボ"],
 "탄성력은 늘어난 길이에 비례해요. {0} N/cm × {1} cm = {2}. 추가 가만히 있으니 무게와 크기가 같고 방향은 반대(위)예요.":["Elastic force is proportional to the stretch: {0} N/cm × {1} cm = {2}. The weight is still, so the force equals its weight and points the opposite way (up).", "La force élastique est proportionnelle à l'allongement : {0} N/cm × {1} cm = {2}. La masse est immobile : la force égale son poids et est dirigée vers le haut.", "Die Federkraft ist proportional zur Dehnung: {0} N/cm × {1} cm = {2}. Das Gewicht ruht, also ist die Kraft so groß wie sein Gewicht und zeigt nach oben.", "La fuerza elástica es proporcional al alargamiento: {0} N/cm × {1} cm = {2}. La pesa está quieta, así que la fuerza iguala su peso y apunta hacia arriba.", "弾性力は伸びに比例する。{0} N/cm × {1} cm = {2}。おもりは静止しているので、重さと同じ大きさで上向き。"],
 "평형 설계실":["Balance Blueprint", "Plan d'équilibre", "Gleichgewichts-Studio", "Estudio del Equilibrio", "つり合い設計室"],
 "평형! 합력이 0이라 그대로 멈춰 있어요.":["Balanced! The net force is 0, so it stays still.", "Équilibre ! La résultante est nulle, il reste immobile.", "Gleichgewicht! Die Gesamtkraft ist 0, also bleibt es stehen.", "¡Equilibrio! La resultante es 0 y se queda quieto.", "つり合った! 合力が0なので止まったまま。"],
@@ -514,7 +554,8 @@ var I18N={
 "혼자 설계":["Solo design", "Solo", "Allein planen", "Diseño en solitario", "ひとりで設計"],
 "화분":["flowerpot", "pot de fleurs", "Blumentopf", "maceta", "植木鉢"],
 "화살표 길이로 읽어요":["Read the arrow length", "Lire la longueur de flèche", "An der Pfeillänge ablesen", "Lee la longitud de la flecha", "矢印の長さで読む"],
-"힘의 화살표를 먼저 그려요":["Draw the force arrow first", "Dessinez d'abord la flèche", "Zeichne zuerst den Kraftpfeil", "Dibuja primero la flecha", "先に力の矢印を描こう"]
+"힘의 화살표를 먼저 그려요":["Draw the force arrow first", "Dessinez d'abord la flèche", "Zeichne zuerst den Kraftpfeil", "Dibuja primero la flecha", "先に力の矢印を描こう"],
+"힘이 여럿 섞여도 더하고 빼서 합력을 0으로 만들어요.":["Even with many forces, add and subtract to make the net force 0.", "Même avec plusieurs forces, additionnez et soustrayez pour une résultante nulle.", "Auch bei vielen Kräften: addieren und abziehen, bis die Gesamtkraft 0 ist.", "Aunque haya varias fuerzas, suma y resta para que la resultante sea 0.", "力がいくつあっても、足したり引いたりして合力を0にしよう。"]
 };
 var MAX_PLAYERS = 40, PREFIX = 'ff-balance-', CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', SHOTS = 3, SOLO_STAGES = 10;
 var $ = function(id){ return document.getElementById(id); };
@@ -593,7 +634,7 @@ if(qs.get('room')) $('codeIn').value = qs.get('room').toUpperCase().slice(0,5);
 
 var S = {
   role:null, peer:null, code:'', name:'',
-  settings:{ stages:10, time:300, hostPlay:1 },
+  settings:{ stages:10, time:300, hostPlay:1, stage:5 },
   phase:'idle', endAt:0, totalMs:0, seed:1,
   stages:[], cur:0, shot:0, score:0, hits:0, rec:[], miss:{size:0,dir:0,line:0}, done:false, doneAt:0,
   vx:0, vy:0, anc:0, anim:null,
@@ -610,7 +651,7 @@ $('codeIn').addEventListener('keydown', function(e){ if(e.key==='Enter') joinNow
 $('joinBtn').onclick=joinNow;
 $('joinBtn').addEventListener('keydown', function(e){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); joinNow(); } });
 $('hostBtn').onclick=function(){ var n=needName(); if(n) startHost(n); };
-$('soloBtn').onclick=function(){ var n=needName(); if(n) startSolo(n); };
+$('soloBtn').onclick=function(){ var n=needName(); if(n){ S.name=n; showStages(); } };
 function joinNow(){
   var n=needName(); if(!n) return;
   var c=$('codeIn').value.trim().toUpperCase();
@@ -692,10 +733,11 @@ function handleHostMsg(conn, d){
 }
 function checkAllDone(){
   if(S.role!=='host' || S.phase!=='play') return;
-  var any=false;
-  for(var t in S.players){ var p=S.players[t]; if(p.online){ any=true; if(!p.done) return; } }
-  if(S.settings.hostPlay){ any=true; if(!S.done) return; }
-  if(any) setTimeout(function(){ if(S.phase==='play') finishRound(); }, 1500);
+  // a room only closes by itself once two or more people have all finished; a lone host keeps the round open for late joiners
+  var any=0;
+  for(var t in S.players){ var p=S.players[t]; if(p.online){ any++; if(!p.done) return; } }
+  if(S.settings.hostPlay){ any++; if(!S.done) return; }
+  if(any>=2) setTimeout(function(){ if(S.phase==='play') finishRound(); }, 1500);
 }
 function enterLobby(){
   S.phase='lobby';
@@ -715,7 +757,7 @@ function enterLobby(){
   $('renameIn').value=S.name;
   renderChips(); show('sLobby');
 }
-function renderGuestSet(){ $('guestSet').textContent=tr('도면 {0}장 · 제한 시간 {1}', S.settings.stages, fmt(S.settings.time*1000)); }
+function renderGuestSet(){ $('guestSet').textContent=tr('{0} · 도면 {1}장 · 제한 시간 {2}', tr(STAGEDEF[S.settings.stage||5].n), S.settings.stages, fmt(S.settings.time*1000)); }
 function bindSeg(id, key){
   $(id).addEventListener('click', function(e){
     var b=e.target.closest('button'); if(!b) return;
@@ -723,8 +765,8 @@ function bindSeg(id, key){
     broadcast({ t:'lobby', settings:S.settings });
   });
 }
-bindSeg('segStages','stages'); bindSeg('segTime','time'); bindSeg('segHostPlay','hostPlay');
-function syncSegs(){ [['segStages','stages'],['segTime','time'],['segHostPlay','hostPlay']].forEach(function(a){ $(a[0]).querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v===S.settings[a[1]]); }); }); }
+bindSeg('segStages','stages'); bindSeg('segStage','stage'); bindSeg('segTime','time'); bindSeg('segHostPlay','hostPlay');
+function syncSegs(){ [['segStage','stage'],['segStages','stages'],['segTime','time'],['segHostPlay','hostPlay']].forEach(function(a){ $(a[0]).querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v===S.settings[a[1]]); }); }); }
 var lobbyNames=[], guestCount=0;
 function renderChips(){
   var names=[];
@@ -807,7 +849,21 @@ function handleGuestMsg(d){
 }
 
 // ---------- solo ----------
-function startSolo(name){ destroyPeer(); S.role='solo'; S.name=name; S.seed=(Math.random()*1e9)|0; S.settings={ stages:SOLO_STAGES, time:0, hostPlay:1 }; beginRound(0, 0); }
+function startSolo(name, sid){ destroyPeer(); S.role='solo'; S.name=name; S.seed=(Math.random()*1e9)|0; sid=sid||5; S.settings={ stages:STAGEDEF[sid].cnt, time:0, hostPlay:1, stage:sid }; beginRound(0, 0); }
+
+// ---------- stage select (solo) ----------
+function bestGet(){ try{ return JSON.parse(lsGet('balance.best')||'{}')||{}; }catch(e){ return {}; } }
+function bestSet(sid, sc){ var b=bestGet(); if(!(b[sid]>=sc)){ b[sid]=sc; lsSet('balance.best', JSON.stringify(b)); } }
+function showStages(){
+  var best=bestGet(), h='';
+  for(var i=1;i<=NSTAGES;i++){
+    var d=STAGEDEF[i], mx=d.cnt*100, bs=best[i]||0;
+    h+='<button class="stg" data-s="'+i+'"><span class="no">'+String(i).padStart(2,'0')+'</span><span class="b"><span class="t">'+esc(tr(d.n))+'</span><span class="d">'+esc(tr(d.d))+'</span><span class="m">'+esc(tr('도면 {0}장', d.cnt))+' · '+esc(bs ? tr('최고 {0} / {1}', bs, mx) : tr('아직 기록 없음'))+(bs>=mx?' ★':'')+'</span></span></button>';
+  }
+  $('stgList').innerHTML=h; show('sStages');
+}
+$('stgList').addEventListener('click', function(e){ var b=e.target.closest('.stg'); if(b) startSolo(S.name, +b.dataset.s); });
+$('stgBack').onclick=function(){ show('sHome'); };
 
 // ---------- round ----------
 var timers=[], tickT=null, sendT=null, boardT=null, boardDirty=false, dirtyScore=false;
@@ -819,7 +875,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
   clearTimers();
   var now=Date.now();
   S.endAt = timed() ? now+cdMs+durMs : 0; S.totalMs = totalMs || durMs;
-  S.stages = makeStages(S.seed, S.settings.stages);
+  S.stages = makeStages(S.seed, S.settings.stages, S.settings.stage);
   S.cur=0; S.shot=0; S.score=0; S.hits=0; S.rec=[]; S.miss={size:0,dir:0,line:0}; S.done=false; S.doneAt=0;
   if(resume){ S.cur=Math.min(resume.stage, S.stages.length); S.score=resume.score; S.done=!!resume.done; }
   S.phase = cdMs>0 ? 'count' : 'play';
@@ -899,6 +955,14 @@ var KINDS = {
   beam:  { n:'얼음 위 판자', f:'당기는 힘' },
   spring:{ n:'용수철에 매달린 추', f:'탄성력' }
 };
+var STAGEDEF = {
+  1:{ n:'기초 평형',      d:'크기는 같고 방향은 반대. 주어진 N으로 힘을 그려요.',        cnt:6,  kinds:['hang','tug','push'],               hardFrom:99 },
+  2:{ n:'줄다리기와 마찰', d:'힘이 여럿 섞여도 더하고 빼서 합력을 0으로 만들어요.',      cnt:8,  kinds:['tug','push','beam'],               hardFrom:2 },
+  3:{ n:'무게와 부력',    d:'질량(kg)에 9.8 N/kg를 곱해 무게를 구해요.',                cnt:8,  kinds:['hang','float'],                    hardFrom:1 },
+  4:{ n:'탄성력 실험실',  d:'용수철 상수와 늘어난 길이로 탄성력을 구해요.',            cnt:6,  kinds:['spring','hang','spring','tug'],    hardFrom:0 },
+  5:{ n:'종합 설계',      d:'워밍업 3장 뒤 모든 종류가 계산 문제로 나와요.',            cnt:10, kinds:null,                                hardFrom:3 }
+};
+var NSTAGES = 5;
 var WARM = 3;                                   // the first drawings are a warm-up; after that numbers have to be worked out
 var ORDER1 = ['hang','tug','push'];
 var ORDER2 = ['spring','float','beam','hang','tug','push'];
@@ -906,10 +970,11 @@ var HANG_OBJ = ['화분','전등','새장'];
 var SCALES = [5, 10, 20, 25, 50];
 var SCALES_G = [9.8, 19.6, 49];                 // 1 kg weighs 9.8 N, so these are 1, 2 and 5 kg per cell
 
-function makeStages(seed, count){
+function makeStages(seed, count, sid){
+  var cfg=STAGEDEF[sid]||STAGEDEF[5];
   var r=rng(seed), out=[], pick=function(a){ return a[Math.floor(r()*a.length)]; }, ri=function(a,b){ return a+Math.floor(r()*(b-a+1)); };
   for(var i=0;i<count;i++){
-    var hard=i>=WARM, t= hard ? ORDER2[(i-WARM)%ORDER2.length] : ORDER1[i%ORDER1.length];
+    var hard=i>=cfg.hardFrom, t= cfg.kinds ? cfg.kinds[i%cfg.kinds.length] : hard ? ORDER2[(i-WARM)%ORDER2.length] : ORDER1[i%ORDER1.length];
     var st={ t:t, sc:pick(SCALES), forces:[], anchors:[], hard:hard, hide: hard && r()<0.5 };
     if(t==='hang'){
       var w=ri(1,hard?4:3); st.obj=pick(HANG_OBJ); st.c={x:8,y:6.2};
@@ -1349,21 +1414,23 @@ function waitOthers(){
 // ---------- result ----------
 function showResult(r){
   clearTimers(); S.phase='result'; $('intro').classList.remove('on');
+  if(S.role==='solo') bestSet(S.settings.stage, S.score);
   var played=iPlay();
   $('rWho').textContent = S.name+' · '+new Date().toLocaleDateString(lang==='ko'?'ko-KR':lang);
   $('rTotal').textContent = played ? S.score : '';
-  $('rSub').textContent = played ? tr('도면 {0}장 · 승인 {1}장', S.rec.length, S.hits) : '';
+  $('rSub').textContent = played ? tr(STAGEDEF[S.settings.stage||5].n)+' · '+tr('도면 {0}장 · 승인 {1}장', S.rec.length, S.hits) : '';
   $('rRankBox').classList.toggle('hide', !r);
   if(r) $('rRank').innerHTML=r.map(function(e){ var me=e.t===token || (S.role==='guest' && e.n===S.name); return '<tr'+(me?' class="me"':'')+'><td class="num">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="num">'+e.s+'</td><td>'+e.st+'/'+S.settings.stages+'</td></tr>'; }).join('');
   $('rMine').classList.toggle('hide', !played || !S.rec.length);
   $('rStages').innerHTML=S.rec.map(function(x,i){ var st=x.st; return '<tr><td class="num">'+String(i+1).padStart(2,'0')+'</td><td>'+esc(st.t==='hang'?tr('매달린 {0}', tr(st.obj)):tr(KINDS[st.t].n))+'</td><td>'+esc(tr(KINDS[st.t].f))+'</td><td class="num">'+esc(ansText(st))+'</td><td>'+x.shots+'</td><td class="num">'+x.pts+'</td></tr>'; }).join('');
   var M=S.miss, rows=[['크기가 같다',M.size],['방향이 반대다',M.dir],['같은 작용선 위에 있다',M.line]], mx=Math.max(1,M.size,M.dir,M.line);
   $('rBars').innerHTML=rows.map(function(x){ return '<div class="bar"><span>'+esc(tr(x[0]))+'</span><div class="t"><i style="width:'+(x[1]/mx*100)+'%"></i></div><span class="v">'+tr('{0}번', x[1])+'</span></div>'; }).join('');
-  $('againBtn').classList.toggle('hide', S.role==='guest');
+  $('againBtn').classList.toggle('hide', S.role==='guest'); $('stagesBtn').classList.toggle('hide', S.role!=='solo');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
   show('sResult');
 }
-$('againBtn').onclick=function(){ if(S.role==='solo') startSolo(S.name); else if(S.role==='host') enterLobby(); };
+$('stagesBtn').onclick=showStages;
+$('againBtn').onclick=function(){ if(S.role==='solo') startSolo(S.name, S.settings.stage); else if(S.role==='host') enterLobby(); };
 $('homeBtn').onclick=goHome;
 window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.phase!=='idle' && onlineCount()>0){ e.preventDefault(); e.returnValue=''; } });
 window.__mk=makeStages; window.__bl=S; window.__blAim=function(){ var A=stage().ans; S.anc=A.anc; setVec(A.vx, A.vy); return [S.anc,S.vx,S.vy]; };
