@@ -1044,5 +1044,13 @@ window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.pha
 window.__tl = { S:S, EV:EV, makeSeq:makeSeq, rightPos:rightPos, place:function(p){ place(p); }, right:function(){ return rightPos(S.me.placed, S.seq[S.me.i]); } };
 })();
 </script>
+<a id="ffBack" href="../" aria-label="Educations"><span class="ffb-i">🍟</span><span class="ffb-t">Educations</span></a>
+<style>
+#ffBack{position:fixed;left:12px;bottom:12px;z-index:99999;display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:14px;background:rgba(20,20,22,.88);color:#fff;font:600 13px/1 system-ui,-apple-system,"Noto Sans KR",sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.18);box-shadow:0 6px 18px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
+#ffBack .ffb-i{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:18px;background:linear-gradient(135deg,#ffb23f,#ff5d8f)}
+#ffBack:hover{border-color:#ffb23f}
+@media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:5px}}
+</style>
+<script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기'};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
 </body>
 </html>
