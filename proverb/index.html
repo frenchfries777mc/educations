@@ -40,6 +40,7 @@
   .btn.ghost{background:transparent; color:var(--ink); border:1px solid var(--line); box-shadow:none;}
   input[type=text]{width:100%; background:#120d09; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:17px; outline:none;} input[type=text]:focus{border-color:var(--brass);}
 
+  .kr-note{text-align:center; font-size:13px; color:var(--mute); margin:-8px 0 14px;}
   /* home */
   .case{position:relative; text-align:center; margin:6px auto 22px; max-width:560px; background:var(--paper); color:var(--pen); border-radius:6px; padding:30px 24px 26px; transform:rotate(-1.2deg); box-shadow:0 22px 44px rgba(0,0,0,.5);}
   .case::before{content:''; position:absolute; left:50%; top:-12px; width:96px; height:26px; background:rgba(212,169,74,.55); transform:translateX(-50%) rotate(2deg);}
@@ -101,6 +102,7 @@
 
   <section class="screen on" id="sHome">
     <div class="case"><div class="no">사건 기록 제0001호</div><h1>속담 탐정</h1><div class="sub">단서를 풀어 속담과 관용구 사건을 해결하세요</div><div class="seal">수사 중</div></div>
+    <p class="kr-note hide" id="krNote">속담과 관용구는 한국어로 나와요. 뜻은 번역해서 보여 줘요.</p>
     <div class="name-row"><input type="text" id="nameIn" maxlength="16" placeholder="탐정 이름" autocomplete="off"><button id="diceBtn" title="이름 뽑기" aria-label="이름 뽑기">🎲</button></div>
     <div class="modes">
       <button class="mode" id="soloBtn"><h3>혼자 수사하기</h3><p>사건 유형을 골라 혼자 풀어요. 최고 기록이 남아요.</p></button>
@@ -253,6 +255,235 @@ var ID=[
 ['이를 {악물다}','몹시 힘든 일을 참고 견디다',['뽑다','닦다','벌리다']],
 ['머리를 {맞대다}','서로 모여 의논하다',['숙이다','쓰다듬다','감다']]
 ];
+// ---------- language: shared Frenchfries777 setting, else the browser language ----------
+// Proverbs and idioms stay in Korean (they are the game itself); screen text and meanings are translated.
+var LANGS=['ko','en','fr','de','es','ja'], LIDX={en:0,fr:1,de:2,es:3,ja:4}, LKEY='arenaClashLang';
+var lang=(function(){
+  var v=null; try{ v=localStorage.getItem(LKEY); }catch(e){}
+  if(LANGS.indexOf(v)>=0) return v;
+  var c=[]; try{ c=navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||'']; }catch(e){}
+  for(var i=0;i<c.length;i++){ var b=String(c[i]||'').toLowerCase().split('-')[0]; if(LANGS.indexOf(b)>=0) return b; }
+  return 'en';
+})();
+// [en, fr, de, es, ja]
+var I18N={
+"속담 탐정":["Proverb Detective", "Détective des proverbes", "Sprichwort-Detektiv", "Detective de refranes", "ことわざ探偵"],
+"속담과 관용구의 단서를 풀어 사건을 해결하는 국어 수사 게임":["A Korean detective game: crack clues about proverbs and idioms to solve cases", "Un jeu d'enquête en coréen : déchiffrez les indices des proverbes et expressions pour résoudre des affaires", "Ein koreanisches Detektivspiel: Hinweise zu Sprichwörtern und Redewendungen knacken und Fälle lösen", "Un juego de detectives en coreano: descifra pistas de refranes y modismos para resolver casos", "ことわざと慣用句の手がかりを解いて事件を解決する国語捜査ゲーム"],
+"속담과 관용구는 한국어로 나와요. 뜻은 번역해서 보여 줘요.":["Proverbs and idioms appear in Korean; their meanings are translated.", "Les proverbes et expressions sont en coréen ; leur sens est traduit.", "Sprichwörter und Redewendungen erscheinen auf Koreanisch, ihre Bedeutung wird übersetzt.", "Los refranes y modismos aparecen en coreano; su significado está traducido.", "ことわざと慣用句は韓国語で出ます。意味は翻訳して表示します。"],
+"오프라인":["Offline", "Hors ligne", "Offline", "Sin conexión", "オフライン"],
+"사건 기록 제0001호":["Case file No. 0001", "Dossier n° 0001", "Akte Nr. 0001", "Expediente n.º 0001", "事件記録 第0001号"],
+"단서를 풀어 속담과 관용구 사건을 해결하세요":["Crack the clues and solve cases about Korean proverbs and idioms", "Déchiffrez les indices et résolvez les affaires de proverbes et d'expressions coréens", "Knacke die Hinweise und löse Fälle rund um koreanische Sprichwörter und Redewendungen", "Descifra las pistas y resuelve casos de refranes y modismos coreanos", "手がかりを解いて、ことわざと慣用句の事件を解決しよう"],
+"수사 중":["On the case", "En enquête", "Ermittlung läuft", "En curso", "捜査中"],
+"탐정 이름":["Detective name", "Nom du détective", "Detektivname", "Nombre del detective", "探偵の名前"],
+"이름 뽑기":["Random name", "Nom au hasard", "Zufallsname", "Nombre al azar", "ランダムな名前"],
+"혼자 수사하기":["Investigate solo", "Enquêter en solo", "Allein ermitteln", "Investigar en solitario", "ひとりで捜査"],
+"사건 유형을 골라 혼자 풀어요. 최고 기록이 남아요.":["Pick a case type and solve it on your own. Your best score is saved.", "Choisissez un type d'affaire et résolvez-la seul. Votre meilleur score est enregistré.", "Wähle eine Fallart und löse sie allein. Dein Bestwert wird gespeichert.", "Elige un tipo de caso y resuélvelo solo. Se guarda tu mejor récord.", "事件タイプを選んでひとりで解きます。最高記録が残ります。"],
+"사무소 열기":["Open the agency", "Ouvrir l'agence", "Detektei eröffnen", "Abrir la agencia", "事務所を開く"],
+"방 코드를 만들어 반 친구들과 같은 사건을 함께 풀어요. 최대 40명.":["Create a room code and solve the same cases with your classmates. Up to 40 players.", "Créez un code de salle et résolvez les mêmes affaires avec vos camarades. Jusqu'à 40 joueurs.", "Erstelle einen Raumcode und löse dieselben Fälle mit deiner Klasse. Bis zu 40 Spieler.", "Crea un código de sala y resuelve los mismos casos con tus compañeros. Hasta 40 jugadores.", "ルームコードを作って、クラスの友だちと同じ事件をいっしょに解きます。最大40人。"],
+"코드로 입장":["Join with a code", "Rejoindre avec un code", "Mit Code beitreten", "Entrar con un código", "コードで入室"],
+"선생님이 알려 준 5자리 코드를 넣어요.":["Enter the 5-character code from your teacher.", "Saisissez le code à 5 caractères donné par votre enseignant.", "Gib den 5-stelligen Code deiner Lehrkraft ein.", "Introduce el código de 5 caracteres que te dio tu profesor.", "先生に教わった5文字のコードを入力します。"],
+"입장":["Join", "Entrer", "Beitreten", "Entrar", "入室"],
+"사건 유형 선택":["Choose a case type", "Choisissez un type d'affaire", "Fallart wählen", "Elige un tipo de caso", "事件タイプを選択"],
+"뒤로":["Back", "Retour", "Zurück", "Atrás", "戻る"],
+"사무소 코드":["Agency code", "Code de l'agence", "Detektei-Code", "Código de la agencia", "事務所コード"],
+"참가한 탐정":["Detectives joined", "Détectives présents", "Detektive dabei", "Detectives unidos", "参加した探偵"],
+"명":["", "", "", "", "人"],
+"내 이름":["Your name", "Votre nom", "Dein Name", "Tu nombre", "自分の名前"],
+"바꾸기":["Change", "Changer", "Ändern", "Cambiar", "変更"],
+"사건 유형":["Case type", "Type d'affaire", "Fallart", "Tipo de caso", "事件タイプ"],
+"사건 수":["Number of cases", "Nombre d'affaires", "Anzahl Fälle", "Número de casos", "事件数"],
+"10건":["10 cases", "10 affaires", "10 Fälle", "10 casos", "10件"],
+"15건":["15 cases", "15 affaires", "15 Fälle", "15 casos", "15件"],
+"20건":["20 cases", "20 affaires", "20 Fälle", "20 casos", "20件"],
+"제한 시간":["Time limit", "Temps limite", "Zeitlimit", "Tiempo límite", "制限時間"],
+"3분":["3 min", "3 min", "3 Min.", "3 min", "3分"],
+"5분":["5 min", "5 min", "5 Min.", "5 min", "5分"],
+"10분":["10 min", "10 min", "10 Min.", "10 min", "10分"],
+"방장도 수사에 참여":["Host plays too", "L'hôte joue aussi", "Host spielt mit", "El anfitrión también juega", "ホストも捜査に参加"],
+"참여":["Play", "Jouer", "Mitspielen", "Jugar", "参加"],
+"구경만":["Just watch", "Regarder seulement", "Nur zuschauen", "Solo mirar", "見るだけ"],
+"방장이 시작하기를 기다리는 중...":["Waiting for the host to start...", "En attente du lancement par l'hôte...", "Warte auf den Start durch den Host...", "Esperando a que empiece el anfitrión...", "ホストの開始を待っています..."],
+"나가기":["Leave", "Quitter", "Verlassen", "Salir", "退出"],
+"수사 시작":["Start investigation", "Lancer l'enquête", "Ermittlung starten", "Empezar la investigación", "捜査開始"],
+"사건":["Case", "Affaire", "Fall", "Caso", "事件"],
+"점수":["Score", "Score", "Punkte", "Puntos", "スコア"],
+"남은 시간":["Time left", "Temps restant", "Restzeit", "Tiempo restante", "残り時間"],
+"수사 마감":["End investigation", "Clore l'enquête", "Ermittlung beenden", "Cerrar la investigación", "捜査終了"],
+"다음 사건":["Next case", "Affaire suivante", "Nächster Fall", "Siguiente caso", "次の事件"],
+"수사 현황":["Case board", "Avancement de l'enquête", "Ermittlungsstand", "Estado de la investigación", "捜査状況"],
+"수사 현황 · 코드":["Case board · Code", "Avancement · Code", "Ermittlungsstand · Code", "Estado · Código", "捜査状況・コード"],
+"끝낸 탐정":["Finished", "Terminé", "Fertig", "Terminados", "終えた探偵"],
+"수사 결과":["Investigation results", "Résultats de l'enquête", "Ermittlungsergebnis", "Resultados de la investigación", "捜査結果"],
+"오답 노트":["Error log", "Carnet d'erreurs", "Fehlerheft", "Cuaderno de errores", "誤答ノート"],
+"처음으로":["Home", "Accueil", "Startseite", "Inicio", "最初へ"],
+"다시 수사":["Investigate again", "Nouvelle enquête", "Nochmal ermitteln", "Investigar de nuevo", "もう一度捜査"],
+"이어 붙이기":["Finish the saying", "Compléter", "Ergänzen", "Completar", "後半つなぎ"],
+"속담의 앞부분을 보고 뒷부분을 이어 붙여요":["See the first half of a proverb and pick the second half", "Voyez le début d'un proverbe et trouvez la fin", "Sieh den Anfang eines Sprichworts und finde das Ende", "Mira el principio de un refrán y elige el final", "ことわざの前半を見て後半をつなげます"],
+"뜻 풀이":["Meaning", "Le sens", "Bedeutung", "Significado", "意味当て"],
+"속담이 말하려는 뜻을 찾아요":["Find what the proverb is trying to say", "Trouvez ce que veut dire le proverbe", "Finde heraus, was das Sprichwort sagen will", "Descubre lo que quiere decir el refrán", "ことわざが伝えたい意味を探します"],
+"빈칸 단서":["Blank clue", "Indice à trou", "Lückenhinweis", "Pista del hueco", "穴埋めの手がかり"],
+"속담에서 비어 있는 낱말을 채워요":["Fill in the missing word in the proverb", "Complétez le mot manquant du proverbe", "Ergänze das fehlende Wort im Sprichwort", "Completa la palabra que falta en el refrán", "ことわざの空いている言葉を埋めます"],
+"관용구 수사":["Idiom case", "Enquête d'expressions", "Redewendungs-Fall", "Caso de modismos", "慣用句捜査"],
+"뜻을 단서로 관용구의 빈칸을 채우고, 관용구의 뜻을 찾아요":["Use the meaning as a clue to fill the idiom's blank, and find what idioms mean", "Avec le sens comme indice, complétez l'expression, puis trouvez ce qu'elle veut dire", "Fülle mit der Bedeutung als Hinweis die Lücke der Redewendung und finde ihre Bedeutung", "Usa el significado como pista para completar el modismo y descubre qué significa", "意味を手がかりに慣用句の空欄を埋め、慣用句の意味を探します"],
+"종합 수사":["Full investigation", "Enquête complète", "Gesamtermittlung", "Investigación completa", "総合捜査"],
+"무한 수사":["Endless investigation", "Enquête sans fin", "Endlose Ermittlung", "Investigación infinita", "無限捜査"],
+"목숨 3개로 시작해요. 틀리면 목숨이 하나씩 줄고, 다 잃을 때까지 사건이 끝없이 이어져요":["You start with 3 lives. Each wrong answer costs one, and the cases keep coming until you lose them all", "Vous commencez avec 3 vies. Chaque erreur en coûte une, et les affaires s'enchaînent jusqu'à ce que vous les perdiez toutes", "Du startest mit 3 Leben. Jeder Fehler kostet eins, und die Fälle gehen weiter, bis du alle verloren hast", "Empiezas con 3 vidas. Cada fallo te quita una, y los casos siguen sin parar hasta que las pierdas todas", "ライフ3つでスタート。間違えるたびに1つ減り、すべて失うまで事件が終わりなく続きます"],
+"혼자만 · 끝없이 · 최고 {0}점":["Solo only · Endless · Best {0}", "Solo uniquement · Sans fin · Record {0}", "Nur allein · Endlos · Bestwert {0}", "Solo individual · Sin fin · Récord {0}", "ひとり専用・エンドレス・最高{0}点"],
+"목숨":["Lives", "Vies", "Leben", "Vidas", "ライフ"],
+"{0}번째":["#{0}", "N° {0}", "Nr. {0}", "N.º {0}", "{0}件目"],
+"속담과 관용구 다섯 가지 유형이 뒤섞여 나와요":["All five proverb and idiom case types, mixed together", "Les cinq types d'affaires de proverbes et d'expressions, mélangés", "Alle fünf Fallarten zu Sprichwörtern und Redewendungen gemischt", "Los cinco tipos de casos de refranes y modismos, mezclados", "ことわざと慣用句の5タイプが混ざって出ます"],
+"관용구 빈칸":["Idiom blank", "Expression à trou", "Redewendungs-Lücke", "Hueco del modismo", "慣用句の穴埋め"],
+"관용구 뜻":["Idiom meaning", "Sens de l'expression", "Bedeutung der Redewendung", "Significado del modismo", "慣用句の意味"],
+"뒷부분을 찾아 이어 붙이세요.":["Find the second half to complete it.", "Trouvez la fin du proverbe.", "Finde das Ende des Sprichworts.", "Encuentra el final del refrán.", "後半を探してつなげよう。"],
+"이 속담의 뜻은 무엇일까요?":["What does this proverb mean?", "Que signifie ce proverbe ?", "Was bedeutet dieses Sprichwort?", "¿Qué significa este refrán?", "このことわざの意味は?"],
+"빈칸에 들어갈 낱말을 고르세요.":["Pick the word that fills the blank.", "Choisissez le mot qui remplit le blanc.", "Wähle das Wort für die Lücke.", "Elige la palabra que va en el hueco.", "空欄に入る言葉を選ぼう。"],
+"뜻: {0}":["Meaning: {0}", "Sens : {0}", "Bedeutung: {0}", "Significado: {0}", "意味：{0}"],
+"이 관용구의 뜻은 무엇일까요?":["What does this idiom mean?", "Que signifie cette expression ?", "Was bedeutet diese Redewendung?", "¿Qué significa este modismo?", "この慣用句の意味は?"],
+"탐정":["Detective", "Détective", "Detektiv", "Detective", "探偵"],
+"이름을 먼저 입력하세요.":["Enter your name first.", "Saisissez d'abord votre nom.", "Gib zuerst deinen Namen ein.", "Escribe primero tu nombre.", "先に名前を入力してください。"],
+"방 코드 5자리를 입력하세요.":["Enter the 5-character room code.", "Saisissez le code de salle à 5 caractères.", "Gib den 5-stelligen Raumcode ein.", "Introduce el código de sala de 5 caracteres.", "5文字のルームコードを入力してください。"],
+"연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.":["Couldn't load the connection tool. Check your internet connection and refresh.", "Impossible de charger l'outil de connexion. Vérifiez votre connexion internet et actualisez.", "Das Verbindungstool konnte nicht geladen werden. Prüfe deine Internetverbindung und lade neu.", "No se pudo cargar la herramienta de conexión. Revisa tu conexión a internet y recarga.", "接続ツールを読み込めませんでした。インターネット接続を確認して再読み込みしてください。"],
+"사무소를 여는 중...":["Opening the agency...", "Ouverture de l'agence...", "Detektei wird eröffnet...", "Abriendo la agencia...", "事務所を開いています..."],
+"연결됨":["Connected", "Connecté", "Verbunden", "Conectado", "接続済み"],
+"다시 연결 중":["Reconnecting", "Reconnexion", "Verbinde neu", "Reconectando", "再接続中"],
+"사무소를 열지 못했어요 ({0}). 잠시 후 다시 해 보세요.":["Couldn't open the agency ({0}). Try again in a moment.", "Impossible d'ouvrir l'agence ({0}). Réessayez dans un instant.", "Detektei konnte nicht eröffnet werden ({0}). Versuch es gleich noch einmal.", "No se pudo abrir la agencia ({0}). Inténtalo de nuevo en un momento.", "事務所を開けませんでした ({0})。少ししてからもう一度試してください。"],
+"서버 연결 끊김":["Server disconnected", "Serveur déconnecté", "Serververbindung getrennt", "Servidor desconectado", "サーバー切断"],
+"복사":["Copy", "Copier", "Kopieren", "Copiar", "コピー"],
+"링크를 복사했어요":["Link copied", "Lien copié", "Link kopiert", "Enlace copiado", "リンクをコピーしました"],
+"{0} · 사건 {1}건 · 제한 시간 {2}":["{0} · {1} cases · Time limit {2}", "{0} · {1} affaires · Temps limite {2}", "{0} · {1} Fälle · Zeitlimit {2}", "{0} · {1} casos · Tiempo límite {2}", "{0}・事件{1}件・制限時間 {2}"],
+"아직 아무도 없어요":["Nobody here yet", "Personne pour l'instant", "Noch niemand da", "Todavía no hay nadie", "まだ誰もいません"],
+"이름을 바꿨어요":["Name changed", "Nom modifié", "Name geändert", "Nombre cambiado", "名前を変えました"],
+"사무소에 연결하는 중...":["Connecting to the agency...", "Connexion à l'agence...", "Verbinde mit der Detektei...", "Conectando con la agencia...", "事務所に接続しています..."],
+"연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.":["Connection timed out. Check the code and try again.", "Délai de connexion dépassé. Vérifiez le code et réessayez.", "Zeitüberschreitung. Prüfe den Code und versuch es noch einmal.", "Se agotó el tiempo de conexión. Revisa el código e inténtalo de nuevo.", "接続がタイムアウトしました。コードを確認してもう一度試してください。"],
+"사무소를 찾을 수 없어요. 코드를 확인하세요.":["Agency not found. Check the code.", "Agence introuvable. Vérifiez le code.", "Detektei nicht gefunden. Prüfe den Code.", "No se encontró la agencia. Revisa el código.", "事務所が見つかりません。コードを確認してください。"],
+"연결하지 못했어요 ({0}).":["Couldn't connect ({0}).", "Connexion impossible ({0}).", "Verbindung fehlgeschlagen ({0}).", "No se pudo conectar ({0}).", "接続できませんでした ({0})。"],
+"방장과 연결 끊김":["Lost the host", "Hôte perdu", "Verbindung zum Host weg", "Sin conexión con el anfitrión", "ホストと切断"],
+"방장과 연결이 끊겼어요":["Lost connection to the host", "Connexion à l'hôte perdue", "Verbindung zum Host verloren", "Se perdió la conexión con el anfitrión", "ホストとの接続が切れました"],
+"사무소가 가득 찼어요 (최대 40명).":["The agency is full (max 40).", "L'agence est pleine (40 max).", "Die Detektei ist voll (max. 40).", "La agencia está llena (máx. 40).", "事務所が満員です (最大40人)。"],
+"사건 {0}건 · 최고 {1}점":["{0} cases · Best {1}", "{0} affaires · Record {1}", "{0} Fälle · Bestwert {1}", "{0} casos · Récord {1}", "事件{0}件・最高{1}点"],
+"시간 끝! 결과를 기다리는 중":["Time's up! Waiting for results", "Temps écoulé ! En attente des résultats", "Zeit um! Warte auf Ergebnisse", "¡Se acabó el tiempo! Esperando resultados", "時間切れ! 結果を待っています"],
+"사건 {0} · {1}":["Case {0} · {1}", "Affaire {0} · {1}", "Fall {0} · {1}", "Caso {0} · {1}", "事件{0}・{1}"],
+"해결":["Solved", "Résolu", "Gelöst", "Resuelto", "解決"],
+"미제":["Unsolved", "Non résolu", "Ungelöst", "Sin resolver", "未解決"],
+"수사 마치기":["Finish", "Terminer l'enquête", "Ermittlung abschließen", "Terminar", "捜査を終える"],
+"수사 완료":["Investigation complete", "Enquête terminée", "Ermittlung abgeschlossen", "Investigación completada", "捜査完了"],
+"모든 사건을 풀었어요!":["You've worked every case!", "Toutes les affaires sont traitées !", "Alle Fälle bearbeitet!", "¡Has revisado todos los casos!", "すべての事件を解きました!"],
+"다른 탐정이 끝나기를 기다리는 중이에요. 내 점수 {0}점 · 정답 {1}건":["Waiting for the other detectives to finish. Your score {0} · {1} correct", "En attente des autres détectives. Votre score {0} · {1} bonnes réponses", "Warte auf die anderen Detektive. Deine Punkte {0} · {1} richtig", "Esperando a que terminen los demás detectives. Tu puntuación {0} · {1} aciertos", "ほかの探偵が終わるのを待っています。自分の点数 {0}点・正解{1}件"],
+"탐정을 기다리는 중":["Waiting for detectives", "En attente des détectives", "Warte auf Detektive", "Esperando detectives", "探偵を待っています"],
+"내 순위 <b>{0}</b>위 / {1}명":["Your rank <b>{0}</b> / {1}", "Votre rang <b>{0}</b> / {1}", "Dein Platz <b>{0}</b> / {1}", "Tu puesto <b>{0}</b> / {1}", "自分の順位 <b>{0}</b>位 / {1}人"],
+"정답 {0}건 / 사건 {1}건":["{0} correct / {1} cases", "{0} bonnes réponses / {1} affaires", "{0} richtig / {1} Fälle", "{0} aciertos / {1} casos", "正解{0}件 / 事件{1}件"],
+"{0} · 최고 {1}점":["{0} · Best {1}", "{0} · Record {1}", "{0} · Bestwert {1}", "{0} · Récord {1}", "{0}・最高{1}点"],
+"내 답: {0} → 정답: {1}":["Your answer: {0} → Correct: {1}", "Votre réponse : {0} → Bonne réponse : {1}", "Deine Antwort: {0} → Richtig: {1}", "Tu respuesta: {0} → Correcta: {1}", "自分の答え：{0} → 正解：{1}"],
+"틀린 사건이 없어요. 완벽한 수사였어요!":["No missed cases. A flawless investigation!", "Aucune affaire ratée. Une enquête parfaite !", "Kein Fall verpasst. Eine perfekte Ermittlung!", "No fallaste ningún caso. ¡Una investigación perfecta!", "間違えた事件はありません。完璧な捜査でした!"],
+"사무소로 돌아가기":["Back to the agency", "Retour à l'agence", "Zurück zur Detektei", "Volver a la agencia", "事務所に戻る"]
+};
+// meanings of the proverbs and idioms: [en, fr, de, es, ja]
+var MEAN={
+"내가 남에게 좋게 해야 남도 나에게 좋게 한다":["If you treat others well, they will treat you well too", "Si l'on est bon avec les autres, ils seront bons avec nous", "Wer andere gut behandelt, wird auch gut behandelt", "Si tratas bien a los demás, ellos también te tratarán bien", "自分が人に良くすれば、人も自分に良くしてくれる"],
+"말은 순식간에 멀리 퍼지니 조심해야 한다":["Words spread far in an instant, so be careful what you say", "Les paroles se répandent loin en un instant, alors attention à ce qu'on dit", "Worte verbreiten sich im Nu weit, also pass auf, was du sagst", "Las palabras se extienden lejos en un instante, así que cuidado con lo que dices", "言葉はあっという間に遠くまで広がるので気をつけるべきだ"],
+"아무도 안 듣는 것 같아도 말은 새어 나가니 조심해야 한다":["Even when no one seems to be listening, words leak out, so be careful", "Même si personne ne semble écouter, les paroles finissent par s'ébruiter, alors prudence", "Auch wenn scheinbar niemand zuhört, sickern Worte durch, also sei vorsichtig", "Aunque parezca que nadie escucha, las palabras se filtran, así que ten cuidado", "誰も聞いていないようでも話は漏れるので気をつけるべきだ"],
+"일이 잘못된 뒤에 뒤늦게 대비한다":["Taking precautions only after things have already gone wrong", "Prendre des précautions trop tard, une fois le mal fait", "Erst Vorsorge treffen, wenn es schon zu spät ist", "Tomar precauciones cuando ya es demasiado tarde", "事がうまくいかなくなってから、遅れて備える"],
+"없는 곳에서 어떤 사람 이야기를 하면 마침 그 사람이 나타난다":["When you talk about someone who isn't there, they show up right then", "Quand on parle de quelqu'un d'absent, il arrive justement à ce moment-là", "Spricht man über jemanden, der nicht da ist, taucht er genau dann auf", "Cuando hablas de alguien que no está, aparece justo en ese momento", "その場にいない人の話をすると、ちょうどその人が現れる"],
+"아무리 잘하는 사람도 실수할 때가 있다":["Even the most skilled person makes mistakes sometimes", "Même les plus doués se trompent parfois", "Selbst die Geschicktesten machen manchmal Fehler", "Hasta el más hábil se equivoca a veces", "どんなに上手な人でも失敗することがある"],
+"어릴 때 몸에 밴 버릇은 늙어서도 고치기 어렵다":["Habits formed in childhood are hard to break even in old age", "Les habitudes prises dans l'enfance sont difficiles à perdre, même en vieillissant", "Gewohnheiten aus der Kindheit legt man selbst im Alter kaum ab", "Los hábitos de la infancia son difíciles de quitar incluso de mayor", "幼いころに身についた癖は、年をとっても直しにくい"],
+"넓은 세상을 모르고 좁은 생각에 갇혀 있는 사람":["Someone stuck in narrow thinking who knows nothing of the wider world", "Quelqu'un enfermé dans des idées étroites, qui ignore le vaste monde", "Jemand, der in engem Denken gefangen ist und die weite Welt nicht kennt", "Alguien encerrado en ideas estrechas que no conoce el ancho mundo", "広い世の中を知らず、狭い考えに閉じこもっている人"],
+"쉬운 일도 힘을 합치면 더 쉽다":["Even easy tasks are easier when people work together", "Même une tâche facile l'est davantage quand on s'y met à plusieurs", "Selbst leichte Aufgaben werden gemeinsam noch leichter", "Hasta lo fácil es más fácil si se unen fuerzas", "やさしいことでも力を合わせればもっとやさしくなる"],
+"작은 것도 모이면 큰 것이 된다":["Small things add up to something big", "Les petites choses accumulées finissent par en faire une grande", "Auch Kleines wird groß, wenn es sich sammelt", "Las cosas pequeñas, juntas, se hacen grandes", "小さなものも集まれば大きなものになる"],
+"꾸준히 노력하면 이루지 못할 일이 없다":["With steady effort, nothing is impossible", "Avec des efforts constants, rien n'est impossible", "Mit beständiger Mühe ist nichts unmöglich", "Con esfuerzo constante, nada es imposible", "こつこつ努力すれば、できないことはない"],
+"아무리 큰 일도 작은 시작에서 비롯된다":["Even the biggest task begins with a small start", "Même la plus grande entreprise commence par un petit pas", "Auch das größte Vorhaben beginnt mit einem kleinen Anfang", "Hasta la tarea más grande empieza con un pequeño paso", "どんなに大きなことも小さな始まりから生まれる"],
+"아주 기초적인 것도 모를 만큼 무식하다":["So ignorant that you don't know even the most basic things", "Être ignorant au point de ne pas savoir les choses les plus simples", "So unwissend, dass man nicht einmal das Einfachste weiß", "Ser tan ignorante que no se sabe ni lo más básico", "ごく基本的なことも知らないほど無知だ"],
+"하기가 아주 쉬운 일":["Something very easy to do", "Une chose très facile à faire", "Etwas, das ganz leicht zu machen ist", "Algo muy fácil de hacer", "とても簡単にできること"],
+"어렵지 않게 쉽게 할 수 있는 일":["Something you can do easily without any trouble", "Une chose qu'on fait sans aucune difficulté", "Etwas, das man ohne Mühe hinbekommt", "Algo que se hace sin ninguna dificultad", "苦労せずにたやすくできること"],
+"조금 주고 훨씬 많이 돌려받는다":["Give a little and get much more back", "Donner peu et recevoir beaucoup plus en retour", "Wenig geben und viel mehr zurückbekommen", "Dar poco y recibir mucho más a cambio", "少し与えて、ずっと多く返してもらう"],
+"처지가 비슷한 쪽끼리 편이 된다":["People in similar situations take each other's side", "Ceux qui sont dans la même situation se soutiennent", "Wer in einer ähnlichen Lage ist, hält zusammen", "Los que están en una situación parecida se ponen del mismo lado", "境遇が似た者同士は味方になる"],
+"한 가지 일로 두 가지 이득을 본다":["Gain two benefits from one action", "Tirer deux avantages d'une seule action", "Mit einer Sache zwei Vorteile erzielen", "Sacar dos beneficios de una sola acción", "一つのことで二つの得をする"],
+"한 번에 두 가지 이로운 일을 이룬다":["Accomplish two useful things at once", "Accomplir deux choses utiles d'un coup", "Zwei nützliche Dinge auf einmal erledigen", "Lograr dos cosas útiles de una vez", "一度に二つの役立つことを成し遂げる"],
+"믿고 있던 사람에게 배신당한다":["Being betrayed by someone you trusted", "Être trahi par quelqu'un en qui on avait confiance", "Von jemandem verraten werden, dem man vertraut hat", "Ser traicionado por alguien de confianza", "信じていた人に裏切られる"],
+"무엇이든 오래 보고 들으면 자연히 알게 된다":["Whatever you see and hear long enough, you naturally come to know", "Ce qu'on voit et entend longtemps, on finit par le savoir naturellement", "Was man lange sieht und hört, lernt man ganz von selbst", "Lo que ves y oyes durante mucho tiempo acabas aprendiéndolo solo", "何でも長く見聞きしていれば自然とわかるようになる"],
+"형편이 나아진 뒤 어려웠던 때를 잊는다":["Forgetting your hard times once life gets better", "Oublier les temps difficiles une fois que la situation s'améliore", "Die schweren Zeiten vergessen, sobald es einem besser geht", "Olvidar los tiempos difíciles cuando las cosas mejoran", "暮らしが良くなると、苦しかったころを忘れる"],
+"자기 이익에 따라 이쪽저쪽 태도를 바꾼다":["Switching sides depending on what benefits you", "Changer d'attitude selon son propre intérêt", "Je nach eigenem Vorteil die Haltung wechseln", "Cambiar de actitud según lo que te convenga", "自分の得になるかどうかで態度をころころ変える"],
+"가까이 있는 것을 오히려 잘 모른다":["You often overlook what is right under your nose", "On connaît souvent mal ce qui est juste à côté de soi", "Was ganz nah ist, übersieht man oft", "A menudo no vemos lo que tenemos justo al lado", "身近なことほどかえってよくわからない"],
+"피하고 싶은 사람을 피할 수 없는 곳에서 만난다":["You run into the person you want to avoid where there's no way out", "On croise la personne qu'on veut éviter là où on ne peut pas l'esquiver", "Man trifft den, den man meiden will, genau dort, wo man nicht ausweichen kann", "Te encuentras a quien quieres evitar justo donde no puedes esquivarlo", "避けたい相手に、避けようのない場所で出くわす"],
+"큰 성공을 하려면 위험을 무릅써야 한다":["To achieve great success, you must take risks", "Pour réussir en grand, il faut prendre des risques", "Wer großen Erfolg will, muss Risiken eingehen", "Para lograr un gran éxito hay que arriesgarse", "大きな成功のためには危険を冒さなければならない"],
+"힘센 사람들 싸움에 약한 사람이 피해를 본다":["When the powerful fight, the weak get hurt", "Quand les puissants se battent, ce sont les faibles qui en pâtissent", "Wenn die Mächtigen streiten, leiden die Schwachen", "Cuando los poderosos pelean, los débiles salen perdiendo", "強い者同士の争いで弱い者が被害を受ける"],
+"철없이 겁 없이 덤빈다":["Rushing in naively, without any fear", "Foncer naïvement, sans aucune peur", "Naiv und ohne jede Angst drauflosgehen", "Lanzarse sin pensar y sin ningún miedo", "世間知らずで怖いもの知らずに立ち向かう"],
+"원인이 있어야 결과도 있다":["There is no effect without a cause", "Il n'y a pas d'effet sans cause", "Keine Wirkung ohne Ursache", "No hay efecto sin causa", "原因があってこそ結果がある"],
+"윗사람이 바르게 행동해야 아랫사람도 바르게 한다":["Those below behave well only when those above set a good example", "Les subordonnés se conduisent bien si leurs supérieurs donnent l'exemple", "Nur wenn die Oberen sich richtig verhalten, tun es auch die Unteren", "Los de abajo actúan bien solo si los de arriba dan ejemplo", "上の人が正しく行動してこそ、下の人も正しくなる"],
+"작은 것도 쌓이면 어느새 큰 것이 된다":["Little things pile up and become big before you know it", "Les petites choses s'accumulent et deviennent grandes sans qu'on s'en aperçoive", "Kleinigkeiten häufen sich und werden unbemerkt groß", "Las cosas pequeñas se acumulan y, sin darte cuenta, se hacen grandes", "小さなことも積み重なれば、いつの間にか大きくなる"],
+"간섭하는 사람이 많으면 일이 잘 안 된다":["Too many people meddling makes things go wrong", "Quand trop de gens s'en mêlent, rien ne va", "Wenn sich zu viele einmischen, geht die Sache schief", "Si muchos se entrometen, las cosas salen mal", "口出しする人が多いと物事がうまく進まない"],
+"이왕이면 더 좋은 것을 고른다":["If it's all the same, pick the better one", "À choisir, autant prendre le meilleur", "Wenn schon, dann das Bessere wählen", "Puestos a elegir, mejor lo mejor", "どうせなら、より良いものを選ぶ"],
+"말만 잘해도 어려운 일을 풀 수 있다":["Just saying the right thing can solve a difficult problem", "Savoir bien parler suffit parfois à régler une affaire difficile", "Mit den richtigen Worten lässt sich auch Schwieriges lösen", "Con solo hablar bien se pueden resolver asuntos difíciles", "言葉一つで難しいことも解決できる"],
+"어려움을 겪은 뒤에 더 단단해진다":["You grow stronger after going through hardship", "On sort plus fort des épreuves", "Nach schweren Zeiten wird man stärker", "Después de las dificultades uno se hace más fuerte", "苦労を経たあとで、より強くなる"],
+"누구에게나 어울리는 짝이 있다":["There's a perfect match for everyone", "Chacun a sa moitié qui lui va bien", "Für jeden gibt es ein passendes Gegenstück", "Todo el mundo tiene su media naranja", "誰にでもお似合いの相手がいる"],
+"아무리 가르쳐도 알아듣지 못한다":["No matter how much you teach, they just don't get it", "On a beau expliquer, la personne ne comprend rien", "So viel man auch erklärt, es kommt nicht an", "Por mucho que le enseñes, no lo entiende", "いくら教えても理解できない"],
+"해를 끼쳐 놓고 도와주는 척한다":["Doing harm and then pretending to help", "Faire du tort puis faire semblant d'aider", "Erst Schaden anrichten und dann so tun, als würde man helfen", "Hacer daño y luego fingir que ayudas", "害を与えておいて、助けるふりをする"],
+"아무리 순한 사람도 괴롭히면 화를 낸다":["Even the gentlest person gets angry if you keep bullying them", "Même la personne la plus douce se fâche si on la tourmente", "Selbst der sanfteste Mensch wird wütend, wenn man ihn quält", "Hasta la persona más mansa se enfada si la molestan", "どんなにおとなしい人でも、いじめられれば怒る"],
+"어려운 사람에게도 좋은 때가 온다":["Good times come even to those who are struggling", "Les jours meilleurs finissent par arriver, même pour ceux qui peinent", "Auch wer es schwer hat, erlebt einmal gute Zeiten", "Hasta a quien lo pasa mal le llegan buenos tiempos", "苦しい人にもいつか良い時が来る"],
+"몸집이 작아도 속이 단단하고 능력이 뛰어나다":["Small in size but tough and highly capable", "Petit de taille mais solide et très capable", "Klein von Gestalt, aber zäh und sehr fähig", "Pequeño de tamaño pero fuerte y muy capaz", "体は小さくても、しっかりしていて能力が高い"],
+"못된 사람이 하는 짓은 점점 나빠진다":["A bad person's behavior keeps getting worse", "Le comportement d'une mauvaise personne ne fait qu'empirer", "Ein schlechter Mensch treibt es immer schlimmer", "Lo que hace una mala persona va de mal en peor", "性悪な人のふるまいはどんどん悪くなる"],
+"뜻밖의 일이 우연히 겹친다":["Unexpected events happen to coincide", "Des événements inattendus tombent par hasard en même temps", "Unerwartete Dinge fallen zufällig zusammen", "Cosas inesperadas coinciden por casualidad", "思いがけないことが偶然重なる"],
+"정성껏 한 일은 헛되지 않는다":["Work done with care is never wasted", "Un travail fait avec soin n'est jamais vain", "Was man mit Sorgfalt tut, ist nie umsonst", "Lo que se hace con esmero nunca es en vano", "心を込めてしたことは無駄にならない"],
+"작을 때 고치지 않으면 나중에 훨씬 힘이 든다":["If you don't fix it while it's small, it gets much harder later", "Si on ne règle pas un problème tant qu'il est petit, ce sera bien plus dur ensuite", "Wer es nicht behebt, solange es klein ist, hat später viel mehr Mühe", "Si no lo arreglas cuando es pequeño, luego cuesta mucho más", "小さいうちに直さないと、後でずっと苦労する"],
+"방법이 어떻든 목적만 이루면 된다":["However you get there, all that matters is reaching the goal", "Peu importe le chemin, l'essentiel est d'atteindre le but", "Egal wie, Hauptsache, man erreicht das Ziel", "No importa el camino, lo que cuenta es llegar a la meta", "やり方はどうであれ、目的さえ果たせばよい"],
+"말한 대로 일이 이루어질 수 있으니 말을 조심해야 한다":["What you say can come true, so watch your words", "Ce qu'on dit peut se réaliser, alors attention à ses paroles", "Was man sagt, kann wahr werden, also achte auf deine Worte", "Lo que dices puede hacerse realidad, así que cuida tus palabras", "口にしたことが本当になることがあるので、言葉に気をつけるべきだ"],
+"처음부터 만족할 수는 없다":["You can't expect to be satisfied right from the start", "On ne peut pas être satisfait dès le début", "Man kann nicht gleich am Anfang zufrieden sein", "No se puede quedar satisfecho desde el principio", "最初から満足することはできない"],
+"가까이 사는 이웃이 멀리 있는 친척보다 도움이 된다":["A neighbor nearby is more help than a relative far away", "Un voisin proche est plus utile qu'un parent éloigné", "Ein Nachbar in der Nähe hilft mehr als Verwandte in der Ferne", "Un vecino cercano ayuda más que un pariente lejano", "近くに住む隣人は遠くの親戚より頼りになる"],
+"아는 사람이 많다":["Knows a lot of people", "Connaître beaucoup de monde", "Viele Leute kennen", "Conocer a mucha gente", "知り合いが多い"],
+"씀씀이가 후하고 통이 크다":["Spends generously and is big-hearted", "Dépenser sans compter et voir les choses en grand", "Großzügig sein und mit vollen Händen geben", "Ser generoso y gastar a lo grande", "気前がよく太っ腹だ"],
+"비밀을 잘 지키고 말이 적다":["Keeps secrets well and says little", "Savoir garder un secret et parler peu", "Verschwiegen sein und wenig reden", "Guardar bien los secretos y hablar poco", "秘密をよく守り口数が少ない"],
+"남의 말에 쉽게 넘어간다":["Easily swayed by what others say", "Se laisser facilement influencer par les autres", "Sich leicht von anderen beeinflussen lassen", "Dejarse convencer fácilmente por los demás", "人の言葉にすぐ乗せられる"],
+"좋고 나쁨을 가리는 기준이 까다롭다":["Has very high standards", "Être très exigeant dans ses choix", "Sehr hohe Ansprüche haben", "Ser muy exigente", "良し悪しを見分ける基準が厳しい"],
+"겁이 없고 대담하다":["Fearless and bold", "Sans peur et audacieux", "Furchtlos und kühn", "Valiente y audaz", "怖いもの知らずで大胆だ"],
+"책임이 커서 마음에 부담이 된다":["Feels the weight of a heavy responsibility", "Ressentir le poids d'une lourde responsabilité", "Eine große Verantwortung lastet auf einem", "Sentir el peso de una gran responsabilidad", "責任が大きくて気が重い"],
+"몹시 긴장하며 지켜보다":["Watch with great tension", "Regarder avec une grande tension", "Mit großer Anspannung zusehen", "Mirar con mucha tensión", "ひどく緊張しながら見守る"],
+"불평하며 잔소리를 심하게 하다":["Complain and nag constantly", "Se plaindre et faire des reproches sans arrêt", "Ständig meckern und nörgeln", "Quejarse y regañar sin parar", "不満を言って口うるさく小言を言う"],
+"시험에 떨어지다":["Fail an exam", "Échouer à un examen", "Durch eine Prüfung fallen", "Suspender un examen", "試験に落ちる"],
+"장사가 안 되어 한가하다":["Business is so slow there's nothing to do", "Les affaires marchent si mal qu'on n'a rien à faire", "Das Geschäft läuft so schlecht, dass nichts zu tun ist", "El negocio va tan mal que no hay nada que hacer", "商売が振るわず暇だ"],
+"잘되어 가던 일을 망쳐 놓다":["Ruin something that was going well", "Gâcher quelque chose qui se passait bien", "Etwas verderben, das gut lief", "Arruinar algo que iba bien", "うまくいっていたことを台無しにする"],
+"한 가지 일에 꾸준히 힘쓰다":["Keep working steadily at one thing", "Se consacrer avec constance à une seule chose", "Beständig an einer einzigen Sache dranbleiben", "Dedicarse con constancia a una sola cosa", "一つのことにこつこつ打ち込む"],
+"일이 몹시 급해지다":["Something becomes extremely urgent", "Une affaire devient extrêmement urgente", "Etwas wird äußerst dringend", "Algo se vuelve muy urgente", "事態がひどく差し迫る"],
+"몹시 바쁘다":["Extremely busy", "Être débordé", "Total beschäftigt sein", "Estar muy ocupado", "ひどく忙しい"],
+"잊히지 않고 자꾸 아른거리다":["Can't forget it; it keeps coming back to mind", "Impossible à oublier, ça revient sans cesse à l'esprit", "Nicht vergessen können, es geht einem immer wieder durch den Kopf", "No poder olvidarlo; vuelve una y otra vez a la mente", "忘れられず、何度も目に浮かぶ"],
+"한 집이나 한 단체에서 함께 지내다":["Live or work together in the same home or group", "Vivre ou travailler ensemble sous le même toit ou dans le même groupe", "Im selben Haus oder in derselben Gruppe zusammenleben", "Convivir en la misma casa o el mismo grupo", "同じ家や同じ団体で一緒に過ごす"],
+"알면서도 모르는 척하다":["Pretend not to know when you do", "Faire semblant de ne pas savoir", "So tun, als wüsste man nichts", "Hacerse el desentendido", "知っているのに知らないふりをする"],
+"쓸데없이 남의 일에 참견한다":["Meddles in other people's business for no reason", "Se mêler inutilement des affaires des autres", "Sich unnötig in fremde Angelegenheiten einmischen", "Meterse sin necesidad en asuntos ajenos", "余計に人のことに口出しする"],
+"아무도 모르게 몰래":["Secretly, without anyone knowing", "En secret, sans que personne ne le sache", "Heimlich, ohne dass es jemand merkt", "En secreto, sin que nadie se entere", "誰にも知られずにこっそり"],
+"일이 너무 바빠 누구 도움이라도 받고 싶다":["So busy you'd take help from anyone", "Être si débordé qu'on accepterait l'aide de n'importe qui", "So beschäftigt, dass man jede Hilfe nehmen würde", "Tan ocupado que aceptarías la ayuda de cualquiera", "忙しすぎて誰の助けでも借りたい"],
+"남이 잘되는 것을 보고 샘이 난다":["Feel jealous when others do well", "Être jaloux de la réussite des autres", "Neidisch werden, wenn es anderen gut geht", "Sentir envidia cuando a otros les va bien", "人がうまくいくのを見てねたましくなる"],
+"부끄러운 줄을 모른다":["Has no sense of shame", "Ne connaître aucune honte", "Kein Schamgefühl haben", "No tener vergüenza", "恥知らずだ"],
+"몹시 어려운 일":["Something extremely difficult", "Une chose extrêmement difficile", "Etwas äußerst Schwieriges", "Algo dificilísimo", "ひどく難しいこと"],
+"몹시 놀라거나 당황하다":["Be badly startled or flustered", "Être très surpris ou paniqué", "Sehr erschrecken oder in Panik geraten", "Asustarse o agobiarse mucho", "ひどく驚いたりあわてたりする"],
+"잘난 체하며 거만하다":["Stuck-up and arrogant", "Prétentieux et arrogant", "Eingebildet und arrogant", "Creído y arrogante", "偉ぶって傲慢だ"],
+"서로 관계를 끊고 지내다":["Cut off all ties with each other", "Couper les ponts l'un avec l'autre", "Den Kontakt zueinander abbrechen", "Cortar la relación el uno con el otro", "互いに関係を断って過ごす"],
+"몹시 힘든 일을 참고 견디다":["Grit your teeth and endure something very hard", "Serrer les dents et endurer une épreuve très dure", "Die Zähne zusammenbeißen und Schweres ertragen", "Apretar los dientes y aguantar algo muy duro", "ひどくつらいことを我慢して耐える"],
+"서로 모여 의논하다":["Get together and discuss", "Se réunir pour en discuter", "Zusammenkommen und beratschlagen", "Reunirse para debatir", "集まって話し合う"]
+};
+// random detective names: [adjectives, nouns, noun first]
+var RNL={"en": [["Sharp", "Calm", "Keen", "Careful", "Quick", "Stubborn", "Quiet", "Quirky", "Shady", "Trusty"], ["Detective", "Sleuth", "Sidekick", "Agent", "Inspector", "Watcher", "Gumshoe"], 0], "fr": [["rusé", "calme", "futé", "minutieux", "vif", "tenace", "discret", "farfelu", "louche", "fiable"], ["Détective", "Limier", "Agent", "Inspecteur", "Enquêteur", "Témoin"], 1], "de": [["Scharfer", "Ruhiger", "Wacher", "Genauer", "Flinker", "Zäher", "Stiller", "Schräger", "Dubioser", "Treuer"], ["Detektiv", "Kommissar", "Agent", "Ermittler", "Spürhund", "Beobachter"], 0], "es": [["astuto", "sereno", "agudo", "minucioso", "rápido", "tenaz", "callado", "peculiar", "sospechoso", "fiable"], ["Detective", "Agente", "Inspector", "Sabueso", "Ayudante", "Testigo"], 1], "ja": [["鋭い", "冷静な", "目ざとい", "几帳面な", "勘のいい", "粘り強い", "無口な", "風変わりな", "怪しい", "頼れる"], ["探偵", "刑事", "助手", "捜査官", "名探偵", "警部", "観察者"], 0]};
+function tr(k){
+  var s=k;
+  if(lang!=='ko'){ var a=I18N[k]; if(a && a[LIDX[lang]]!=null) s=a[LIDX[lang]]; }
+  var args=arguments;
+  return s.replace(/\{(\d)\}/g,function(_,n){ var v=args[+n+1]; return v==null?'':String(v); });
+}
+function tm(k){ if(lang==='ko') return k; var a=MEAN[k]; return (a && a[LIDX[lang]]) || k; }
+function translateStatic(){
+  document.documentElement.lang=lang;
+  $('krNote').classList.toggle('hide',lang==='ko');
+  if(lang==='ko') return;
+  document.title=tr(document.title);
+  var md=document.querySelector('meta[name="description"]'); if(md) md.setAttribute('content',tr(md.getAttribute('content')||''));
+  var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null), n, list=[];
+  while((n=w.nextNode())) list.push(n);
+  list.forEach(function(t){
+    if(t.parentNode && /^(SCRIPT|STYLE)$/.test(t.parentNode.nodeName)) return;
+    var o=t.nodeValue, k=o.trim(); if(!k || !I18N[k]) return;
+    t.nodeValue=o.replace(k,tr(k));
+  });
+  document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(function(el){
+    ['placeholder','title','aria-label'].forEach(function(a){ var o=el.getAttribute(a); if(o && I18N[o]) el.setAttribute(a,tr(o)); });
+  });
+}
 var MAX_PLAYERS=40, PREFIX='ff-proverb-', CODE_CH='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 var $=function(id){ return document.getElementById(id); };
 var qs=new URLSearchParams(location.search);
@@ -264,6 +495,7 @@ var STAGEDEF=[null,
  {n:'종합 수사',d:'속담과 관용구 다섯 가지 유형이 뒤섞여 나와요',cnt:15},
  {n:'무한 수사',d:'목숨 3개로 시작해요. 틀리면 목숨이 하나씩 줄고, 다 잃을 때까지 사건이 끝없이 이어져요',cnt:300}];
 var NSTAGES=6, RSTAGES=5;
+translateStatic();
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 var token=lsGet('proverb.token');
@@ -274,9 +506,9 @@ function shuf(a,r){ a=a.slice(); for(var i=a.length-1;i>0;i--){ var j=Math.floor
 function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on',s.id===id); }); window.scrollTo(0,0); }
 var toastT;
 function toast(t){ var el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('on'); },2400); }
-function setNet(state,txt){ $('net').className='net'+(state?' '+state:''); $('netTxt').textContent=txt; }
+function setNet(state,txt){ $('net').className='net'+(state?' '+state:''); $('netTxt').textContent=tr(txt); }
 function fmt(ms){ var s=Math.max(0,Math.ceil(ms/1000)); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
-function cleanName(n){ n=String(n||'').replace(/\s+/g,' ').trim().slice(0,16); return n||'탐정'; }
+function cleanName(n){ n=String(n||'').replace(/\s+/g,' ').trim().slice(0,16); return n||tr('탐정'); }
 function peerOpts(){
   var o={debug:0,config:{iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}]}};
   var ps=qs.get('ps');
@@ -303,15 +535,15 @@ function makeCases(seed,count,sid){
   seq.forEach(function(t){
     var p, id, full;
     if(t==='A'){ p=nextP(); full=p[0]+' '+p[1];
-      out.push(mk('이어 붙이기',esc(p[0])+' <span class="bl">　　　</span>','뒷부분을 찾아 이어 붙이세요.',p[1],pick3(PV.map(function(x){ return x[1]; }),p[1]),full,p[2])); }
+      out.push(mk(tr('이어 붙이기'),esc(p[0])+' <span class="bl">　　　</span>',tr('뒷부분을 찾아 이어 붙이세요.'),p[1],pick3(PV.map(function(x){ return x[1]; }),p[1]),full,tm(p[2]))); }
     else if(t==='B'){ p=nextP(); full=p[0]+' '+p[1];
-      out.push(mk('뜻 풀이','“'+esc(full)+'”','이 속담의 뜻은 무엇일까요?',p[2],pick3(PV.map(function(x){ return x[2]; }),p[2]),full,p[2])); }
+      out.push(mk(tr('뜻 풀이'),'“'+esc(full)+'”',tr('이 속담의 뜻은 무엇일까요?'),tm(p[2]),pick3(PV.map(function(x){ return x[2]; }),p[2]).map(tm),full,tm(p[2]))); }
     else if(t==='C'){ p=nextP(); full=p[0]+' '+p[1];
-      out.push(mk('빈칸 단서',esc(full).replace(esc(p[3]),'<span class="bl">　　</span>'),'빈칸에 들어갈 낱말을 고르세요.',p[3],p[4].slice(),full,p[2])); }
+      out.push(mk(tr('빈칸 단서'),esc(full).replace(esc(p[3]),'<span class="bl">　　</span>'),tr('빈칸에 들어갈 낱말을 고르세요.'),p[3],p[4].slice(),full,tm(p[2]))); }
     else if(t==='D'){ id=nextI(); full=plain(id[0]); var ans=/\{(.+?)\}/.exec(id[0])[1];
-      out.push(mk('관용구 빈칸',esc(id[0]).replace(/\{.+?\}/,'<span class="bl">　　</span>'),'뜻: '+id[1],ans,id[2].slice(),full,id[1])); }
+      out.push(mk(tr('관용구 빈칸'),esc(id[0]).replace(/\{.+?\}/,'<span class="bl">　　</span>'),tr('뜻: {0}',tm(id[1])),ans,id[2].slice(),full,tm(id[1]))); }
     else { id=nextI(); full=plain(id[0]);
-      out.push(mk('관용구 뜻','“'+esc(full)+'”','이 관용구의 뜻은 무엇일까요?',id[1],pick3(ID.map(function(x){ return x[1]; }),id[1]),full,id[1])); }
+      out.push(mk(tr('관용구 뜻'),'“'+esc(full)+'”',tr('이 관용구의 뜻은 무엇일까요?'),tm(id[1]),pick3(ID.map(function(x){ return x[1]; }),id[1]).map(tm),full,tm(id[1]))); }
   });
   return out;
 }
@@ -319,14 +551,14 @@ function makeCases(seed,count,sid){
 // ---------- 홈 ----------
 var RN=[['예리한','침착한','날카로운','꼼꼼한','눈치 빠른','끈질긴','과묵한','엉뚱한','수상한','믿음직한'],['탐정','형사','조수','수사관','명탐정','경감','관찰자','추리가']];
 $('nameIn').value=lsGet('proverb.name')||'';
-$('diceBtn').onclick=function(){ var p=function(a){ return a[Math.floor(Math.random()*a.length)]; }; var n; do{ n=p(RN[0])+' '+p(RN[1]); }while(n.length>16); $('nameIn').value=n; };
+$('diceBtn').onclick=function(){ var p=function(a){ return a[Math.floor(Math.random()*a.length)]; }; var L=RNL[lang], n; do{ n=L?(L[2]?p(L[1])+' '+p(L[0]):p(L[0])+' '+p(L[1])):p(RN[0])+' '+p(RN[1]); }while(n.length>16); $('nameIn').value=n; };
 if(qs.get('room')) $('codeIn').value=qs.get('room').toUpperCase().slice(0,5);
 var S={role:null,peer:null,code:'',name:'',settings:{cnt:10,time:300,hostPlay:1,stage:1},phase:'idle',endAt:0,totalMs:0,seed:1,
   cases:[],cur:0,score:0,right:0,wrongs:[],done:false,doneAt:0,locked:false,t0:0,players:{},conn:null,board:null};
 window.__pv=S;
 function needName(){
   var n=$('nameIn').value.trim();
-  if(!n){ $('homeMsg').className='msg'; $('homeMsg').textContent='이름을 먼저 입력하세요.'; $('nameIn').focus(); return null; }
+  if(!n){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('이름을 먼저 입력하세요.'); $('nameIn').focus(); return null; }
   n=cleanName(n); lsSet('proverb.name',n); $('homeMsg').textContent=''; return n;
 }
 $('codeIn').addEventListener('input',function(){ this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
@@ -336,20 +568,20 @@ $('hostBtn').onclick=function(){ var n=needName(); if(n) startHost(n); };
 $('soloBtn').onclick=function(){ var n=needName(); if(n){ S.name=n; showStages(); } };
 function joinNow(){
   var n=needName(); if(!n) return; var c=$('codeIn').value.trim().toUpperCase();
-  if(c.length!==5){ $('homeMsg').className='msg'; $('homeMsg').textContent='방 코드 5자리를 입력하세요.'; return; }
+  if(c.length!==5){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('방 코드 5자리를 입력하세요.'); return; }
   startGuest(n,c);
 }
 var isBusy=false;
 function busy(on){ isBusy=on; $('hostBtn').disabled=on; $('soloBtn').disabled=on; }
 function destroyPeer(){ if(S.peer){ try{ S.peer.destroy(); }catch(e){} } S.peer=null; S.conn=null; S.players={}; setNet('','오프라인'); }
 function goHome(){ destroyPeer(); clearTimers(); S.role=null; S.phase='idle'; busy(false); $('cd').classList.remove('on'); show('sHome'); }
-function noPeerLib(){ if(window.Peer) return false; $('homeMsg').className='msg'; $('homeMsg').textContent='연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.'; return true; }
+function noPeerLib(){ if(window.Peer) return false; $('homeMsg').className='msg'; $('homeMsg').textContent=tr('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.'); return true; }
 
 // ---------- 방장 ----------
 function newCode(){ var s=''; for(var i=0;i<5;i++) s+=CODE_CH[Math.floor(Math.random()*CODE_CH.length)]; return s; }
 function startHost(name,tries){
   if(noPeerLib()) return; tries=tries||0; busy(true);
-  $('homeMsg').className='msg info'; $('homeMsg').textContent='사무소를 여는 중...';
+  $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('사무소를 여는 중...');
   destroyPeer(); S.role='host'; S.name=name; S.code=newCode(); S.players={};
   var p=new Peer(PREFIX+S.code,peerOpts()); S.peer=p;
   p.on('open',function(){ $('homeMsg').textContent=''; busy(false); setNet('on','연결됨'); enterLobby(); });
@@ -358,7 +590,7 @@ function startHost(name,tries){
   p.on('error',function(err){
     if(S.peer!==p) return;
     if(err.type==='unavailable-id'&&tries<5){ startHost(name,tries+1); return; }
-    if(S.phase==='idle'){ $('homeMsg').className='msg'; $('homeMsg').textContent='사무소를 열지 못했어요 ('+err.type+'). 잠시 후 다시 해 보세요.'; busy(false); destroyPeer(); }
+    if(S.phase==='idle'){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('사무소를 열지 못했어요 ({0}). 잠시 후 다시 해 보세요.',err.type); busy(false); destroyPeer(); }
     else if(err.type==='network'||err.type==='server-error'||err.type==='socket-error') setNet('off','서버 연결 끊김');
   });
 }
@@ -412,16 +644,16 @@ function enterLobby(){
   $('hostSet').classList.toggle('hide',!isHost); $('guestWait').classList.toggle('hide',isHost); $('startBtn').classList.toggle('hide',!isHost);
   if(isHost){
     var url=location.origin+location.pathname+'?room='+S.code+(qs.get('ps')?'&ps='+encodeURIComponent(qs.get('ps')):'');
-    $('lobbyLink').innerHTML=esc(url.replace(/^https?:\/\//,''))+'<button id="copyLnk">복사</button>';
-    $('copyLnk').onclick=function(){ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){ toast('링크를 복사했어요'); },function(){ toast(url); }); };
+    $('lobbyLink').innerHTML=esc(url.replace(/^https?:\/\//,''))+'<button id="copyLnk">'+esc(tr('복사'))+'</button>';
+    $('copyLnk').onclick=function(){ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){ toast(tr('링크를 복사했어요')); },function(){ toast(url); }); };
     syncSegs();
     for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else{ p.score=0; p.stage=0; p.done=false; p.doneAt=0; } }
     broadcast({t:'lobby',settings:S.settings});
   } else{ $('lobbyLink').textContent=''; renderGuestSet(); }
   $('renameIn').value=S.name; renderChips(); show('sLobby');
 }
-function renderGuestSet(){ $('guestSet').textContent=STAGEDEF[S.settings.stage||1].n+' · 사건 '+S.settings.cnt+'건 · 제한 시간 '+fmt(S.settings.time*1000); }
-(function(){ var h=''; for(var i=1;i<=RSTAGES;i++) h+='<button data-v="'+i+'">'+STAGEDEF[i].n+'</button>'; $('segStage').innerHTML=h; })();
+function renderGuestSet(){ $('guestSet').textContent=tr('{0} · 사건 {1}건 · 제한 시간 {2}',tr(STAGEDEF[S.settings.stage||1].n),S.settings.cnt,fmt(S.settings.time*1000)); }
+(function(){ var h=''; for(var i=1;i<=RSTAGES;i++) h+='<button data-v="'+i+'">'+esc(tr(STAGEDEF[i].n))+'</button>'; $('segStage').innerHTML=h; })();
 function bindSeg(id,key){ $(id).addEventListener('click',function(e){ var b=e.target.closest('button'); if(!b) return; S.settings[key]=+b.dataset.v; syncSegs(); renderChips(); broadcast({t:'lobby',settings:S.settings}); }); }
 bindSeg('segStage','stage'); bindSeg('segCnt','cnt'); bindSeg('segTime','time'); bindSeg('segHostPlay','hostPlay');
 function syncSegs(){ [['segStage','stage'],['segCnt','cnt'],['segTime','time'],['segHostPlay','hostPlay']].forEach(function(a){ $(a[0]).querySelectorAll('button').forEach(function(b){ b.classList.toggle('on',+b.dataset.v===+S.settings[a[1]]); }); }); }
@@ -436,7 +668,7 @@ function renderChips(){
     $('startBtn').disabled=names.length===0;
   } else names=lobbyNames.map(function(n){ return {n:n,me:n===S.name}; });
   $('pNum').textContent=guestCount;
-  $('chips').innerHTML=names.map(function(x){ return '<span class="'+(x.me?'me':'')+'">'+esc(x.n)+'</span>'; }).join('')||'<span style="background:none;border:0;color:var(--mute)">아직 아무도 없어요</span>';
+  $('chips').innerHTML=names.map(function(x){ return '<span class="'+(x.me?'me':'')+'">'+esc(x.n)+'</span>'; }).join('')||'<span style="background:none;border:0;color:var(--mute)">'+esc(tr('아직 아무도 없어요'))+'</span>';
 }
 $('startBtn').onclick=function(){
   if(S.role!=='host') return;
@@ -448,22 +680,22 @@ $('startBtn').onclick=function(){
 $('leaveBtn').onclick=goHome;
 $('renameBtn').onclick=function(){
   var n=$('renameIn').value.trim(); if(!n||S.phase!=='lobby') return; n=cleanName(n);
-  if(S.role==='host'){ S.name=n; lsSet('proverb.name',n); renderChips(); toast('이름을 바꿨어요'); } else send(S.conn,{t:'rename',name:n});
+  if(S.role==='host'){ S.name=n; lsSet('proverb.name',n); renderChips(); toast(tr('이름을 바꿨어요')); } else send(S.conn,{t:'rename',name:n});
 };
 $('renameIn').addEventListener('keydown',function(e){ if(e.key==='Enter') $('renameBtn').click(); });
 $('endNow2').onclick=$('endNowBtn').onclick=function(){ if(S.role==='host'&&S.phase==='play') finishRound(); };
 
 // ---------- 참가자 ----------
 function startGuest(name,code){
-  if(noPeerLib()||isBusy) return; busy(true); $('homeMsg').className='msg info'; $('homeMsg').textContent='사무소에 연결하는 중...';
+  if(noPeerLib()||isBusy) return; busy(true); $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('사무소에 연결하는 중...');
   destroyPeer(); S.role='guest'; S.name=name; S.code=code;
   var p=new Peer(peerOpts()); S.peer=p;
-  var tm=setTimeout(function(){ if(S.peer===p&&S.phase==='idle'){ $('homeMsg').className='msg'; $('homeMsg').textContent='연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.'; busy(false); destroyPeer(); } },15000);
+  var tm=setTimeout(function(){ if(S.peer===p&&S.phase==='idle'){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.'); busy(false); destroyPeer(); } },15000);
   p.on('open',function(){ connectHost(p,tm); });
   p.on('disconnected',function(){ if(S.peer===p&&!p.destroyed) setTimeout(function(){ if(S.peer===p&&!p.destroyed) p.reconnect(); },1000); });
   p.on('error',function(err){
     if(S.peer!==p) return;
-    if(S.phase==='idle'){ clearTimeout(tm); $('homeMsg').className='msg'; $('homeMsg').textContent=err.type==='peer-unavailable'?'사무소를 찾을 수 없어요. 코드를 확인하세요.':'연결하지 못했어요 ('+err.type+').'; busy(false); destroyPeer(); }
+    if(S.phase==='idle'){ clearTimeout(tm); $('homeMsg').className='msg'; $('homeMsg').textContent=err.type==='peer-unavailable'?tr('사무소를 찾을 수 없어요. 코드를 확인하세요.'):tr('연결하지 못했어요 ({0}).',err.type); busy(false); destroyPeer(); }
     else if(err.type==='peer-unavailable') setNet('off','방장과 연결 끊김');
   });
 }
@@ -475,20 +707,20 @@ function connectHost(p,tm){
   c.on('close',function(){
     if(S.conn!==c||S.peer!==p) return; S.conn=null; setNet('off','방장과 연결 끊김');
     if(S.phase!=='idle'&&retries<8){ retries++; clearTimeout(retryT); retryT=setTimeout(function(){ if(S.peer===p) connectHost(p); },1500); }
-    else if(S.phase==='lobby'){ toast('방장과 연결이 끊겼어요'); goHome(); }
+    else if(S.phase==='lobby'){ toast(tr('방장과 연결이 끊겼어요')); goHome(); }
   });
 }
 function handleGuestMsg(d){
   if(!d||typeof d!=='object') return;
   switch(d.t){
-    case 'full': $('homeMsg').className='msg'; $('homeMsg').textContent='사무소가 가득 찼어요 (최대 40명).'; busy(false); destroyPeer(); show('sHome'); break;
+    case 'full': $('homeMsg').className='msg'; $('homeMsg').textContent=tr('사무소가 가득 찼어요 (최대 40명).'); busy(false); destroyPeer(); show('sHome'); break;
     case 'welcome':
       S.name=d.name; S.settings=d.settings; busy(false); $('homeMsg').textContent='';
       if(d.phase==='play'||d.phase==='count'){ if(S.phase!=='play'&&S.phase!=='count'){ S.seed=d.seed; beginRound(0,Math.max(0,d.remain),d.total,{score:d.score,stage:d.stage,done:d.done}); } }
       else if(d.phase==='lobby'&&S.phase!=='lobby') enterLobby();
       break;
     case 'lobby': S.settings=d.settings; if(S.phase!=='lobby') enterLobby(); else renderGuestSet(); break;
-    case 'named': S.name=d.name; lsSet('proverb.name',d.name); $('renameIn').value=d.name; renderChips(); toast('이름을 바꿨어요'); break;
+    case 'named': S.name=d.name; lsSet('proverb.name',d.name); $('renameIn').value=d.name; renderChips(); toast(tr('이름을 바꿨어요')); break;
     case 'players': lobbyNames=d.names||[]; guestCount=d.guests|0; if(S.phase==='lobby') renderChips(); break;
     case 'start': S.settings=d.settings; S.seed=d.seed; beginRound(d.cd,d.dur); break;
     case 'board': S.board=d; renderMyBoard(); break;
@@ -503,7 +735,7 @@ function bestSet(sid,sc){ var b=bestGet(); if(!(b[sid]>=sc)){ b[sid]=sc; lsSet('
 function showStages(){
   var best=bestGet(),h='';
   for(var i=1;i<=NSTAGES;i++){ var d=STAGEDEF[i],bs=best[i]||0;
-    h+='<button class="stg" data-s="'+i+'"><span class="no">'+String(i).padStart(2,'0')+'</span><span><span class="t">'+esc(d.n)+'</span><span class="d">'+esc(d.d)+'</span><span class="m">'+(i===6?'혼자만 · 끝없이':'사건 '+d.cnt+'건')+' · 최고 '+bs+'점</span></span></button>'; }
+    h+='<button class="stg" data-s="'+i+'"><span class="no">'+String(i).padStart(2,'0')+'</span><span><span class="t">'+esc(tr(d.n))+'</span><span class="d">'+esc(tr(d.d))+'</span><span class="m">'+esc(i===6?tr('혼자만 · 끝없이 · 최고 {0}점',bs):tr('사건 {0}건 · 최고 {1}점',d.cnt,bs))+'</span></span></button>'; }
   $('stgList').innerHTML=h; show('sStages');
 }
 $('stgList').addEventListener('click',function(e){ var b=e.target.closest('.stg'); if(b) startSolo(S.name,+b.dataset.s); });
@@ -535,7 +767,7 @@ function beginRound(cdMs,durMs,totalMs,resume){
   if(S.role==='host'){ boardDirty=true; boardT=setInterval(function(){ if(boardDirty){ boardDirty=false; pushBoard(); } },700); }
 }
 function report(){ send(S.conn,{t:'score',score:S.score,stage:S.cur,done:S.done}); }
-function hud(){ var no=Math.max(1,Math.min(S.locked?S.cur:S.cur+1,S.cases.length)); $('gNo').textContent=endless()?no+'번째':no+'/'+S.cases.length; $('gLives').textContent=endless()?new Array(Math.max(0,S.lives)+1).join('♥')+new Array(Math.max(0,3-S.lives)+1).join('♡'):''; $('gScore').textContent=S.score; }
+function hud(){ var no=Math.max(1,Math.min(S.locked?S.cur:S.cur+1,S.cases.length)); $('gNo').textContent=endless()?tr('{0}번째',no):no+'/'+S.cases.length; $('gLives').textContent=endless()?new Array(Math.max(0,S.lives)+1).join('♥')+new Array(Math.max(0,3-S.lives)+1).join('♡'):''; $('gScore').textContent=S.score; }
 function tick(){
   if(!timed()) return;
   var left=S.endAt-Date.now(), txt=fmt(Math.min(left,S.totalMs));
@@ -543,7 +775,7 @@ function tick(){
   $('gTimeBox').classList.toggle('low',left<=15000); $('wTimeBox').classList.toggle('low',left<=15000);
   if(left<=0&&S.phase==='play'){
     if(S.role==='host') finishRound();
-    else{ S.phase='wait'; S.locked=true; report(); toast('시간 끝! 결과를 기다리는 중'); }
+    else{ S.phase='wait'; S.locked=true; report(); toast(tr('시간 끝! 결과를 기다리는 중')); }
   }
 }
 // ---------- 사건 풀기 ----------
@@ -551,7 +783,7 @@ function showCase(){
   if(S.phase!=='play'&&S.phase!=='count') return;
   var c=S.cases[S.cur]; if(!c){ finishMine(); return; }
   S.locked=false; S.t0=Date.now(); hud();
-  $('gTag').textContent='사건 '+String(S.cur+1).padStart(2,'0')+' · '+c.tag; $('gQ').innerHTML=c.q; $('gHint').textContent=c.hint;
+  $('gTag').textContent=tr('사건 {0} · {1}',String(S.cur+1).padStart(2,'0'),c.tag); $('gQ').innerHTML=c.q; $('gHint').textContent=c.hint;
   $('gExp').className='exp'; $('gExp').innerHTML=''; $('stamp').className='stamp'; $('stamp').textContent='';
   $('opts').innerHTML=c.opts.map(function(o,i){ return '<button class="opt" data-i="'+i+'"><span class="n">'+(i+1)+'</span><span>'+esc(o)+'</span></button>'; }).join('');
   $('nextBtn').classList.add('hide');
@@ -567,13 +799,13 @@ function pick(i){
   var ok=i===c.ans, sec=(Date.now()-S.t0)/1000;
   if(ok){ S.right++; S.score+=100+(sec<=4?20:sec<=8?10:0); } else S.wrongs.push({full:c.full,meaning:c.meaning,picked:c.opts[i],answer:c.opts[c.ans],tag:c.tag});
   var bs=$('opts').querySelectorAll('.opt'); bs.forEach(function(b,k){ b.disabled=true; if(k===c.ans) b.classList.add('right'); else if(k===i) b.classList.add('wrong'); });
-  $('stamp').textContent=ok?'해결':'미제'; $('stamp').className='stamp '+(ok?'ok':'no');
+  $('stamp').textContent=tr(ok?'해결':'미제'); $('stamp').className='stamp '+(ok?'ok':'no');
   $('gExp').innerHTML='<b>'+esc(c.full)+'</b><br>'+esc(c.meaning); $('gExp').className='exp on';
   if(!ok&&endless()) S.lives--;
   S.cur++; dirtyScore=true; hud(); boardDirty=true;
   if(S.cur>=S.cases.length||(endless()&&S.lives<=0)){ S.done=true; S.doneAt=Date.now(); }
   if(S.role==='guest') report();
-  $('nextBtn').classList.remove('hide'); $('nextBtn').textContent=S.done?'수사 마치기':'다음 사건';
+  $('nextBtn').classList.remove('hide'); $('nextBtn').textContent=tr(S.done?'수사 마치기':'다음 사건');
   clearTimeout(advT); advT=setTimeout(nextCase,ok?1800:4200);
   if(S.done&&S.role==='host') checkAllDone();
 }
@@ -581,7 +813,7 @@ $('nextBtn').onclick=nextCase;
 function nextCase(){ clearTimeout(advT); if(S.phase!=='play'&&S.phase!=='wait') return; if(!S.locked) return; if(S.done||S.cur>=S.cases.length) finishMine(); else showCase(); }
 function finishMine(){ clearTimeout(advT); if(S.role==='solo'){ finishRound(); return; } waitOthers(); }
 function waitOthers(){
-  $('gTag').textContent='수사 완료'; $('gQ').textContent='모든 사건을 풀었어요!'; $('gHint').textContent='다른 탐정이 끝나기를 기다리는 중이에요. 내 점수 '+S.score+'점 · 정답 '+S.right+'건';
+  $('gTag').textContent=tr('수사 완료'); $('gQ').textContent=tr('모든 사건을 풀었어요!'); $('gHint').textContent=tr('다른 탐정이 끝나기를 기다리는 중이에요. 내 점수 {0}점 · 정답 {1}건',S.score,S.right);
   $('gExp').className='exp'; $('stamp').className='stamp'; $('opts').innerHTML=''; $('nextBtn').classList.add('hide'); hud();
   if(S.role==='guest') report(); if(S.role==='host'){ boardDirty=true; checkAllDone(); }
 }
@@ -599,20 +831,20 @@ function pushBoard(){
   var top=r.slice(0,6).map(function(e){ return {r:e.r,n:e.n,s:e.s,st:e.st}; });
   for(var t in S.players){ var p=S.players[t]; if(p.conn&&p.conn.open){ var me=byTok[t]; send(p.conn,{t:'board',top:top,n:r.length,me:me?{r:me.r}:null}); } }
   $('wDone').textContent=done+'/'+r.length;
-  $('wBoard').innerHTML=r.map(function(e){ return rowHtml(e,false); }).join('')||'<div class="msg info">탐정을 기다리는 중</div>';
+  $('wBoard').innerHTML=r.map(function(e){ return rowHtml(e,false); }).join('')||'<div class="msg info">'+esc(tr('탐정을 기다리는 중'))+'</div>';
   if(S.settings.hostPlay){ S.board={top:top,n:r.length,me:byTok[token]?{r:byTok[token].r}:null}; renderMyBoard(); }
 }
-function renderMyBoard(){ var b=S.board; if(!b) return; $('gBoard').innerHTML=b.top.map(function(e){ return rowHtml(e,b.me&&e.r===b.me.r&&e.n===S.name); }).join(''); if(b.me) $('gMeRank').innerHTML='내 순위 <b>'+b.me.r+'</b>위 / '+b.n+'명'; }
+function renderMyBoard(){ var b=S.board; if(!b) return; $('gBoard').innerHTML=b.top.map(function(e){ return rowHtml(e,b.me&&e.r===b.me.r&&e.n===S.name); }).join(''); if(b.me) $('gMeRank').innerHTML=tr('내 순위 <b>{0}</b>위 / {1}명',b.me.r,b.n); }
 function finishRound(){ clearTimers(); $('cd').classList.remove('on'); S.phase='result'; if(S.role==='solo'){ showResult(null); return; } var r=ranking(); broadcast({t:'end',ranking:r}); showResult(r); }
 function showResult(rk){
   clearTimers(); S.phase='result'; $('cd').classList.remove('on');
   var total=endless()?S.cur:S.cases.length, sid=S.settings.stage;
-  $('rScore').textContent=S.score; $('rSub').textContent='정답 '+S.right+'건 / 사건 '+total+'건';
-  if(S.role==='solo'){ bestSet(sid,S.score); var b=bestGet()[sid]||0; $('rTitle').textContent=STAGEDEF[sid].n+' · 최고 '+b+'점'; $('rRank').innerHTML=''; }
-  else{ $('rTitle').textContent='수사 결과'; var me=null; (rk||[]).forEach(function(e){ if(e.t===token||(S.role!=='host'&&e.n===S.name)) me=e; });
+  $('rScore').textContent=S.score; $('rSub').textContent=tr('정답 {0}건 / 사건 {1}건',S.right,total);
+  if(S.role==='solo'){ bestSet(sid,S.score); var b=bestGet()[sid]||0; $('rTitle').textContent=tr('{0} · 최고 {1}점',tr(STAGEDEF[sid].n),b); $('rRank').innerHTML=''; }
+  else{ $('rTitle').textContent=tr('수사 결과'); var me=null; (rk||[]).forEach(function(e){ if(e.t===token||(S.role!=='host'&&e.n===S.name)) me=e; });
     $('rRank').innerHTML='<div class="board">'+(rk||[]).map(function(e){ return rowHtml(e,me&&e.r===me.r&&e.n===me.n); }).join('')+'</div>'; }
-  $('rWrong').innerHTML=S.wrongs.length?S.wrongs.map(function(w){ return '<div class="wr"><b>'+esc(w.full)+'</b><small>뜻: '+esc(w.meaning)+'</small><small>내 답: '+esc(w.picked)+' → 정답: '+esc(w.answer)+'</small></div>'; }).join(''):'<div class="msg info">틀린 사건이 없어요. 완벽한 수사였어요!</div>';
-  $('againBtn').classList.toggle('hide',S.role==='guest'); $('againBtn').textContent=S.role==='host'?'사무소로 돌아가기':'다시 수사';
+  $('rWrong').innerHTML=S.wrongs.length?S.wrongs.map(function(w){ return '<div class="wr"><b>'+esc(w.full)+'</b><small>'+esc(tr('뜻: {0}',w.meaning))+'</small><small>'+esc(tr('내 답: {0} → 정답: {1}',w.picked,w.answer))+'</small></div>'; }).join(''):'<div class="msg info">'+esc(tr('틀린 사건이 없어요. 완벽한 수사였어요!'))+'</div>';
+  $('againBtn').classList.toggle('hide',S.role==='guest'); $('againBtn').textContent=tr(S.role==='host'?'사무소로 돌아가기':'다시 수사');
   show('sResult');
 }
 $('homeBtn').onclick=goHome;
