@@ -284,6 +284,27 @@ canvas.stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 .chart .vb { fill: #67e3a71a; stroke: #67e3a7; stroke-width: 1.5; }
 .chart .vc { fill: #ffb5471a; stroke: #ffb547; stroke-width: 1.5; }
 .chart .setlab { fill: #e9edff; font-size: 15px; font-weight: 600; }
+.sheet-head { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: flex-end; }
+.sheet-head .label b { color: var(--text); font-weight: 500; }
+.name-in { background: none; border: 0; border-bottom: 1px solid var(--hair-2); padding: 4px 2px; width: 160px; font-size: 16px; }
+.sheet h3 { font-size: 16px; }
+@media print {
+  :root { --text: #111; --dim: #333; --faint: #555; --hair: #bbb; --hair-2: #888; --ice: #111; --signal: #111; --ok: #0a6b3d; --bad: #c62828; color-scheme: light; }
+  @page { margin: 14mm; }
+  body { background: #fff !important; font-size: 12px; }
+  .no-print, #modal, .hud, canvas.stars { display: none !important; }
+  .name-in { border-bottom-color: #111; }
+  .wrap { padding: 0 !important; max-width: none !important; }
+  .box { background: none; border: 0; padding: 0; backdrop-filter: none; gap: 10px; }
+  .box::before, .box::after { display: none; }
+  .rcard { background: none; padding: 10px; }
+  .rc-cell b { font-size: 15px; }
+  .tbl-wrap { overflow: visible; }
+  .pt { min-width: 0 !important; width: 100%; }
+  .pt th, .pt td { padding: 5px 6px; }
+  .pt td.mono { font-size: 12px; }
+  .sheet section { break-inside: avoid; }
+}
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 
@@ -413,12 +434,8 @@ function videoPlayer(kind, fps, res) {
 }
 
 /* ---------- world generation ---------- */
-const PNAMES = ["트렌터", "터미너스", "아나크레온", "스미르노", "산태니", "칼간", "시리우스", "타젠더", "로셈", "코렐", "시낵스", "헬리콘"];
-function planetName(used) {
-  let free = PNAMES.filter(n => !used.has(n));
-  if (!free.length) free = PNAMES.filter(n => !(used.cur && used.cur.has(n)));
-  const n = pick(free); used.add(n); if (used.cur) used.cur.add(n); return n;
-}
+const SYL = ["케", "플", "라", "오", "르", "테", "니", "브", "실", "바", "텔", "루", "스", "마", "카", "에", "코", "보", "타", "미", "아", "델", "이", "온", "주", "노", "하", "가", "렌", "포"];
+function planetName(used) { let n; do { n = pick(SYL) + pick(SYL) + (rnd() < .4 ? pick(SYL) : "") + " " + pick(["b", "c", "d", "e"]); } while (used.has(n)); used.add(n); return n; }
 // numeric signals, each sent as 8 bits
 const SIG = [
   { k: "temp", t: "온도", u: "℃" }, { k: "grav", t: "중력", u: "" }, { k: "oxy", t: "산소", u: "%" },
@@ -494,7 +511,8 @@ function newRun(seed, code) {
 function startSector() {
   if (G.code) rnd = seeded(hashStr(G.code) + G.sector * 1013);
   G.sec = { dec: 0, ok: 0, ex: null, scans: { photo: [], sound: [], video: [] }, bits: 0, reply: null };
-  const used = new Set(G.colonies.map(c => c.planet.name)); used.cur = new Set();
+  (G.hist = G.hist || []).push(G.sec);
+  const used = new Set(G.colonies.map(c => c.planet.name));
   G.list = Array.from({ length: 5 + (G.upg.range ? 2 : 0) }, (_, i) => makePlanet(`P${G.sector}${i}`, used));
   G.idx = -1; G.storeMax = 4000 + (G.upg.store ? 3000 : 0);
   nextPlanet();
@@ -931,7 +949,11 @@ const LESSONS = [
 function endRun(won, why) {
   const score = totalPop();
   save.runs++; const newBest = score > save.best; if (newBest) save.best = score; persist();
-  const alive = G.colonies.filter(c => c.alive).length;
+  G.end = { won, why, score, newBest };
+  endScreen();
+}
+function endScreen() {
+  const { won, why, score, newBest } = G.end, alive = G.colonies.filter(c => c.alive).length;
   $("#app").replaceChildren(h("div", { class: "wrap" },
     h("div", { class: "box" },
       h("span", { class: "kicker" }, won ? "항해 완료" : "항해 실패"),
@@ -940,11 +962,39 @@ function endRun(won, why) {
       h("p", { class: "mono", style: "font-size:20px" }, `총 인구 ${score}${newBest ? " · 최고 기록!" : ""}`),
       h("p", { class: "dim" }, `살아남은 정착지 ${alive} / ${G.colonies.length}곳 · 최고 기록 ${save.best}명`),
       resultCard(),
-      h("div", { class: "row" }, h("button", { class: "btn primary", onclick: () => newRun() }, "새 항해 시작"), h("button", { class: "btn", onclick: home }, "처음 화면"), G.all.length ? h("button", { class: "btn", onclick: openArchive }, "탐사 기록 보기") : null)),
+      h("div", { class: "row" }, h("button", { class: "btn primary", onclick: () => newRun() }, "새 항해 시작"), h("button", { class: "btn", id: "to-sheet", onclick: sheet }, "결과지"), h("button", { class: "btn", onclick: home }, "처음 화면"), G.all.length ? h("button", { class: "btn", onclick: openArchive }, "탐사 기록 보기") : null)),
     h("div", { class: "box" }, h("h3", {}, "이번 항해에서 쓴 데이터 지식"), h("div", { class: "lessons" }, LESSONS.map(([t, d]) => h("div", {}, h("b", {}, t), d))))));
   window.scrollTo(0, 0);
 }
 const gameOver = why => endRun(false, why);
+function sheet() {
+  const name = h("input", { class: "name-in", id: "sheet-name", type: "text", maxlength: 20, placeholder: "이름 쓰기", "aria-label": "이름", value: G.name || "" });
+  name.oninput = () => { G.name = name.value; };
+  const fit = G.colonies.filter(c => c.conds.every(k => k.test(c.planet))).length;
+  const th = t => h("th", { scope: "col" }, t), td = v => h("td", { class: "mono" }, v);
+  const sectors = h("div", { class: "tbl-wrap" }, h("table", { class: "pt", style: "min-width:620px" },
+    h("thead", {}, h("tr", {}, ["섹터", "이진수 해독", "사진", "소리", "영상", "사용 비트", "답장 신호"].map(th))),
+    h("tbody", {}, (G.hist || []).map((S, i) => h("tr", {}, td(i + 1), td(`${S.ok}/${S.dec}`),
+      ["photo", "sound", "video"].map(k => td(S.scans[k].length ? `${S.scans[k].length}번` : "—")), td(fmt(S.bits)),
+      td(S.reply ? (S.reply.ok ? "성공" : "실패") : "—"))))));
+  const cols = G.cols && G.cols.length ? COLS.filter(c => G.cols.includes(c.k)).map(c => c.t).join(", ") : "고르지 않음";
+  const sec = (t, ...kids) => h("section", { style: "display:flex;flex-direction:column;gap:10px;min-width:0" }, h("h3", {}, t), ...kids);
+  $("#app").replaceChildren(h("div", { class: "wrap" },
+    h("div", { class: "box sheet", id: "sheet" },
+      h("span", { class: "kicker" }, "행성 탐사 결과지"),
+      h("div", { class: "sheet-head" },
+        h("label", { class: "label row", style: "gap:8px" }, "이름", name),
+        G.code ? h("span", { class: "label" }, "반 코드 ", h("b", {}, G.code)) : null,
+        h("span", { class: "label" }, "날짜 ", h("b", {}, new Date().toLocaleDateString("ko-KR"))),
+        h("span", { class: "label" }, "결과 ", h("b", {}, G.end.won ? "세 섹터 통과" : `섹터 ${G.sector}에서 귀환`))),
+      resultCard(),
+      sec("이주 신청 배정", h("p", {}, `조건을 모두 맞춘 배정 ${fit} / ${G.colonies.length}곳`)),
+      sec("섹터별 기록", sectors),
+      sec("표 설계", h("p", {}, `직접 고른 열: ${cols}`)),
+      sec("조사한 행성", G.all.length ? arcTable() : h("p", { class: "dim" }, "조사한 행성이 없어요."), h("p", { class: "dim", style: "font-size:13px" }, "빨간 값은 해독이 틀린 값이에요.")),
+      h("div", { class: "row no-print" }, h("button", { class: "btn primary", id: "print-sheet", onclick: () => window.print() }, "인쇄하기"), h("button", { class: "btn", id: "sheet-back", onclick: endScreen }, "돌아가기")))));
+  window.scrollTo(0, 0);
+}
 
 function home() {
   $("#app").replaceChildren(h("main", { class: "home" },
