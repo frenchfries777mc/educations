@@ -219,6 +219,16 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .bl .tags span{background:transparent; color:#eaf3ff; border:1px solid rgba(234,243,255,.5); border-radius:0;}
   .bl .desc{color:#b9cde8;} .bl .desc li::marker{color:#ffb547;}
   .bl .play{background:#ffb547; color:#0b3263; border-radius:0; box-shadow:3px 3px 0 #c9832a;}
+  /* 속담 탐정: 탐정 사무소 책상, 짙은 갈색 나무와 누런 종이, 놋쇠색 */
+  .pv{--card:#221a14; background:#221a14; border-color:#5a4632; background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 2px,transparent 2px 9px);}
+  .pv:hover{border-color:#d4a94a; box-shadow:0 18px 50px rgba(212,169,74,.16);}
+  .pv .badge{background:#d4a94a; color:#1d1608;}
+  .pv h2{font-family:'Black Han Sans','Noto Sans KR',sans-serif; font-weight:400; font-size:42px; color:#f2e8d0; letter-spacing:.01em;}
+  .pv .motto{display:flex; align-items:center; gap:10px; color:#d4a94a; font-family:'Noto Serif KR','Nanum Myeongjo',serif; font-size:13px; letter-spacing:.2em; margin-top:6px; white-space:nowrap;}
+  .pv .motto i{flex:0 0 26px; height:0; border-top:2px solid #d4a94a; opacity:.7;}
+  .pv .tags span{background:rgba(212,169,74,.1); color:#f2e8d0; border:1px solid rgba(212,169,74,.4);}
+  .pv .desc{color:#cdbb9c;} .pv .desc li::marker{color:#d4a94a;}
+  .pv .play{background:#d4a94a; color:#1d1608; box-shadow:0 4px 0 #a98529;}
   .games{grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));}
   html[data-ff-theme=light]{--bg:#f6f3ec; --panel:#ffffff; --line:#e2dccf; --text:#1f1b14; --dim:#6d6658;}
   html[data-ff-theme=light] body{background-image:radial-gradient(ellipse 900px 520px at 10% -10%, rgba(255,201,60,.22), transparent 60%), radial-gradient(ellipse 800px 600px at 110% 30%, rgba(255,77,94,.10), transparent 60%);}
@@ -344,6 +354,25 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
         </div>
       </div>
     </article>
+    <article class="game pv">
+      <a class="shot" href="proverb/" aria-label="속담 탐정 플레이"><span class="badge">속담 · 관용구</span><img src="proverb.webp" alt="속담 탐정 게임 화면" loading="lazy"></a>
+      <div class="body">
+        <h2>속담 탐정</h2>
+        <div class="motto"><i></i>사건 기록 제0001호<i></i></div>
+        <div class="tags"><span>국어 · 속담과 관용구</span><span>사건 유형 5가지</span><span>혼자 · 방 코드로 최대 40명</span><span>로그인 없이</span></div>
+        <div class="desc">
+          속담과 관용구의 단서를 풀어 사건을 해결해요. 이어 붙이기, 뜻 풀이, 빈칸 채우기를 풀고 나면 틀린 사건을 오답 노트로 다시 볼 수 있어요.
+          <ul>
+            <li>속담 49개와 관용구 29개를 4지선다로 수사</li>
+            <li>빨리 풀수록 점수가 올라가요</li>
+            <li>혼자 사건 10건, 방 코드로 반 전체가 같은 사건을 대결</li>
+          </ul>
+        </div>
+        <div class="acts">
+          <a class="play" href="proverb/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
+        </div>
+      </div>
+    </article>
   </section>
 
   <section class="why">
@@ -363,6 +392,7 @@ var P=[['행성 탐사','planetsearch/','g5','행성에서 데이터를 모아 �
  ['SpeedCode','speedcode/','g5','2진수를 10진수로 바꾸는 실시간 대결','speedcode 스피드코드 이진수 2진수 십진수 binary decimal 정보'],
  ['Timeline Battle','timeline/','g5','역사 사건 카드를 연표에 놓는 대결','timeline battle 타임라인 배틀 역사 연표 한국사 세계사 과학사'],
  ['문장 수리공','munjang/','g5','맞춤법과 띄어쓰기를 고치는 국어 게임','문장 수리공 국어 맞춤법 띄어쓰기 교정'],
+ ['속담 탐정','proverb/','g5','속담과 관용구의 단서를 풀어 사건을 해결하는 국어 게임','속담 탐정 관용구 국어 이어 붙이기 뜻 풀이 빈칸 사건 수사'],
  ['평형 설계실','balance/','g5','힘의 화살표를 그려 평형을 맞추는 중1 과학','평형 설계실 balance blueprint 과학 힘 평형 중학교 1학년 무게 탄성력 마찰 부력']];
 var G=[['Stickseum','https://frenchfries777mc.github.io/games/stickseum/','g1','친구들과 실시간으로 붙는 스틱맨 난투','stickseum 스틱맨 난투 액션'],
  ['Crown Envoy','https://frenchfries777mc.github.io/games/crownenvoy/','g2','외교와 전쟁으로 제국을 키우는 턴제 전략','crown envoy 외교 전쟁 전략'],
