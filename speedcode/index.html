@@ -161,6 +161,14 @@
   .skip{margin-top:12px; background:none; border:0; color:var(--dim); font-size:14px; text-decoration:underline; text-underline-offset:3px;}
   .plus{position:absolute; left:50%; top:46%; transform:translate(-50%,-50%); font-family:'Oswald',sans-serif; font-weight:700; font-size:54px; color:var(--ok); pointer-events:none; opacity:0;}
   .plus.go{animation:plus .7s ease;}
+  .plus.big{color:var(--fry); font-size:68px; text-shadow:0 0 24px rgba(255,180,60,.6);}
+  .combo{display:inline-block; margin-top:8px; padding:3px 12px; border-radius:99px; font-size:13px; font-weight:700; color:var(--fry); background:rgba(255,201,60,.12); border:1px solid rgba(255,201,60,.35);}
+  .combo.hide{display:none;}
+  .pen{position:absolute; inset:0; z-index:5; display:none; flex-direction:column; align-items:center; justify-content:center; gap:4px; background:rgba(8,9,13,.8); backdrop-filter:blur(3px); -webkit-backdrop-filter:blur(3px);}
+  .pen.on{display:flex;}
+  .pen b{font-size:18px; color:var(--bad);}
+  .pen span{font-family:'Oswald',sans-serif; font-weight:700; font-size:84px; line-height:1; color:var(--text);}
+  .rule{margin-top:12px; color:var(--dim); font-size:13.5px; line-height:1.45;}
   @keyframes plus{0%{opacity:0; transform:translate(-50%,-30%) scale(.6);}30%{opacity:1; transform:translate(-50%,-60%) scale(1.1);}100%{opacity:0; transform:translate(-50%,-110%) scale(1);}}
   .countdown{position:fixed; inset:0; display:none; place-items:center; background:rgba(8,9,13,.82); z-index:20; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);}
   .countdown.on{display:grid;}
@@ -276,6 +284,7 @@
           <div class="setRow"><span>방장</span><div class="seg" id="segHostPlay"><button data-v="0" class="on">순위판만 보기</button><button data-v="1">나도 참가</button></div></div>
           <button class="btn main" id="startBtn" disabled>시작</button>
         </div>
+        <div class="rule">연속 정답 3·6·9번째부터 점수가 늘어요(최대 4점). 오답이면 2초 쉬어요.</div>
         <div id="guestWait" class="panel hide">
           <h3 style="margin:0 0 6px">방장이 시작하기를 기다리는 중<span class="waitDots"></span></h3>
           <div class="msg info" id="guestSet"></div>
@@ -290,7 +299,7 @@
   <!-- GAME -->
   <section class="screen" id="sGame">
     <div class="hud">
-      <div class="stat"><small>해독</small><b id="gScore">0</b></div>
+      <div class="stat"><small>점수</small><b id="gScore">0</b></div>
       <div class="stat time" id="gTimeBox"><small>남은 시간</small><b id="gTime">0:00</b></div>
       <div class="stat" id="gRankBox"><small>순위</small><b id="gRank">-</b></div>
     </div>
@@ -298,6 +307,7 @@
     <div class="play">
       <div class="stage">
         <div class="lvl"><b id="gBits">3</b><span id="gTask">BIT · 십진수로 바꾸세요</span></div>
+        <div class="combo hide" id="gCombo"></div>
         <div class="dec hide" id="gDec"></div>
         <div class="bitsWrap"><div class="bits" id="gBitsBox"></div><div class="dir" id="gDir"><span>큰 자리</span><i></i><span>작은 자리</span></div></div>
         <div class="ans empty" id="gAns">?</div>
@@ -310,6 +320,7 @@
         <div class="pad2 hide" id="pad2"><button data-k="clr">지우기</button><button data-k="ok" class="k-ok"><span>확인</span><small>Enter</small></button></div>
         <button class="skip" id="skipBtn">건너뛰기</button> <button class="skip hide" id="endNow2">지금 끝내기</button>
         <div class="plus" id="gPlus">+1</div>
+        <div class="pen" id="pen"><b>오답! 쉬는 중</b><span id="penNum">2</span></div>
       </div>
       <div class="side panel" id="gSide">
         <h4>실시간 순위</h4>
@@ -336,7 +347,7 @@
     <h1 class="title" style="font-size:clamp(44px,9vw,84px)">결과</h1>
     <div class="podium" id="podium"></div>
     <div class="myRes" id="myRes"></div>
-    <div class="tblWrap"><table class="resTbl"><thead><tr><th>순위</th><th>이름</th><th>해독</th><th>정확도</th><th>최고 자릿수</th></tr></thead><tbody id="resBody"></tbody></table></div>
+    <div class="tblWrap"><table class="resTbl"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>해독</th><th>정확도</th><th>최고 자릿수</th></tr></thead><tbody id="resBody"></tbody></table></div>
     <div class="row" style="margin-top:22px; justify-content:center">
       <button class="btn main hide" id="againBtn">다시 하기</button>
       <button class="btn ghost" id="homeBtn">처음으로</button>
@@ -356,7 +367,7 @@ var $ = function(id){ return document.getElementById(id); };
 var qs = new URLSearchParams(location.search);
 
 // ---------- language: shared Frenchfries777 setting (same key as the Educations site), else the browser language ----------
-var I18N={"이름": ["Name", "Nom", "Name", "Nombre", "名前"], "이름을 입력하세요": ["Enter your name", "Entrez votre nom", "Gib deinen Namen ein", "Escribe tu nombre", "名前を入力"], "무작위 이름": ["Random name", "Nom aléatoire", "Zufälliger Name", "Nombre aleatorio", "ランダムな名前"], "방 만들기": ["Create room", "Créer une salle", "Raum erstellen", "Crear sala", "ルームを作る"], "방 코드를 받아 친구들을 초대해요. 최대 40명.": ["Get a room code and invite your friends. Up to 40 players.", "Obtenez un code et invitez vos amis. Jusqu'à 40 joueurs.", "Hol dir einen Raumcode und lade Freunde ein. Bis zu 40 Spieler.", "Consigue un código e invita a tus amigos. Hasta 40 jugadores.", "ルームコードで友だちを招待。最大40人。"], "참가하기": ["Join a room", "Rejoindre", "Beitreten", "Unirse", "参加する"], "받은 방 코드를 입력하세요.": ["Enter the room code you got.", "Entrez le code de la salle.", "Gib den Raumcode ein.", "Escribe el código de la sala.", "もらったルームコードを入力。"], "참가": ["Join", "Rejoindre", "Beitreten", "Entrar", "参加"], "혼자 연습": ["Solo practice", "Entraînement solo", "Allein üben", "Práctica en solitario", "ひとりで練習"], "방 코드": ["Room code", "Code de la salle", "Raumcode", "Código de sala", "ルームコード"], "시간": ["Time", "Temps", "Zeit", "Tiempo", "時間"], "1분": ["1 min", "1 min", "1 Min.", "1 min", "1分"], "1분 30초": ["1 min 30 s", "1 min 30", "1:30 Min.", "1 min 30 s", "1分30秒"], "2분": ["2 min", "2 min", "2 Min.", "2 min", "2分"], "3분": ["3 min", "3 min", "3 Min.", "3 min", "3分"], "최대 자릿수": ["Max bits", "Bits max", "Max. Bits", "Bits máx.", "最大桁数"], "6비트": ["6 bits", "6 bits", "6 Bits", "6 bits", "6ビット"], "8비트": ["8 bits", "8 bits", "8 Bits", "8 bits", "8ビット"], "10비트": ["10 bits", "10 bits", "10 Bits", "10 bits", "10ビット"], "자릿값 힌트": ["Place values", "Valeurs des positions", "Stellenwerte", "Valores posicionales", "位の値ヒント"], "보이기": ["Show", "Afficher", "Zeigen", "Mostrar", "表示"], "숨기기": ["Hide", "Masquer", "Verbergen", "Ocultar", "非表示"], "방장": ["Host", "Hôte", "Gastgeber", "Anfitrión", "ホスト"], "순위판만 보기": ["Watch the board", "Voir le classement", "Nur Rangliste", "Solo ver el ranking", "ランキングを見る"], "나도 참가": ["Play too", "Jouer aussi", "Mitspielen", "Jugar también", "自分も参加"], "시작": ["Start", "Commencer", "Start", "Empezar", "スタート"], "방장이 시작하기를 기다리는 중": ["Waiting for the host to start", "En attente du lancement par l'hôte", "Warten auf den Start durch den Gastgeber", "Esperando a que el anfitrión empiece", "ホストの開始を待っています"], "참가자": ["Players", "Joueurs", "Spieler", "Jugadores", "参加者"], "이름 바꾸기": ["Rename", "Renommer", "Umbenennen", "Cambiar nombre", "名前を変更"], "내 이름": ["My name", "Mon nom", "Mein Name", "Mi nombre", "自分の名前"], "나가기": ["Leave", "Quitter", "Verlassen", "Salir", "退出"], "해독": ["Solved", "Résolus", "Gelöst", "Resueltos", "解読"], "남은 시간": ["Time left", "Temps restant", "Restzeit", "Tiempo restante", "残り時間"], "순위": ["Rank", "Rang", "Rang", "Puesto", "順位"], "BIT · 십진수로 바꾸세요": ["BIT · convert to decimal", "BIT · en décimal", "BIT · ins Dezimalsystem", "BIT · a decimal", "BIT · 10進数に変換"], "확인": ["OK", "OK", "OK", "OK", "確認"], "건너뛰기": ["Skip", "Passer", "Überspringen", "Saltar", "スキップ"], "지금 끝내기": ["End now", "Terminer", "Jetzt beenden", "Terminar ya", "今すぐ終了"], "실시간 순위": ["Live ranking", "Classement en direct", "Live-Rangliste", "Ranking en vivo", "リアルタイム順位"], "전체 해독": ["Total solved", "Total résolus", "Insgesamt gelöst", "Total resueltos", "合計解読"], "결과": ["Results", "Résultats", "Ergebnis", "Resultados", "結果"], "정확도": ["Accuracy", "Précision", "Genauigkeit", "Precisión", "正確さ"], "최고 자릿수": ["Best bits", "Meilleurs bits", "Beste Bits", "Mejores bits", "最高桁数"], "다시 하기": ["Play again", "Rejouer", "Nochmal", "Otra vez", "もう一度"], "처음으로": ["Home", "Accueil", "Startseite", "Inicio", "最初へ"], "오프라인": ["Offline", "Hors ligne", "Offline", "Sin conexión", "オフライン"], "복사": ["Copy", "Copier", "Kopieren", "Copiar", "コピー"], "연결됨": ["Connected", "Connecté", "Verbunden", "Conectado", "接続中"], "다시 연결 중": ["Reconnecting", "Reconnexion", "Verbinde neu", "Reconectando", "再接続中"], "서버 연결 끊김": ["Server disconnected", "Serveur déconnecté", "Server getrennt", "Servidor desconectado", "サーバー切断"], "방장과 연결 끊김": ["Host disconnected", "Hôte déconnecté", "Gastgeber getrennt", "Anfitrión desconectado", "ホストと切断"], "방장과 연결이 끊겼어요": ["Lost connection to the host", "Connexion à l'hôte perdue", "Verbindung zum Gastgeber verloren", "Se perdió la conexión con el anfitrión", "ホストとの接続が切れました"], "이름을 먼저 입력하세요.": ["Enter your name first.", "Entrez d'abord votre nom.", "Gib zuerst deinen Namen ein.", "Escribe primero tu nombre.", "先に名前を入力してください。"], "방 코드 5자리를 입력하세요.": ["Enter the 5-character room code.", "Entrez le code à 5 caractères.", "Gib den 5-stelligen Raumcode ein.", "Escribe el código de 5 caracteres.", "5文字のルームコードを入力してください。"], "연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.": ["Couldn't load the connection tool. Check your internet and refresh.", "Impossible de charger l'outil de connexion. Vérifiez Internet et actualisez.", "Das Verbindungstool konnte nicht geladen werden. Prüfe das Internet und lade neu.", "No se pudo cargar la herramienta de conexión. Revisa internet y recarga.", "接続ツールを読み込めませんでした。ネット接続を確認して再読み込みしてください。"], "방을 만드는 중...": ["Creating room...", "Création de la salle...", "Raum wird erstellt...", "Creando sala...", "ルームを作成中..."], "방을 만들지 못했어요 ({0}). 잠시 후 다시 해 보세요.": ["Couldn't create the room ({0}). Try again shortly.", "Impossible de créer la salle ({0}). Réessayez bientôt.", "Raum konnte nicht erstellt werden ({0}). Versuch es gleich nochmal.", "No se pudo crear la sala ({0}). Inténtalo en un momento.", "ルームを作れませんでした({0})。少し後でもう一度試してください。"], "링크를 복사했어요": ["Link copied", "Lien copié", "Link kopiert", "Enlace copiado", "リンクをコピーしました"], "방에 연결하는 중...": ["Connecting to room...", "Connexion à la salle...", "Verbinde mit dem Raum...", "Conectando a la sala...", "ルームに接続中..."], "연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.": ["Connection timed out. Check the code and try again.", "Délai dépassé. Vérifiez le code et réessayez.", "Zeitüberschreitung. Prüfe den Code und versuch es nochmal.", "Tiempo agotado. Revisa el código e inténtalo de nuevo.", "接続がタイムアウトしました。コードを確認してもう一度試してください。"], "방을 찾을 수 없어요. 코드를 확인하세요.": ["Room not found. Check the code.", "Salle introuvable. Vérifiez le code.", "Raum nicht gefunden. Prüfe den Code.", "Sala no encontrada. Revisa el código.", "ルームが見つかりません。コードを確認してください。"], "연결하지 못했어요 ({0}).": ["Couldn't connect ({0}).", "Connexion impossible ({0}).", "Verbindung fehlgeschlagen ({0}).", "No se pudo conectar ({0}).", "接続できませんでした({0})。"], "방이 가득 찼어요 (최대 40명).": ["The room is full (max 40).", "La salle est pleine (40 max).", "Der Raum ist voll (max. 40).", "La sala está llena (máx. 40).", "ルームが満員です(最大40人)。"], "이름을 바꿨어요": ["Name changed", "Nom modifié", "Name geändert", "Nombre cambiado", "名前を変更しました"], "{0} · 최대 {1}비트 · 자릿값 힌트 {2}": ["{0} · max {1} bits · place values {2}", "{0} · {1} bits max · valeurs {2}", "{0} · max. {1} Bits · Stellenwerte {2}", "{0} · máx. {1} bits · valores {2}", "{0} · 最大{1}ビット · 位の値ヒント{2}"], "있음": ["on", "oui", "an", "sí", "あり"], "없음": ["off", "non", "aus", "no", "なし"], "아직 아무도 없어요": ["No one yet", "Personne pour l'instant", "Noch niemand da", "Aún no hay nadie", "まだ誰もいません"], "{0}비트로 올라갔어요!": ["Up to {0} bits!", "Passage à {0} bits !", "Jetzt {0} Bits!", "¡Subes a {0} bits!", "{0}ビットに上がりました!"], "시간 종료": ["Time's up", "Temps écoulé", "Zeit um", "Se acabó", "時間切れ"], "참가자를 기다리는 중": ["Waiting for players", "En attente de joueurs", "Warte auf Spieler", "Esperando jugadores", "参加者を待っています"], "내 순위 {0}위 / {1}명": ["My rank {0} / {1}", "Mon rang {0} / {1}", "Mein Rang {0} / {1}", "Mi puesto {0} / {1}", "自分の順位 {0}位 / {1}人"], "{0}개": ["{0} solved", "{0} résolus", "{0} gelöst", "{0} resueltos", "{0}個"], "해독 {0}개 · 최고 {1}비트": ["Solved {0} · best {1} bits", "Résolus {0} · meilleur {1} bits", "Gelöst {0} · beste {1} Bits", "Resueltos {0} · mejor {1} bits", "解読 {0}個 · 最高{1}ビット"], "{0}위 · 해독 {1}개": ["Rank {0} · solved {1}", "Rang {0} · résolus {1}", "Rang {0} · gelöst {1}", "Puesto {0} · resueltos {1}", "{0}位 · 解読 {1}個"], "🏆 우승! ": ["🏆 Winner! ", "🏆 Victoire ! ", "🏆 Sieg! ", "🏆 ¡Victoria! ", "🏆 優勝! "], "{0}비트": ["{0} bits", "{0} bits", "{0} Bits", "{0} bits", "{0}ビット"], "방장이 다시 시작하면 대기실로 이동해요.": ["You'll go to the lobby when the host starts again.", "Vous irez au salon quand l'hôte relancera.", "Wenn der Gastgeber neu startet, geht es zur Lobby.", "Irás a la sala de espera cuando el anfitrión vuelva a empezar.", "ホストが再開するとロビーに移動します。"], "플레이어": ["Player", "Joueur", "Spieler", "Jugador", "プレイヤー"], "큰 자리": ["Bigger", "Plus grand", "Größer", "Mayor", "大きい位"], "작은 자리": ["Smaller", "Plus petit", "Kleiner", "Menor", "小さい位"], "문제 방향": ["Direction", "Sens", "Richtung", "Dirección", "出題の向き"], "2진수 → 10진수": ["Binary → decimal", "Binaire → décimal", "Binär → dezimal", "Binario → decimal", "2進数 → 10進数"], "10진수 → 2진수": ["Decimal → binary", "Décimal → binaire", "Dezimal → binär", "Decimal → binario", "10進数 → 2進数"], "섞기": ["Mixed", "Mélangé", "Gemischt", "Mezclado", "ミックス"], "BIT · 이진수로 바꾸세요": ["BIT · convert to binary", "BIT · en binaire", "BIT · ins Binärsystem", "BIT · a binario", "BIT · 2進数に変換"], "지우기": ["Clear", "Effacer", "Löschen", "Borrar", "クリア"], "언어": ["Language", "Langue", "Sprache", "Idioma", "言語"]};
+var I18N={"이름": ["Name", "Nom", "Name", "Nombre", "名前"], "이름을 입력하세요": ["Enter your name", "Entrez votre nom", "Gib deinen Namen ein", "Escribe tu nombre", "名前を入力"], "무작위 이름": ["Random name", "Nom aléatoire", "Zufälliger Name", "Nombre aleatorio", "ランダムな名前"], "방 만들기": ["Create room", "Créer une salle", "Raum erstellen", "Crear sala", "ルームを作る"], "방 코드를 받아 친구들을 초대해요. 최대 40명.": ["Get a room code and invite your friends. Up to 40 players.", "Obtenez un code et invitez vos amis. Jusqu'à 40 joueurs.", "Hol dir einen Raumcode und lade Freunde ein. Bis zu 40 Spieler.", "Consigue un código e invita a tus amigos. Hasta 40 jugadores.", "ルームコードで友だちを招待。最大40人。"], "참가하기": ["Join a room", "Rejoindre", "Beitreten", "Unirse", "参加する"], "받은 방 코드를 입력하세요.": ["Enter the room code you got.", "Entrez le code de la salle.", "Gib den Raumcode ein.", "Escribe el código de la sala.", "もらったルームコードを入力。"], "참가": ["Join", "Rejoindre", "Beitreten", "Entrar", "参加"], "혼자 연습": ["Solo practice", "Entraînement solo", "Allein üben", "Práctica en solitario", "ひとりで練習"], "방 코드": ["Room code", "Code de la salle", "Raumcode", "Código de sala", "ルームコード"], "시간": ["Time", "Temps", "Zeit", "Tiempo", "時間"], "1분": ["1 min", "1 min", "1 Min.", "1 min", "1分"], "1분 30초": ["1 min 30 s", "1 min 30", "1:30 Min.", "1 min 30 s", "1分30秒"], "2분": ["2 min", "2 min", "2 Min.", "2 min", "2分"], "3분": ["3 min", "3 min", "3 Min.", "3 min", "3分"], "최대 자릿수": ["Max bits", "Bits max", "Max. Bits", "Bits máx.", "最大桁数"], "6비트": ["6 bits", "6 bits", "6 Bits", "6 bits", "6ビット"], "8비트": ["8 bits", "8 bits", "8 Bits", "8 bits", "8ビット"], "10비트": ["10 bits", "10 bits", "10 Bits", "10 bits", "10ビット"], "자릿값 힌트": ["Place values", "Valeurs des positions", "Stellenwerte", "Valores posicionales", "位の値ヒント"], "보이기": ["Show", "Afficher", "Zeigen", "Mostrar", "表示"], "숨기기": ["Hide", "Masquer", "Verbergen", "Ocultar", "非表示"], "방장": ["Host", "Hôte", "Gastgeber", "Anfitrión", "ホスト"], "순위판만 보기": ["Watch the board", "Voir le classement", "Nur Rangliste", "Solo ver el ranking", "ランキングを見る"], "나도 참가": ["Play too", "Jouer aussi", "Mitspielen", "Jugar también", "自分も参加"], "시작": ["Start", "Commencer", "Start", "Empezar", "スタート"], "방장이 시작하기를 기다리는 중": ["Waiting for the host to start", "En attente du lancement par l'hôte", "Warten auf den Start durch den Gastgeber", "Esperando a que el anfitrión empiece", "ホストの開始を待っています"], "참가자": ["Players", "Joueurs", "Spieler", "Jugadores", "参加者"], "이름 바꾸기": ["Rename", "Renommer", "Umbenennen", "Cambiar nombre", "名前を変更"], "내 이름": ["My name", "Mon nom", "Mein Name", "Mi nombre", "自分の名前"], "나가기": ["Leave", "Quitter", "Verlassen", "Salir", "退出"], "해독": ["Solved", "Résolus", "Gelöst", "Resueltos", "解読"], "남은 시간": ["Time left", "Temps restant", "Restzeit", "Tiempo restante", "残り時間"], "순위": ["Rank", "Rang", "Rang", "Puesto", "順位"], "BIT · 십진수로 바꾸세요": ["BIT · convert to decimal", "BIT · en décimal", "BIT · ins Dezimalsystem", "BIT · a decimal", "BIT · 10進数に変換"], "확인": ["OK", "OK", "OK", "OK", "確認"], "건너뛰기": ["Skip", "Passer", "Überspringen", "Saltar", "スキップ"], "지금 끝내기": ["End now", "Terminer", "Jetzt beenden", "Terminar ya", "今すぐ終了"], "실시간 순위": ["Live ranking", "Classement en direct", "Live-Rangliste", "Ranking en vivo", "リアルタイム順位"], "전체 해독": ["Total solved", "Total résolus", "Insgesamt gelöst", "Total resueltos", "合計解読"], "결과": ["Results", "Résultats", "Ergebnis", "Resultados", "結果"], "정확도": ["Accuracy", "Précision", "Genauigkeit", "Precisión", "正確さ"], "최고 자릿수": ["Best bits", "Meilleurs bits", "Beste Bits", "Mejores bits", "最高桁数"], "다시 하기": ["Play again", "Rejouer", "Nochmal", "Otra vez", "もう一度"], "처음으로": ["Home", "Accueil", "Startseite", "Inicio", "最初へ"], "오프라인": ["Offline", "Hors ligne", "Offline", "Sin conexión", "オフライン"], "복사": ["Copy", "Copier", "Kopieren", "Copiar", "コピー"], "연결됨": ["Connected", "Connecté", "Verbunden", "Conectado", "接続中"], "다시 연결 중": ["Reconnecting", "Reconnexion", "Verbinde neu", "Reconectando", "再接続中"], "서버 연결 끊김": ["Server disconnected", "Serveur déconnecté", "Server getrennt", "Servidor desconectado", "サーバー切断"], "방장과 연결 끊김": ["Host disconnected", "Hôte déconnecté", "Gastgeber getrennt", "Anfitrión desconectado", "ホストと切断"], "방장과 연결이 끊겼어요": ["Lost connection to the host", "Connexion à l'hôte perdue", "Verbindung zum Gastgeber verloren", "Se perdió la conexión con el anfitrión", "ホストとの接続が切れました"], "이름을 먼저 입력하세요.": ["Enter your name first.", "Entrez d'abord votre nom.", "Gib zuerst deinen Namen ein.", "Escribe primero tu nombre.", "先に名前を入力してください。"], "방 코드 5자리를 입력하세요.": ["Enter the 5-character room code.", "Entrez le code à 5 caractères.", "Gib den 5-stelligen Raumcode ein.", "Escribe el código de 5 caracteres.", "5文字のルームコードを入力してください。"], "연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.": ["Couldn't load the connection tool. Check your internet and refresh.", "Impossible de charger l'outil de connexion. Vérifiez Internet et actualisez.", "Das Verbindungstool konnte nicht geladen werden. Prüfe das Internet und lade neu.", "No se pudo cargar la herramienta de conexión. Revisa internet y recarga.", "接続ツールを読み込めませんでした。ネット接続を確認して再読み込みしてください。"], "방을 만드는 중...": ["Creating room...", "Création de la salle...", "Raum wird erstellt...", "Creando sala...", "ルームを作成中..."], "방을 만들지 못했어요 ({0}). 잠시 후 다시 해 보세요.": ["Couldn't create the room ({0}). Try again shortly.", "Impossible de créer la salle ({0}). Réessayez bientôt.", "Raum konnte nicht erstellt werden ({0}). Versuch es gleich nochmal.", "No se pudo crear la sala ({0}). Inténtalo en un momento.", "ルームを作れませんでした({0})。少し後でもう一度試してください。"], "링크를 복사했어요": ["Link copied", "Lien copié", "Link kopiert", "Enlace copiado", "リンクをコピーしました"], "방에 연결하는 중...": ["Connecting to room...", "Connexion à la salle...", "Verbinde mit dem Raum...", "Conectando a la sala...", "ルームに接続中..."], "연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.": ["Connection timed out. Check the code and try again.", "Délai dépassé. Vérifiez le code et réessayez.", "Zeitüberschreitung. Prüfe den Code und versuch es nochmal.", "Tiempo agotado. Revisa el código e inténtalo de nuevo.", "接続がタイムアウトしました。コードを確認してもう一度試してください。"], "방을 찾을 수 없어요. 코드를 확인하세요.": ["Room not found. Check the code.", "Salle introuvable. Vérifiez le code.", "Raum nicht gefunden. Prüfe den Code.", "Sala no encontrada. Revisa el código.", "ルームが見つかりません。コードを確認してください。"], "연결하지 못했어요 ({0}).": ["Couldn't connect ({0}).", "Connexion impossible ({0}).", "Verbindung fehlgeschlagen ({0}).", "No se pudo conectar ({0}).", "接続できませんでした({0})。"], "방이 가득 찼어요 (최대 40명).": ["The room is full (max 40).", "La salle est pleine (40 max).", "Der Raum ist voll (max. 40).", "La sala está llena (máx. 40).", "ルームが満員です(最大40人)。"], "이름을 바꿨어요": ["Name changed", "Nom modifié", "Name geändert", "Nombre cambiado", "名前を変更しました"], "{0} · 최대 {1}비트 · 자릿값 힌트 {2}": ["{0} · max {1} bits · place values {2}", "{0} · {1} bits max · valeurs {2}", "{0} · max. {1} Bits · Stellenwerte {2}", "{0} · máx. {1} bits · valores {2}", "{0} · 最大{1}ビット · 位の値ヒント{2}"], "있음": ["on", "oui", "an", "sí", "あり"], "없음": ["off", "non", "aus", "no", "なし"], "아직 아무도 없어요": ["No one yet", "Personne pour l'instant", "Noch niemand da", "Aún no hay nadie", "まだ誰もいません"], "{0}비트로 올라갔어요!": ["Up to {0} bits!", "Passage à {0} bits !", "Jetzt {0} Bits!", "¡Subes a {0} bits!", "{0}ビットに上がりました!"], "시간 종료": ["Time's up", "Temps écoulé", "Zeit um", "Se acabó", "時間切れ"], "참가자를 기다리는 중": ["Waiting for players", "En attente de joueurs", "Warte auf Spieler", "Esperando jugadores", "参加者を待っています"], "내 순위 {0}위 / {1}명": ["My rank {0} / {1}", "Mon rang {0} / {1}", "Mein Rang {0} / {1}", "Mi puesto {0} / {1}", "自分の順位 {0}位 / {1}人"], "{0}개": ["{0} solved", "{0} résolus", "{0} gelöst", "{0} resueltos", "{0}個"], "해독 {0}개 · 최고 {1}비트": ["Solved {0} · best {1} bits", "Résolus {0} · meilleur {1} bits", "Gelöst {0} · beste {1} Bits", "Resueltos {0} · mejor {1} bits", "解読 {0}個 · 最高{1}ビット"], "{0}위 · 해독 {1}개": ["Rank {0} · solved {1}", "Rang {0} · résolus {1}", "Rang {0} · gelöst {1}", "Puesto {0} · resueltos {1}", "{0}位 · 解読 {1}個"], "🏆 우승! ": ["🏆 Winner! ", "🏆 Victoire ! ", "🏆 Sieg! ", "🏆 ¡Victoria! ", "🏆 優勝! "], "{0}비트": ["{0} bits", "{0} bits", "{0} Bits", "{0} bits", "{0}ビット"], "방장이 다시 시작하면 대기실로 이동해요.": ["You'll go to the lobby when the host starts again.", "Vous irez au salon quand l'hôte relancera.", "Wenn der Gastgeber neu startet, geht es zur Lobby.", "Irás a la sala de espera cuando el anfitrión vuelva a empezar.", "ホストが再開するとロビーに移動します。"], "플레이어": ["Player", "Joueur", "Spieler", "Jugador", "プレイヤー"], "큰 자리": ["Bigger", "Plus grand", "Größer", "Mayor", "大きい位"], "작은 자리": ["Smaller", "Plus petit", "Kleiner", "Menor", "小さい位"], "문제 방향": ["Direction", "Sens", "Richtung", "Dirección", "出題の向き"], "2진수 → 10진수": ["Binary → decimal", "Binaire → décimal", "Binär → dezimal", "Binario → decimal", "2進数 → 10進数"], "10진수 → 2진수": ["Decimal → binary", "Décimal → binaire", "Dezimal → binär", "Decimal → binario", "10進数 → 2進数"], "섞기": ["Mixed", "Mélangé", "Gemischt", "Mezclado", "ミックス"], "BIT · 이진수로 바꾸세요": ["BIT · convert to binary", "BIT · en binaire", "BIT · ins Binärsystem", "BIT · a binario", "BIT · 2進数に変換"], "지우기": ["Clear", "Effacer", "Löschen", "Borrar", "クリア"], "점수": ["Score", "Score", "Punkte", "Puntos", "スコア"], "{0}점": ["{0} pts", "{0} pts", "{0} Pkt.", "{0} pts", "{0}点"], "{0}위 · {1}점": ["Rank {0} · {1} pts", "Rang {0} · {1} pts", "Rang {0} · {1} Pkt.", "Puesto {0} · {1} pts", "{0}位 · {1}点"], "{0}점 · 해독 {1}개 · 최고 {2}비트": ["{0} pts · solved {1} · best {2} bits", "{0} pts · résolus {1} · meilleur {2} bits", "{0} Pkt. · gelöst {1} · beste {2} Bits", "{0} pts · resueltos {1} · mejor {2} bits", "{0}点 · 解読 {1}個 · 最高{2}ビット"], "🔥 콤보 {0} · 다음 +{1}": ["🔥 Combo {0} · next +{1}", "🔥 Combo {0} · prochain +{1}", "🔥 Combo {0} · nächster +{1}", "🔥 Combo {0} · siguiente +{1}", "🔥 コンボ {0} · 次は +{1}"], "오답! 쉬는 중": ["Wrong! Cooling down", "Faux ! Pause", "Falsch! Pause", "¡Error! Pausa", "不正解!少し休憩"], "연속 정답 3·6·9번째부터 점수가 늘어요(최대 4점). 오답이면 2초 쉬어요.": ["From the 3rd, 6th and 9th correct answer in a row, each is worth more (up to 4 pts). A wrong answer pauses you for 2 s.", "À partir de la 3e, 6e et 9e bonne réponse d'affilée, chacune vaut plus (4 pts max). Une erreur vous bloque 2 s.", "Ab der 3., 6. und 9. richtigen Antwort in Folge zählt jede mehr (max. 4 Pkt.). Eine falsche Antwort sperrt dich 2 s.", "Desde la 3.ª, 6.ª y 9.ª respuesta correcta seguida, cada una vale más (máx. 4 pts). Un error te bloquea 2 s.", "連続正解の3・6・9問目から1問の点数が増えます(最大4点)。不正解だと2秒休みます。"], "언어": ["Language", "Langue", "Sprache", "Idioma", "言語"]};
 var RNAMES={"ko": [["빠른", "날쌘", "똑똑한", "용감한", "반짝이는", "조용한", "신비한", "번개", "졸린", "배고픈", "씩씩한", "은하"], ["고양이", "로봇", "외계인", "비트", "해커", "우주인", "탐험가", "부엉이", "펭귄", "드론", "혜성", "다람쥐"]], "en": [["Swift", "Clever", "Brave", "Shiny", "Quiet", "Mystic", "Sleepy", "Hungry", "Bold", "Cosmic", "Lucky", "Turbo"], ["Cat", "Robot", "Alien", "Bit", "Hacker", "Astronaut", "Explorer", "Owl", "Penguin", "Drone", "Comet", "Squirrel"]], "fr": [["Chat", "Robot", "Alien", "Bit", "Hacker", "Astronaute", "Explorateur", "Hibou", "Pingouin", "Drone", "Comète", "Écureuil"], ["rapide", "malin", "brave", "brillant", "calme", "mystique", "endormi", "affamé", "hardi", "cosmique", "chanceux", "turbo"]], "de": [["Flinke", "Kluge", "Mutige", "Leuchtende", "Stille", "Mystische", "Müde", "Hungrige", "Kühne", "Kosmische", "Glückliche", "Turbo"], ["Katze", "Robo", "Alien", "Bit", "Hackerin", "Astronautin", "Forscherin", "Eule", "Pinguin", "Drohne", "Rakete", "Maus"]], "es": [["Gato", "Robot", "Alien", "Bit", "Hacker", "Astronauta", "Explorador", "Búho", "Pingüino", "Dron", "Cometa", "Ardilla"], ["veloz", "listo", "valiente", "brillante", "tranquilo", "místico", "dormido", "hambriento", "audaz", "cósmico", "afortunado", "turbo"]], "ja": [["すばやい", "かしこい", "勇敢な", "きらめく", "しずかな", "ふしぎな", "ねむい", "はらぺこ", "元気な", "銀河の", "ラッキー", "ターボ"], ["ネコ", "ロボ", "宇宙人", "ビット", "ハッカー", "宇宙飛行士", "探検家", "フクロウ", "ペンギン", "ドローン", "彗星", "リス"]]};
 var LANGS=['ko','en','fr','de','es','ja'], LIDX={en:0,fr:1,de:2,es:3,ja:4}, LKEY='arenaClashLang';
 var lang = (function(){
@@ -433,13 +444,16 @@ var S = {
   phase:'idle',    // idle | lobby | count | play | result
   endAt:0, startAt:0, total:0,
   // my play
-  score:0, wrong:0, maxBits:0, bits:START_BITS, cur:0, input:'',
+  score:0, solved:0, combo:0, wrong:0, maxBits:0, bits:START_BITS, cur:0, input:'',
   // host
   players:{},      // token -> {name, conn, score, wrong, maxBits, last, online}
   conn:null,       // guest's connection to host
   board:null
 };
 
+// points per correct answer: 1, then +1 from the 3rd, 6th and 9th correct answer in a row (max 4)
+function comboPts(c){ return 1+Math.min(3, Math.floor(c/3)); }
+var PEN_MS=2000;
 function bitsFor(score, maxBits){
   // 3 bits, then one more bit after every few solves (more solves needed as it gets harder)
   var b = START_BITS, need = 3, acc = 0;
@@ -528,12 +542,12 @@ function handleHostMsg(conn, d){
         if(S.phase==='lobby'){ for(var t in S.players){ if(!S.players[t].online){ delete S.players[t]; freed=true; break; } } }
         if(!freed){ send(conn,{t:'full'}); setTimeout(function(){ conn.close(); }, 500); return; }
       }
-      pl = S.players[tok] = { name:'', conn:null, score:0, wrong:0, maxBits:0, last:0, online:true };
+      pl = S.players[tok] = { name:'', conn:null, score:0, solved:0, wrong:0, maxBits:0, last:0, online:true };
     }
     if(pl.conn && pl.conn!==conn){ try{ pl.conn.close(); }catch(e){} }
     pl.conn=conn; pl.online=true; conn._tok=tok;
     pl.name = uniqueName(cleanName(d.name), tok);
-    send(conn, { t:'welcome', name:pl.name, settings:S.settings, phase:S.phase, remain:S.endAt-Date.now(), total:S.total*1000, score:pl.score, wrong:pl.wrong, maxBits:pl.maxBits });
+    send(conn, { t:'welcome', name:pl.name, settings:S.settings, phase:S.phase, remain:S.endAt-Date.now(), total:S.total*1000, score:pl.score, solved:pl.solved, wrong:pl.wrong, maxBits:pl.maxBits });
     if(S.phase==='result') send(conn, { t:'end', ranking:ranking() });
     if(S.phase==='lobby') renderChips();
     boardDirty=true;
@@ -545,8 +559,8 @@ function handleHostMsg(conn, d){
     send(conn, { t:'named', name:pl2.name }); renderChips(); return;
   }
   if(d.t==='score' && (S.phase==='play' || S.phase==='count')){
-    var sc = d.score|0, wr = d.wrong|0, mb = d.maxBits|0;
-    if(sc > pl2.score){ pl2.score = Math.min(sc, pl2.score+5); pl2.last = Date.now(); }
+    var sc = d.score|0, so = d.solved|0, wr = d.wrong|0, mb = d.maxBits|0;
+    if(sc > pl2.score){ pl2.score = Math.min(sc, pl2.score+40); pl2.solved = Math.min(Math.max(so, pl2.solved), pl2.solved+10); pl2.last = Date.now(); }
     pl2.wrong = Math.max(pl2.wrong, wr); pl2.maxBits = Math.max(pl2.maxBits, Math.min(mb, S.settings.maxBits));
     boardDirty=true;
   }
@@ -564,7 +578,7 @@ function enterLobby(){
     $('copyLnk').onclick=function(){ (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function(){ toast(tr('링크를 복사했어요')); }, function(){ toast(url); }); };
     syncSegs();
     // results of last round are cleared for a new round
-    for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else { p.score=0; p.wrong=0; p.maxBits=0; p.last=0; } }
+    for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else { p.score=0; p.solved=0; p.wrong=0; p.maxBits=0; p.last=0; } }
     broadcast({ t:'lobby', settings:S.settings });
   } else {
     $('lobbyLink').textContent='';
@@ -613,7 +627,7 @@ $('startBtn').onclick = function(){
   var cdMs=3000;
   S.total = S.settings.time;
   S.startAt = Date.now()+cdMs; S.endAt = S.startAt + S.total*1000;
-  for(var t in S.players){ var p=S.players[t]; p.score=0; p.wrong=0; p.maxBits=0; p.last=0; }
+  for(var t in S.players){ var p=S.players[t]; p.score=0; p.solved=0; p.wrong=0; p.maxBits=0; p.last=0; }
   broadcast({ t:'start', cd:cdMs, dur:S.total*1000, settings:S.settings });
   beginRound(cdMs, S.total*1000);
 };
@@ -670,7 +684,7 @@ function handleGuestMsg(d){
     case 'welcome':
       S.name=d.name; S.settings=d.settings; busy(false); $('homeMsg').textContent='';
       if(d.phase==='play' || d.phase==='count'){
-        if(S.phase!=='play' && S.phase!=='count'){ S.score=d.score; S.wrong=d.wrong; S.maxBits=d.maxBits; beginRound(0, Math.max(0,d.remain), d.total, true); }
+        if(S.phase!=='play' && S.phase!=='count'){ S.score=d.score; S.solved=d.solved|0; S.wrong=d.wrong; S.maxBits=d.maxBits; beginRound(0, Math.max(0,d.remain), d.total, true); }
       } else if(d.phase==='lobby' && S.phase!=='lobby') enterLobby();
       break;
     case 'lobby':
@@ -697,7 +711,7 @@ function startSolo(name){
 
 // ---------- ROUND ----------
 var timers=[], tickT=null, sendT=null, boardT=null, boardDirty=false;
-function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearInterval(tickT); clearInterval(sendT); clearInterval(boardT); $('cd').classList.remove('on'); }
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearTimeout(penTimer); $('pen').classList.remove('on'); clearInterval(tickT); clearInterval(sendT); clearInterval(boardT); $('cd').classList.remove('on'); }
 
 function iPlay(){ return S.role!=='host' || !!S.settings.hostPlay; }
 
@@ -705,7 +719,8 @@ function beginRound(cdMs, durMs, totalMs, resume){
   clearTimers();
   var now=Date.now();
   S.startAt = now+cdMs; S.endAt = S.startAt+durMs; S.totalMs = totalMs || durMs;
-  if(!resume){ S.score=0; S.wrong=0; S.maxBits=0; }
+  if(!resume){ S.score=0; S.solved=0; S.wrong=0; S.maxBits=0; }
+  S.combo=0; renderCombo();
   S.phase = cdMs>0 ? 'count' : 'play';
   var play = iPlay();
   if(play){
@@ -724,7 +739,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
     timers.push(setTimeout(function(){ $('cd').classList.remove('on'); S.phase='play'; }, cdMs));
   }
   tickT = setInterval(tick, 200); tick();
-  if(S.role==='guest'){ sendT = setInterval(function(){ if(dirtyScore){ dirtyScore=false; send(S.conn, { t:'score', score:S.score, wrong:S.wrong, maxBits:S.maxBits }); } }, 400); }
+  if(S.role==='guest'){ sendT = setInterval(function(){ if(dirtyScore){ dirtyScore=false; send(S.conn, { t:'score', score:S.score, solved:S.solved, wrong:S.wrong, maxBits:S.maxBits }); } }, 400); }
   if(S.role==='host'){ boardDirty=true; boardT = setInterval(function(){ if(boardDirty){ boardDirty=false; pushBoard(); } }, 700); }
 }
 
@@ -733,18 +748,19 @@ function tick(){
   var txt = fmt(Math.min(left, S.totalMs)), pct = Math.max(0, Math.min(1, left/S.totalMs))*100;
   $('gTime').textContent=txt; $('wTime').textContent=txt;
   $('gBar').style.width=pct+'%'; $('wBar').style.width=pct+'%';
+  if($('pen').classList.contains('on')) updatePen();
   var low = left<=10000;
   $('gTimeBox').classList.toggle('low', low); $('wTimeBox').classList.toggle('low', low);
   if(left<=0 && S.phase==='play'){
     if(S.role==='host' || S.role==='solo') finishRound();
-    else { S.phase='wait'; lockPad(true); send(S.conn, { t:'score', score:S.score, wrong:S.wrong, maxBits:S.maxBits }); $('gAns').textContent=tr('시간 종료'); $('gAns').className='ans'; }
+    else { S.phase='wait'; lockPad(true); send(S.conn, { t:'score', score:S.score, solved:S.solved, wrong:S.wrong, maxBits:S.maxBits }); $('gAns').textContent=tr('시간 종료'); $('gAns').className='ans'; }
   }
 }
 
 // questions
 var dirtyScore=false;
 function nextQ(){
-  S.bits = bitsFor(S.score, S.settings.maxBits);
+  S.bits = bitsFor(S.solved, S.settings.maxBits);
   var lo = 1<<(S.bits-1), hi = (1<<S.bits)-1, v;
   do { v = lo + Math.floor(Math.random()*(hi-lo+1)); } while(v===S.cur);
   S.cur=v; S.input='';
@@ -804,23 +820,40 @@ function check(){
   if(S.qd2b){
     var ok = bitsValue()===S.cur;
     if(ok){ $('gBitsBox').className='bits ok'; }
-    else { S.wrong++; dirtyScore=true; var bb=$('gBitsBox'); bb.className='bits'; void bb.offsetWidth; bb.className='bits bad'; lockPad(true); timers.push(setTimeout(function(){ bb.className='bits'; lockPad(false); }, 420)); return; }
+    else { var bb=$('gBitsBox'); bb.className='bits'; void bb.offsetWidth; bb.className='bits bad'; penalize(); return; }
   } else if(!S.input) return;
   if(S.qd2b || +S.input===S.cur){
-    S.score++; S.lastSolve=Date.now(); S.maxBits=Math.max(S.maxBits, S.bits); dirtyScore=true;
-    $('gScore').textContent=S.score; if(!S.qd2b) renderAns('ok');
-    var pl=$('gPlus'); pl.classList.remove('go'); void pl.offsetWidth; pl.classList.add('go');
+    S.solved++; S.combo++; var pts=comboPts(S.combo);
+    S.score+=pts; S.lastSolve=Date.now(); S.maxBits=Math.max(S.maxBits, S.bits); dirtyScore=true;
+    $('gScore').textContent=S.score; if(!S.qd2b) renderAns('ok'); renderCombo();
+    var pl=$('gPlus'); pl.textContent='+'+pts; pl.classList.toggle('big', pts>1); pl.classList.remove('go'); void pl.offsetWidth; pl.classList.add('go');
     lockPad(true);
-    var lvlUp = bitsFor(S.score, S.settings.maxBits) > S.bits;
+    var lvlUp = bitsFor(S.solved, S.settings.maxBits) > S.bits;
     timers.push(setTimeout(function(){ if(S.phase==='play'){ nextQ(); if(lvlUp) toast(tr('{0}비트로 올라갔어요!', S.bits)); } }, 260));
     if(S.role==='host') boardDirty=true;
   } else {
-    S.wrong++; dirtyScore=true; renderAns('bad');
-    lockPad(true); timers.push(setTimeout(function(){ S.input=''; renderAns(); lockPad(false); }, 420));
+    renderAns('bad'); penalize();
   }
 }
+// wrong answer: combo is lost and the keypad is locked for a moment so guessing doesn't pay
+var penTimer=null;
+function penalize(){
+  S.wrong++; S.combo=0; dirtyScore=true; renderCombo();
+  lockPad(true); S.penUntil=Date.now()+PEN_MS;
+  $('pen').classList.add('on'); updatePen();
+  clearTimeout(penTimer); penTimer=setTimeout(endPenalty, PEN_MS);
+}
+function updatePen(){ $('penNum').textContent=Math.max(1, Math.ceil((S.penUntil-Date.now())/1000)); }
+function endPenalty(){
+  $('pen').classList.remove('on'); $('gBitsBox').className='bits';
+  if(!S.qd2b){ S.input=''; renderAns(); }
+  if(S.phase==='play') lockPad(false);
+}
+function renderCombo(){
+  var c=$('gCombo'); if(S.combo>=2){ c.textContent=tr('🔥 콤보 {0} · 다음 +{1}', S.combo, comboPts(S.combo+1)); c.classList.remove('hide'); } else c.classList.add('hide');
+}
 $('pad').addEventListener('pointerdown', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); press(b.dataset.k); });
-$('skipBtn').onclick = function(){ if(!canType()) return; S.wrong++; dirtyScore=true; nextQ(); };
+$('skipBtn').onclick = function(){ if(!canType()) return; S.wrong++; S.combo=0; renderCombo(); dirtyScore=true; nextQ(); };
 document.addEventListener('keydown', function(e){
   if(!$('sGame').classList.contains('on')) return;
   if(/^[0-9]$/.test(e.key)) press(e.key);
@@ -831,14 +864,14 @@ document.addEventListener('keydown', function(e){
 // boards
 function hostEntries(){
   var arr=[];
-  for(var t in S.players){ var p=S.players[t]; if(p.online || p.score>0) arr.push({ n:p.name, s:p.score, w:p.wrong, b:p.maxBits, l:p.last||Infinity, o:p.online, t:t }); }
-  if(S.settings.hostPlay) arr.push({ n:S.name, s:S.score, w:S.wrong, b:S.maxBits, l:S.lastSolve||Infinity, o:true, t:token });
+  for(var t in S.players){ var p=S.players[t]; if(p.online || p.score>0) arr.push({ n:p.name, s:p.score, c:p.solved, w:p.wrong, b:p.maxBits, l:p.last||Infinity, o:p.online, t:t }); }
+  if(S.settings.hostPlay) arr.push({ n:S.name, s:S.score, c:S.solved, w:S.wrong, b:S.maxBits, l:S.lastSolve||Infinity, o:true, t:token });
   arr.sort(function(a,b){ return b.s-a.s || a.l-b.l || a.n.localeCompare(b.n); });
   return arr;
 }
 function ranking(){
   var arr = hostEntries(), rk=0, prev=null;
-  return arr.map(function(e,i){ if(!prev || e.s!==prev.s || e.l!==prev.l) rk=i+1; prev=e; return { r:rk, n:e.n, s:e.s, w:e.w, b:e.b, t:e.t }; });
+  return arr.map(function(e,i){ if(!prev || e.s!==prev.s || e.l!==prev.l) rk=i+1; prev=e; return { r:rk, n:e.n, s:e.s, c:e.c, w:e.w, b:e.b, t:e.t }; });
 }
 function rowHtml(e, max, me){
   return '<div class="brow'+(me?' me':'')+(e.r<=3?' r'+e.r:'')+(e.o===false?' off':'')+'"><div class="bar" style="width:'+(max?Math.round(e.s/max*100):0)+'%"></div><div class="rk">'+e.r+'</div><div class="nm">'+esc(e.n)+'</div><div class="sc">'+e.s+'</div></div>';
@@ -846,7 +879,7 @@ function rowHtml(e, max, me){
 function pushBoard(){
   var r = ranking(), byTok={}, total=0;
   var ent = hostEntries(); ent.forEach(function(e,i){ r[i].o=e.o; });
-  r.forEach(function(e){ byTok[e.t]=e; total+=e.s; });
+  r.forEach(function(e){ byTok[e.t]=e; total+=e.c; });
   var max = r.length?r[0].s:0;
   var top = r.slice(0,5).map(function(e){ return { r:e.r, n:e.n, s:e.s }; });
   for(var t in S.players){ var p=S.players[t]; if(p.conn && p.conn.open){ var me=byTok[t]; send(p.conn, { t:'board', top:top, max:max, n:r.length, me: me?{ r:me.r, s:me.s }:null }); } }
@@ -864,7 +897,7 @@ function renderGuestBoard(){
 
 function finishRound(){
   clearTimers(); S.phase='result';
-  if(S.role==='solo'){ showResult([{ r:1, n:S.name, s:S.score, w:S.wrong, b:S.maxBits, t:token }]); return; }
+  if(S.role==='solo'){ showResult([{ r:1, n:S.name, s:S.score, c:S.solved, w:S.wrong, b:S.maxBits, t:token }]); return; }
   var r = ranking();
   broadcast({ t:'end', ranking:r });
   showResult(r);
@@ -873,16 +906,16 @@ function finishRound(){
 function showResult(r){
   clearTimers(); S.phase='result';
   var meTok = token;
-  var p = function(i, cls){ var e=r[i]; if(!e) return '<div class="pod '+cls+'" style="visibility:hidden"><div class="blk"></div></div>'; return '<div class="pod '+cls+'"><div class="who">'+esc(e.n)+'</div><div class="pts">'+tr('{0}개', e.s)+'</div><div class="blk">'+e.r+'</div></div>'; };
+  var p = function(i, cls){ var e=r[i]; if(!e) return '<div class="pod '+cls+'" style="visibility:hidden"><div class="blk"></div></div>'; return '<div class="pod '+cls+'"><div class="who">'+esc(e.n)+'</div><div class="pts">'+tr('{0}점', e.s)+'</div><div class="blk">'+e.r+'</div></div>'; };
   $('podium').innerHTML = S.role==='solo' ? '' : p(1,'p2')+p(0,'p1')+p(2,'p3');
   var mine = r.filter(function(e){ return e.t===meTok || (S.role==='guest' && e.n===S.name); })[0];
-  if(S.role==='solo') $('myRes').innerHTML = tr('해독 {0}개 · 최고 {1}비트', '<b>'+S.score+'</b>', S.maxBits||'-');
-  else if(mine) $('myRes').innerHTML = (mine.r===1?tr('🏆 우승! '):'')+tr('{0}위 · 해독 {1}개', '<b>'+mine.r+'</b>', '<b>'+mine.s+'</b>');
+  if(S.role==='solo') $('myRes').innerHTML = tr('{0}점 · 해독 {1}개 · 최고 {2}비트', '<b>'+S.score+'</b>', S.solved, S.maxBits||'-');
+  else if(mine) $('myRes').innerHTML = (mine.r===1?tr('🏆 우승! '):'')+tr('{0}위 · {1}점', '<b>'+mine.r+'</b>', '<b>'+mine.s+'</b>');
   else $('myRes').textContent='';
   $('resBody').innerHTML = r.map(function(e){
-    var acc = (e.s+e.w)? Math.round(e.s/(e.s+e.w)*100)+'%' : '-';
+    var acc = (e.c+e.w)? Math.round(e.c/(e.c+e.w)*100)+'%' : '-';
     var me = mine && e===mine;
-    return '<tr'+(me?' class="me"':'')+'><td class="n">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="n">'+e.s+'</td><td>'+acc+'</td><td>'+(e.b?tr('{0}비트', e.b):'-')+'</td></tr>';
+    return '<tr'+(me?' class="me"':'')+'><td class="n">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="n">'+e.s+'</td><td class="n">'+e.c+'</td><td>'+acc+'</td><td>'+(e.b?tr('{0}비트', e.b):'-')+'</td></tr>';
   }).join('');
   $('againBtn').classList.toggle('hide', S.role==='guest');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
