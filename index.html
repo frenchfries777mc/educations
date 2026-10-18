@@ -96,7 +96,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   @media(max-width:520px){ .tb{margin-left:8px;} .tb .ffa-set,.tb .ffa-bell,.tb .ffa-vote,.tb .ffa-chip{padding:6px 7px!important;} }
   .langSel{background:var(--panel); color:var(--dim); border:1px solid var(--line); border-radius:8px; padding:6px 9px; font:inherit; font-size:14px; cursor:pointer; margin-left:16px;}
   .langSel:hover{color:var(--text); border-color:var(--fry);}
-  .swr{margin:0 auto 0 20px;}
+  .swr{margin:0 auto 0 20px; display:flex; align-items:center; gap:8px;}
   .sw{display:inline-flex; padding:3px; border-radius:99px; border:1px solid var(--line); background:var(--panel);}
   .sw a{font-family:'Oswald',sans-serif; font-weight:600; font-size:13.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--dim); text-decoration:none; padding:4px 13px; border-radius:99px; transition:color .15s,background .15s;}
   .sw a:hover{color:var(--text);}
@@ -107,6 +107,22 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .hero h1{font-family:'Oswald','Noto Sans KR',sans-serif; font-weight:700; font-size:clamp(40px,7vw,76px); line-height:1.02; margin:10px 0 0; text-transform:uppercase; letter-spacing:.01em;}
   .hero h1 span{background:linear-gradient(90deg,var(--fry),var(--fry2)); -webkit-background-clip:text; background-clip:text; color:transparent;}
   .hero p{color:var(--dim); font-size:18px; margin:16px 0 0; max-width:46ch;}
+  /* 🔍 검색 (games 허브와 같은 모양) */
+  .srx-btn{background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:99px; width:38px; height:38px; display:inline-grid; place-items:center; cursor:pointer; font-size:15px; flex:0 0 auto; padding:0;}
+  .srx-btn:hover{border-color:var(--fry);}
+  .hn-bg{position:fixed; inset:0; z-index:2147482300; background:rgba(5,6,10,.72); display:none; align-items:center; justify-content:center; padding:16px;}
+  .hn-b{width:100%; max-width:560px; max-height:calc(100vh - 32px); overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 20px; box-sizing:border-box; overscroll-behavior:contain;}
+  .hn-h{display:flex; justify-content:space-between; align-items:center; font-size:19px; margin-bottom:6px;} .hn-x{background:none; border:0; color:var(--dim); font-size:24px; cursor:pointer; line-height:1;}
+  .srx .hn-b{max-width:640px; align-self:flex-start; margin-top:8vh;}
+  .srx input{width:100%; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font:inherit; font-size:17px;}
+  .srx input:focus{outline:none; border-color:var(--fry);}
+  .srx .sg{margin-top:14px;} .srx .sg h4{margin:0 0 6px; font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim);}
+  .srx .sr{display:block; text-decoration:none; color:var(--text); background:var(--bg); border:1px solid var(--line); border-radius:11px; padding:9px 12px; margin-bottom:6px; cursor:pointer; text-align:left; width:100%; font:inherit;}
+  .srx .sr:hover,.srx .sr.sel{border-color:var(--fry);} .srx .sr b{font-weight:700;} .srx .sr small{display:block; color:var(--dim); font-size:13px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .srx .g1{color:#3ee0c4;} .srx .g2{color:#e8c25a;} .srx .g3{color:#ffae5a;} .srx .g5{color:#9be564;}
+  .srx mark{background:rgba(255,201,60,.35); color:inherit; border-radius:3px;}
+  .srx .se{color:var(--dim); font-size:14px; padding:14px 2px 4px;}
+  html[data-ff-theme=light] .srx input, html[data-ff-theme=light] .srx .sr{background:#faf8f3;} html[data-ff-theme=light] .srx .g5{color:#3f7d12;} html[data-ff-theme=light] .srx .g1{color:#0f8a77;} html[data-ff-theme=light] .srx .g2{color:#8a6c14;} html[data-ff-theme=light] .srx .g3{color:#a0600c;}
   /* 로고: games 사이트와 같은 크기와 위치 */
   .logo img.lg{width:36px; height:36px; border-radius:10px;}
   .hero{display:flex; align-items:center; justify-content:space-between; gap:28px;}
@@ -219,7 +235,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 <div class="wrap">
   <header>
     <a class="logo" href="./"><img class="lg" src="logo.svg" alt="" width="36" height="36"><span>FRENCHFRIES<b>777</b></span></a>
-    <div class="swr"><span class="sw" data-notr><a href="https://frenchfries777mc.github.io/games/">Games</a><a class="on" href="./" aria-current="page">Educations</a><a href="https://frenchfries777mc.github.io/tools/">Tools</a></span></div>
+    <div class="swr"><span class="sw" data-notr><a href="https://frenchfries777mc.github.io/games/">Games</a><a class="on" href="./" aria-current="page">Educations</a><a href="https://frenchfries777mc.github.io/tools/">Tools</a></span><button type="button" class="srx-btn" id="srxBtn" aria-label="검색" title="검색" data-notr>🔍</button></div>
     <div class="right"><nav><a href="#games">게임</a><a href="https://frenchfries777mc.github.io/games/wiki/#educations">위키</a><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">GitHub</a><a href="https://frenchfries777mc.github.io/games/settings/">설정</a></nav><div class="tb"><span data-ff-account data-ff-nohub></span></div></div>
   </header>
 
@@ -340,5 +356,45 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 </div>
 <script src="https://frenchfries777mc.github.io/games/ff-auth.js"></script>
 <script src="https://frenchfries777mc.github.io/games/ff-splash.js" defer></script>
+<script>
+/* 🔍 검색: 이 사이트의 프로그램과 허브 게임 (games 허브의 검색 창과 같은 동작) */
+(function(){
+var P=[['행성 탐사','planetsearch/','g5','행성에서 데이터를 모아 표로 정리하는 데이터 탐험','행성 탐사 planet search 데이터 정보 표 벤다이어그램 산점도 2진수'],
+ ['SpeedCode','speedcode/','g5','2진수를 10진수로 바꾸는 실시간 대결','speedcode 스피드코드 이진수 2진수 십진수 binary decimal 정보'],
+ ['Timeline Battle','timeline/','g5','역사 사건 카드를 연표에 놓는 대결','timeline battle 타임라인 배틀 역사 연표 한국사 세계사 과학사'],
+ ['문장 수리공','munjang/','g5','맞춤법과 띄어쓰기를 고치는 국어 게임','문장 수리공 국어 맞춤법 띄어쓰기 교정'],
+ ['평형 설계실','balance/','g5','힘의 화살표를 그려 평형을 맞추는 중1 과학','평형 설계실 balance blueprint 과학 힘 평형 중학교 1학년 무게 탄성력 마찰 부력']];
+var G=[['Stickseum','https://frenchfries777mc.github.io/games/stickseum/','g1','친구들과 실시간으로 붙는 스틱맨 난투','stickseum 스틱맨 난투 액션'],
+ ['Crown Envoy','https://frenchfries777mc.github.io/games/crownenvoy/','g2','외교와 전쟁으로 제국을 키우는 턴제 전략','crown envoy 외교 전쟁 전략'],
+ ['Beaconfall','https://frenchfries777mc.github.io/games/beaconfall/','g3','외계 행성에서 살아남아 탈출하는 생존 제작','beaconfall 생존 제작 픽셀']];
+var sel=-1;
+function esc(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+function mark(t,q){ var e=esc(t); if(!q) return e; var r=esc(q).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); try{ return e.replace(new RegExp(r,'gi'),function(x){ return '<mark>'+x+'</mark>'; }); }catch(_){ return e; } }
+function box(){ var el=document.getElementById('srxBox'); if(el) return el;
+  el=document.createElement('div'); el.id='srxBox'; el.className='hn-bg srx'; el.setAttribute('data-notr',''); document.body.appendChild(el);
+  el.innerHTML='<div class="hn-b"><div class="hn-h"><b>🔍 검색</b><button type="button" class="hn-x" aria-label="닫기">×</button></div><input type="search" autocomplete="off" placeholder="프로그램, 게임 검색"><div class="srs"></div></div>';
+  var inp=el.querySelector('input');
+  el.addEventListener('click',function(e){ if(e.target===el||e.target.closest('.hn-x')) close(); });
+  inp.addEventListener('input',function(){ run(inp.value); });
+  inp.addEventListener('keydown',function(e){ var rs=el.querySelectorAll('.sr'); if(!rs.length) return;
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){ e.preventDefault(); sel=(sel+(e.key==='ArrowDown'?1:-1)+rs.length)%rs.length; [].forEach.call(rs,function(r,i){ r.classList.toggle('sel',i===sel); }); rs[sel].scrollIntoView({block:'nearest'}); }
+    else if(e.key==='Enter'){ e.preventDefault(); rs[sel<0?0:sel].click(); } });
+  return el; }
+function open(){ var el=box(); el.style.display='flex'; var i=el.querySelector('input'); i.focus(); i.select(); if(i.value) run(i.value); }
+function close(){ var el=document.getElementById('srxBox'); if(el&&el.style.display!=='none'){ el.style.display='none'; el.querySelector('input').blur(); } }
+function run(v){ var R=box().querySelector('.srs'), q=String(v||'').trim(), ql=q.toLowerCase(); sel=-1; if(!q){ R.innerHTML=''; return; }
+  function hit(g){ return (g[0]+' '+g[3]+' '+g[4]).toLowerCase().indexOf(ql)>=0; }
+  function rows(a){ return a.map(function(g){ return '<a class="sr" href="'+g[1]+'"><b class="'+g[2]+'">'+mark(g[0],q)+'</b><small>'+esc(g[3])+'</small></a>'; }).join(''); }
+  var ps=P.filter(hit), gs=G.filter(hit), h='';
+  if(ps.length) h+='<div class="sg"><h4>교육 게임</h4>'+rows(ps)+'</div>';
+  if(gs.length) h+='<div class="sg"><h4>게임</h4>'+rows(gs)+'</div>';
+  R.innerHTML=h||'<div class="se">검색 결과가 없어요. <a href="https://frenchfries777mc.github.io/games/" style="color:var(--fry)">허브에서 위키와 게시판도 검색해 보세요</a></div>'; }
+document.getElementById('srxBtn').onclick=open;
+document.addEventListener('keydown',function(e){ var t=e.target, typing=t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
+  if((e.key==='k'||e.key==='K')&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); open(); }
+  else if(e.key==='/'&&!typing){ e.preventDefault(); open(); }
+  else if(e.key==='Escape'){ close(); } });
+})();
+</script>
 </body>
 </html>
