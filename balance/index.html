@@ -312,6 +312,7 @@
   <div class="tbar">
     <div><small>도면</small><b id="gStage">01 / 10</b></div>
     <div><small>점수</small><b id="gScore">0</b></div>
+    <div id="gLivesBox" class="hide"><small>목숨</small><b id="gLives"></b></div>
     <div><small>남은 검토</small><div class="shots" id="gShots"></div></div>
     <div class="grow" id="gTimeBox"><small>남은 시간</small><b id="gTime">-</b></div>
   </div>
@@ -858,7 +859,7 @@ function showStages(){
   var best=bestGet(), h='';
   for(var i=1;i<=NSTAGES;i++){
     var d=STAGEDEF[i], mx=d.cnt*100, bs=best[i]||0;
-    h+='<button class="stg" data-s="'+i+'"><span class="no">'+String(i).padStart(2,'0')+'</span><span class="b"><span class="t">'+esc(tr(d.n))+'</span><span class="d">'+esc(tr(d.d))+'</span><span class="m">'+esc(tr('도면 {0}장', d.cnt))+' · '+esc(bs ? tr('최고 {0} / {1}', bs, mx) : tr('아직 기록 없음'))+(bs>=mx?' ★':'')+'</span></span></button>';
+    h+='<button class="stg" data-s="'+i+'"><span class="no">'+String(i).padStart(2,'0')+'</span><span class="b"><span class="t">'+esc(tr(d.n))+'</span><span class="d">'+esc(tr(d.d))+'</span><span class="m">'+esc(i===6 ? tr('혼자만 · 끝없이') : tr('도면 {0}장', d.cnt))+' · '+esc(bs ? tr('최고 {0} / {1}', bs, mx) : tr('아직 기록 없음'))+(bs>=mx?' ★':'')+'</span></span></button>';
   }
   $('stgList').innerHTML=h; show('sStages');
 }
@@ -876,7 +877,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
   var now=Date.now();
   S.endAt = timed() ? now+cdMs+durMs : 0; S.totalMs = totalMs || durMs;
   S.stages = makeStages(S.seed, S.settings.stages, S.settings.stage);
-  S.cur=0; S.shot=0; S.score=0; S.hits=0; S.rec=[]; S.miss={size:0,dir:0,line:0}; S.done=false; S.doneAt=0;
+  S.lives=3; S.cur=0; S.shot=0; S.score=0; S.hits=0; S.rec=[]; S.miss={size:0,dir:0,line:0}; S.done=false; S.doneAt=0;
   if(resume){ S.cur=Math.min(resume.stage, S.stages.length); S.score=resume.score; S.done=!!resume.done; }
   S.phase = cdMs>0 ? 'count' : 'play';
   if(iPlay()){
@@ -960,9 +961,11 @@ var STAGEDEF = {
   2:{ n:'줄다리기와 마찰', d:'힘이 여럿 섞여도 더하고 빼서 합력을 0으로 만들어요.',      cnt:8,  kinds:['tug','push','beam'],               hardFrom:2 },
   3:{ n:'무게와 부력',    d:'질량(kg)에 9.8 N/kg를 곱해 무게를 구해요.',                cnt:8,  kinds:['hang','float'],                    hardFrom:1 },
   4:{ n:'탄성력 실험실',  d:'용수철 상수와 늘어난 길이로 탄성력을 구해요.',            cnt:6,  kinds:['spring','hang','spring','tug'],    hardFrom:0 },
-  5:{ n:'종합 설계',      d:'워밍업 3장 뒤 모든 종류가 계산 문제로 나와요.',            cnt:10, kinds:null,                                hardFrom:3 }
+  5:{ n:'종합 설계',      d:'워밍업 3장 뒤 모든 종류가 계산 문제로 나와요.',            cnt:10, kinds:null,                                hardFrom:3 },
+  6:{ n:'무한 설계',      d:'목숨 3개. 도면 하나를 세 번 안에 승인받지 못하면 목숨이 줄고, 다 잃을 때까지 도면이 끝없이 이어져요.', cnt:300, kinds:null, hardFrom:3 }
 };
-var NSTAGES = 5;
+var NSTAGES = 6;
+function endless(){ return S.settings.stage===6; }
 var WARM = 3;                                   // the first drawings are a warm-up; after that numbers have to be worked out
 var ORDER1 = ['hang','tug','push'];
 var ORDER2 = ['spring','float','beam','hang','tug','push'];
@@ -1059,7 +1062,8 @@ function judge(st, vx, vy, anc){
 // ---------- round ui ----------
 function stage(){ return S.stages[Math.min(S.cur, S.stages.length-1)]; }
 function hud(){
-  $('gStage').textContent=String(Math.min(S.cur+1, S.stages.length)).padStart(2,'0')+' / '+String(S.stages.length).padStart(2,'0');
+  $('gStage').textContent=String(Math.min(S.cur+1, S.stages.length)).padStart(2,'0')+(endless()?'':' / '+String(S.stages.length).padStart(2,'0'));
+  $('gLivesBox').classList.toggle('hide', !endless()); $('gLives').textContent=endless()?new Array(Math.max(0,S.lives)+1).join('♥')+new Array(Math.max(0,3-S.lives)+1).join('♡'):'';
   $('gScore').textContent=S.score;
   var h=''; for(var i=0;i<SHOTS;i++) h+='<i class="'+(i<S.shot?'used':'')+'"></i>'; $('gShots').innerHTML=h;
 }
@@ -1096,7 +1100,7 @@ function introRows(st){
 }
 function fillIntro(){
   var st=stage();
-  $('iNo').textContent='DWG No. '+String(S.cur+1).padStart(2,'0')+' / '+String(S.stages.length).padStart(2,'0');
+  $('iNo').textContent='DWG No. '+String(S.cur+1).padStart(2,'0')+(endless()?'':' / '+String(S.stages.length).padStart(2,'0'));
   $('iTitle').textContent= st.t==='hang' ? tr('매달린 {0}', tr(st.obj)) : tr(KINDS[st.t].n);
   $('iFind').textContent=tr('그릴 힘: {0}', tr(KINDS[st.t].f));
   $('iTab').innerHTML=introRows(st).map(function(r){ return '<tr><th>'+esc(r[0])+'</th><td>'+esc(r[1])+'</td></tr>'; }).join('');
@@ -1392,7 +1396,7 @@ function land(st, an){
   var line=esc(resultLine(st, j));
   var finished = j.ok || S.shot>=SHOTS;
   if(finished){
-    S.score+=gain; if(j.ok) S.hits++;
+    S.score+=gain; if(j.ok) S.hits++; else if(endless()) S.lives--;
     S.rec.push({ st:st, shots:S.shot, pts:gain });
     if(!j.ok) line+='<br>'+esc(tr('정답'))+': <b>'+esc(ansText(st))+'</b>';
     line += '<br><b>'+esc(tr('배운 점'))+'</b> '+esc(lesson(st));
@@ -1401,7 +1405,7 @@ function land(st, an){
   $('note').innerHTML=line;
   hud();
   if(finished){
-    if(S.cur>=S.stages.length){ S.done=true; S.doneAt=Date.now(); if(S.role==='guest') report(); timers.push(setTimeout(function(){ if(S.role==='solo') finishRound(); else { waitOthers(); if(S.role==='host'){ boardDirty=true; checkAllDone(); } } }, 2800)); }
+    if(S.cur>=S.stages.length || (endless() && S.lives<=0)){ S.done=true; S.doneAt=Date.now(); if(S.role==='guest') report(); timers.push(setTimeout(function(){ if(S.role==='solo') finishRound(); else { waitOthers(); if(S.role==='host'){ boardDirty=true; checkAllDone(); } } }, 2800)); }
     else timers.push(setTimeout(openIntro, 4200));
   } else timers.push(setTimeout(function(){ S.anim=null; $('stamp').className='stamp'; draw(); $('fireBtn').disabled=false; }, 1100));
 }
