@@ -138,6 +138,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .hero-bg img,.hero-bg video{position:absolute; top:0; right:0; width:72%; height:100%; object-fit:cover; opacity:.8; -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 48%); mask-image:linear-gradient(90deg,transparent 0,#000 48%); animation:hbKen 32s ease-in-out infinite alternate;}
   .hero-bg i::after{content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 82% 55%, color-mix(in srgb,var(--c) 38%,transparent), transparent 70%), radial-gradient(ellipse 50% 60% at 8% 30%, color-mix(in srgb,var(--c) 14%,transparent), transparent 70%);}
   .hero-bg::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 90%,transparent) 0,color-mix(in srgb,var(--bg) 55%,transparent) 14%,transparent 34%);}
+  .hero-bg.one i{animation:none; opacity:1;}
   @keyframes hbFade{0%{opacity:0;} 5%{opacity:1;} 25%{opacity:1;} 31%{opacity:0;} 100%{opacity:0;}}
   @keyframes hbKen{from{transform:scale(1.03) translate3d(0,0,0);} to{transform:scale(1.14) translate3d(-2%,-2%,0);}}
   @keyframes hbRise{from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:none;}}
@@ -289,7 +290,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   </header>
 
   <section class="hero">
-    <div class="hero-bg" aria-hidden="true"><i style="--c:#6aa8ff"><img src="planetsearch.webp" alt=""></i><i style="--c:#5ac878"><img src="balance.webp" alt=""></i><i style="--c:#e8c25a"><img src="proverb.webp" alt=""></i><i style="--c:#ff7a5a"><img src="speedcode.webp" alt=""></i></div>
+    <div class="hero-bg one" aria-hidden="true"><i style="--c:#6aa8ff"><img src="hero/edu.webp" alt=""></i></div>
     <img class="hero-lg" src="logo.svg" alt="" width="230" height="230">
     <div class="hero-t">
     <span class="eyebrow">Learning Games</span>
@@ -491,6 +492,25 @@ document.addEventListener('keydown',function(e){ var t=e.target, typing=t&&(t.ta
   if(window.matchMedia&&matchMedia('(hover:hover) and (pointer:fine)').matches&&!rm){
     cards.forEach(function(c){ c.addEventListener('pointermove',function(e){ var r=c.getBoundingClientRect(), x=(e.clientX-r.left)/r.width, y=(e.clientY-r.top)/r.height; c.style.setProperty('--mx',(x*100)+'%'); c.style.setProperty('--my',(y*100)+'%'); c.style.setProperty('--ry',((x-.5)*5).toFixed(2)+'deg'); c.style.setProperty('--rx',((.5-y)*4).toFixed(2)+'deg'); }); c.addEventListener('pointerleave',function(){ c.style.setProperty('--rx','0deg'); c.style.setProperty('--ry','0deg'); }); });
   }
+})();
+</script>
+<script>
+(function(){
+  var bg=document.querySelector('.hero-bg'); if(!bg) return;
+  var rm=matchMedia('(prefers-reduced-motion:reduce)').matches, narrow=matchMedia('(max-width:640px)').matches, cn=navigator.connection||{};
+  if(rm||narrow||cn.saveData) return;
+  var clips=['edu'], vids=[];
+  bg.querySelectorAll('i').forEach(function(el,k){
+    var v=document.createElement('video'); v.muted=true; v.loop=true; v.playsInline=true; v.preload='auto'; v.setAttribute('aria-hidden','true'); v.style.opacity=0; v.style.transition='opacity .6s';
+    v.src='hero/'+clips[k]+(v.canPlayType('video/mp4; codecs="avc1.42E01E"')?'.mp4':'.webm'); el.appendChild(v); vids.push(v);
+    v.addEventListener('playing',function(){ v.style.opacity=.9; });
+    v.addEventListener('error',function(){ v.remove(); });
+  });
+  function go(on){ vids.forEach(function(v){ if(!v.isConnected) return; if(on){ var p=v.play(); if(p&&p.catch) p.catch(function(){}); } else v.pause(); }); }
+  var vis=true,tab=true;
+  function upd(){ go(vis&&tab); }
+  new IntersectionObserver(function(e){ vis=e[0].isIntersecting; upd(); }).observe(document.querySelector('.hero'));
+  document.addEventListener('visibilitychange',function(){ tab=!document.hidden; upd(); });
 })();
 </script>
 </body>
