@@ -237,9 +237,8 @@ canvas.stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 .home-title h1 { word-spacing: -.32em; }
 @media (max-width: 600px) {
   .hud b, .hudbar { display: none; }
-  .hud .inner { flex-wrap: nowrap; overflow-x: auto; }
-  .stat { padding: 0 10px; font-size: 12px; white-space: nowrap; }
-  .stat:first-of-type { padding-left: 0; }
+  .hud .inner { flex-wrap: wrap; row-gap: 6px; padding-block: 8px; }
+  .stat { padding: 0 12px 0 0; margin-right: 12px; font-size: 12px; white-space: nowrap; }
   .stat .v { font-size: 13px; }
   .stepper { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); width: 100%; }
   .stepper li { margin-right: 6px; padding-right: 0; font-size: 12px; flex-direction: column; align-items: flex-start; gap: 0; }
@@ -450,8 +449,8 @@ const SYL = ["케", "플", "라", "오", "르", "테", "니", "브", "실", "바
 function planetName(used) { let n; do { n = pick(SYL) + pick(SYL) + (rnd() < .4 ? pick(SYL) : "") + " " + pick(["b", "c", "d", "e"]); } while (used.has(n)); used.add(n); return n; }
 // numeric signals, each sent as 8 bits
 const SIG = [
-  { k: "temp", t: "온도", u: "℃" }, { k: "grav", t: "중력", u: "" }, { k: "oxy", t: "산소", u: "%" },
-  { k: "rad", t: "방사선", u: "" },
+  { k: "temp", t: "온도", u: "℃" }, { k: "grav", t: "중력", u: "m/s²" }, { k: "oxy", t: "산소", u: "%" },
+  { k: "rad", t: "방사선", u: "mSv" },
 ];
 function makePlanet(id, used) {
   const water = rnd() < .5;
@@ -476,12 +475,12 @@ function condsFor(p) {
   else if (t.temp >= 10) out.push({ k: "temp", label: "온도 10~30℃", test: q => q.t.temp >= 10 && q.t.temp <= 30 });
   else out.push({ k: "temp", label: "온도 10℃ 미만", test: q => q.t.temp < 10 });
   const g = Math.max(5, Math.ceil(t.grav / 5) * 5);
-  out.push({ k: "grav", label: `중력 ${g} 이하`, test: q => q.t.grav <= g });
+  out.push({ k: "grav", label: `중력 ${g}m/s² 이하`, test: q => q.t.grav <= g });
   if (t.oxy >= 20) out.push({ k: "oxy", label: "산소 20% 이상", test: q => q.t.oxy >= 20 });
   else if (t.oxy >= 10) out.push({ k: "oxy", label: "산소 10% 이상", test: q => q.t.oxy >= 10 });
   else out.push({ k: "oxy", label: "산소 10% 미만", test: q => q.t.oxy < 10 });
   const r = Math.ceil(t.rad / 20) * 20;
-  out.push({ k: "rad", label: `방사선 ${r} 이하`, test: q => q.t.rad <= r });
+  out.push({ k: "rad", label: `방사선 ${r}mSv 이하`, test: q => q.t.rad <= r });
   out.push(t.water ? { k: "water", label: "물 필요", test: q => q.t.water } : { k: "water", label: "물 없는 곳", test: q => !q.t.water });
   if (t.sound === "quiet") out.push({ k: "sound", label: "조용한 곳", test: q => q.t.sound === "quiet" });
   if (!t.danger) out.push({ k: "danger", label: "위험 없음", test: q => !q.t.danger });
@@ -546,6 +545,8 @@ function hud(title) {
     h("span", { class: "stat" }, "인구", h("span", { class: "v" }, totalPop())),
     G.all && G.all.length ? h("button", { class: "btn sm hud-arc", id: "open-archive", onclick: openArchive }, "탐사 기록") : null));
 }
+
+const placeSum = v => { const parts = [128, 64, 32, 16, 8, 4, 2, 1].filter(b => v & b); return parts.length > 1 ? `${parts.join(" + ")} = ${v}` : `${v}`; };
 
 /* ---------- explore ---------- */
 function nextPlanet() {
@@ -657,7 +658,7 @@ function sigRow(p, sg) {
   const inp = h("input", { class: "num-in", type: "number", inputmode: "numeric", id: `dec-${p.id}-${k}`, "aria-label": `${sg.t} 10진수`, placeholder: "10진수", min: 0, max: 255 });
   const ok = h("button", { class: "btn primary" }, "해독");
   ok.onclick = () => { if (inp.value === "") return; p.dec[k] = +inp.value;
-    G.sec.dec++; G.tot.dec++; if (+inp.value === v) { G.sec.ok++; G.tot.ok++; G.sec.ex = G.sec.ex || { t: sg.t, v }; } explore(+inp.value === v ? `${sg.t}: ${bin8(v)}₍₂₎ = ${v}` : `${sg.t}: 해독 실패`); };
+    G.sec.dec++; G.tot.dec++; if (+inp.value === v) { G.sec.ok++; G.tot.ok++; G.sec.ex = G.sec.ex || { t: sg.t, v }; } explore(+inp.value === v ? `${sg.t}: ${bin8(v)}₍₂₎ = ${v}` : `${sg.t} 해독 실패 · 정답 ${bin8(v)}₍₂₎ = ${placeSum(v)}`); };
   inp.onkeydown = e => { if (e.key === "Enter") ok.click(); };
   return h("div", { class: "sig" }, bulbs, h("div", { class: "decode-in" }, inp, h("span", { class: "mono dim" }, sg.u || ""), ok));
 }
@@ -872,8 +873,8 @@ function eventText(col, k) {
   if (k === "sound") return t.sound === "storm" ? "밤마다 폭풍 소리에 아무도 잠을 못 자요." : "바람 소리가 너무 시끄러워 다들 지쳤어요.";
   if (k === "temp") return `기온이 ${t.temp}℃라서 주민들이 견디기 힘들어해요.`;
   if (k === "oxy") return `산소가 ${t.oxy}%라서 숨쉬기가 힘들어요.`;
-  if (k === "rad") return `방사선 ${t.rad} 때문에 병에 걸린 주민이 늘었어요.`;
-  return `중력이 ${t.grav}라서 다들 몸이 아파요.`;
+  if (k === "rad") return `방사선 ${t.rad}mSv 때문에 병에 걸린 주민이 늘었어요.`;
+  return `중력이 ${t.grav}m/s²라서 다들 몸이 아파요.`;
 }
 function report() {
   const YEARS = 3, cards = [];
@@ -1244,6 +1245,5 @@ window.__ps = { get G() { return G; }, newRun, planets, nextPlanet, totalPop, ma
 #ffBack:hover{border-color:#ffb23f}
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:8px;bottom:8px;opacity:.6;border-radius:12px}#ffBack .ffb-i{width:30px;height:30px;font-size:16px}#ffBack:active,#ffBack:focus-visible{opacity:1}}
 </style>
-<script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기'};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
-</body>
+<script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기'};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script></body>
 </html>
