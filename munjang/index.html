@@ -28,7 +28,11 @@
   button,input,select{font:inherit; color:inherit;}
   button{cursor:pointer; touch-action:manipulation;}
   .hide{display:none !important;}
-  .wrap{max-width:1080px; margin:0 auto; padding:0 18px;}
+  button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--yel); outline-offset:2px;}
+  .big:hover:not(:disabled){filter:brightness(1.12);}
+  .passBtn:hover:not(:disabled){filter:brightness(1.1);}
+  .opt:hover{filter:brightness(1.06);}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 18px 64px;}
   .hz{height:12px; background:repeating-linear-gradient(-45deg, var(--yel) 0 14px, #161411 14px 28px); box-shadow:0 2px 0 rgba(0,0,0,.4);}
   header{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0 0;}
   .logo{display:flex; align-items:center; gap:10px; font-family:'Do Hyeon',sans-serif; font-size:22px; letter-spacing:.02em; color:var(--ink); text-decoration:none;}
@@ -63,7 +67,7 @@
   .sign .bulbs i{width:9px; height:9px; border-radius:50%; background:#ffe27a; box-shadow:0 0 8px #ffd23b; animation:bulb 1.6s infinite;}
   .sign .bulbs i:nth-child(2n){animation-delay:.8s;}
   @keyframes bulb{0%,49%{opacity:1;} 50%,100%{opacity:.25;}}
-  .tagline{text-align:center; color:var(--mute); margin:0 auto 22px; max-width:560px;}
+  .tagline{text-align:center; color:var(--mute); margin:0 auto 22px; max-width:560px; text-wrap:balance; word-break:keep-all;}
   .home{display:grid; grid-template-columns:minmax(0,360px) minmax(0,1fr); gap:20px; align-items:start;}
   @media(max-width:820px){ .home{grid-template-columns:minmax(0,1fr);} }
   .badge{background:var(--paper); color:var(--pink); border-radius:12px; padding:0; overflow:hidden; box-shadow:0 14px 30px rgba(0,0,0,.45); position:relative;}
@@ -148,7 +152,7 @@
   .lane .bin{position:absolute; left:0; bottom:44px; width:38px; height:120px; background:repeating-linear-gradient(-45deg,var(--rust) 0 8px,#2a1a14 8px 16px); opacity:.55; border-radius:0 6px 0 0;}
   .lane .press{position:absolute; right:0; bottom:44px; width:38px; height:150px; background:linear-gradient(90deg,#2f2a25,#3d3731); border-left:3px solid #0e0d0b;}
   .slipBox{position:absolute; left:50%; bottom:50px; width:min(680px,calc(100% - 96px)); transform:translateX(-50%);}
-  .slip{position:relative; background:var(--paper); color:var(--pink); border-radius:3px; padding:18px 18px 16px; box-shadow:0 8px 0 rgba(0,0,0,.45), 0 0 0 1px #c9b48c inset;
+  .slip{position:relative; background:var(--paper); color:var(--pink); border-radius:3px; padding:26px 18px 16px; box-shadow:0 8px 0 rgba(0,0,0,.45), 0 0 0 1px #c9b48c inset;
     background-image:repeating-linear-gradient(0deg, transparent 0 31px, rgba(120,90,40,.12) 31px 32px); will-change:transform;}
   .slip .no{position:absolute; right:10px; top:4px; font-size:11px; color:#9b8763; letter-spacing:.1em;}
   .slip .holes{position:absolute; left:6px; top:12px; bottom:12px; width:6px; background:radial-gradient(circle,#1b1916 2.5px,transparent 3px) 0 0/6px 18px repeat-y; opacity:.45;}
@@ -158,23 +162,23 @@
   .w.sel{background:var(--yel); border-bottom-color:transparent; box-shadow:0 0 0 2px #1b1916;}
   .w.bad{background:rgba(212,85,47,.25); text-decoration:line-through; text-decoration-color:var(--rust);}
   .w.fix{background:rgba(76,178,118,.25); color:#1c5c35;}
-  .stamp{position:absolute; right:14px; top:50%; transform:translateY(-50%) rotate(-12deg) scale(1.6); opacity:0; font-family:'Do Hyeon',sans-serif; font-size:30px; padding:4px 14px; border:4px solid currentColor; border-radius:8px; letter-spacing:.06em; pointer-events:none; background:rgba(241,228,200,.75);}
+  .stamp{position:absolute; right:14px; top:-26px; transform:rotate(-9deg) scale(1.6); opacity:0; font-family:'Do Hyeon',sans-serif; font-size:30px; padding:4px 14px; border:4px solid currentColor; border-radius:8px; letter-spacing:.06em; pointer-events:none; background:rgba(241,228,200,.92); box-shadow:0 3px 8px rgba(0,0,0,.35);}
   .stamp.go{animation:stamp .28s ease-out forwards;}
   .stamp.ok{color:#2c8a52;} .stamp.pass{color:#2f6db3;} .stamp.bad{color:#c13e1c;}
-  @keyframes stamp{to{opacity:1; transform:translateY(-50%) rotate(-12deg) scale(1);}}
+  @keyframes stamp{to{opacity:1; transform:rotate(-9deg) scale(1);}}
   .timeStrip{height:10px; background:#0e0d0b; position:relative;}
   .timeStrip i{position:absolute; left:0; top:0; bottom:0; width:100%; background:repeating-linear-gradient(-45deg,var(--yel) 0 8px,#b38e00 8px 16px);}
   .tools{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:14px; background:#1f1c19; border-top:2px solid #0e0d0b; min-height:90px; align-items:stretch;}
   .tools .hint{grid-column:1/-1; color:var(--mute); font-size:14px; align-self:center; text-align:center;}
   .opt{border:0; border-radius:8px; padding:12px 8px; background:var(--paper2); color:var(--pink); font-family:'Gowun Batang',serif; font-weight:700; font-size:clamp(17px,2.6vw,22px); box-shadow:0 4px 0 #8b7550; transition:transform .06s;}
   .opt:active{transform:translateY(3px); box-shadow:0 1px 0 #8b7550;}
-  .opt.right{background:#b9e6c9;} .opt.wrong{background:#f2b9a6;}
+  .opt.right{background:#b9e6c9; box-shadow:0 4px 0 #5f9a77;} .opt.wrong{background:#f2b9a6; box-shadow:0 4px 0 #b6745f;}
   .opt .kb{display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; color:#8b7550; font-weight:500;}
   .passRow{display:flex; gap:10px; padding:0 14px 14px; background:#1f1c19;}
   .passBtn{flex:1; border:0; border-radius:10px; padding:14px; font-family:'Do Hyeon',sans-serif; font-size:24px; color:#fff; background:linear-gradient(180deg,#5aa6ec,var(--blue)); box-shadow:0 5px 0 #23568f; letter-spacing:.04em;}
   .passBtn:active{transform:translateY(4px); box-shadow:0 1px 0 #23568f;}
   .passBtn:disabled{opacity:.45;}
-  .memo{margin-top:14px; background:var(--paper); color:var(--pink); border-radius:4px; padding:12px 16px 12px 46px; position:relative; min-height:64px; box-shadow:0 5px 0 rgba(0,0,0,.35);}
+  .memo{scroll-margin-bottom:64px; margin-top:14px; background:var(--paper); color:var(--pink); border-radius:4px; padding:12px 16px 46px 46px; position:relative; min-height:64px; box-shadow:0 5px 0 rgba(0,0,0,.35);}
   .memo::before{content:'✎'; position:absolute; left:14px; top:10px; font-size:22px; color:#9b8763;}
   .memo .h{font-family:'Do Hyeon',sans-serif; font-size:19px;}
   .memo .h.ok{color:#2c8a52;} .memo .h.bad{color:#c13e1c;} .memo .h.pass{color:#2f6db3;}
@@ -240,14 +244,19 @@
   @keyframes siren{to{box-shadow:0 0 10px var(--rust); opacity:.75;}}
   .cd b{display:block; font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:120px; line-height:1; color:var(--yel);}
   .cd span{font-family:'Do Hyeon',sans-serif; color:var(--mute); font-size:20px; letter-spacing:.2em;}
-  .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); background:var(--yel); color:#1b1916; font-weight:700; padding:10px 18px; border-radius:8px; opacity:0; transition:.25s; z-index:50; pointer-events:none; max-width:90vw; text-align:center;}
+  .toast{position:fixed; left:50%; bottom:72px; transform:translateX(-50%) translateY(20px); background:var(--yel); color:#1b1916; font-weight:700; padding:10px 18px; border-radius:8px; opacity:0; transition:.25s; z-index:50; pointer-events:none; max-width:90vw; text-align:center;}
   .toast.on{opacity:1; transform:translateX(-50%);}
   .shake{animation:shake .35s;}
   @keyframes shake{20%{transform:translateX(-7px);} 40%{transform:translateX(6px);} 60%{transform:translateX(-4px);} 80%{transform:translateX(3px);}}
   @media(max-width:600px){
+    .opt{padding:9px 8px; min-height:48px;}
     .lane{height:250px;} .slipBox{width:calc(100% - 70px);} .lane .bin,.lane .press{width:26px;}
     .tools{grid-template-columns:1fr; padding:10px;} .hud .gauge b{font-size:24px;}
     .stamp{font-size:22px; right:6px;}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;}
+    .belt-demo .track{animation:none;}
   }
 </style>
 </head>
@@ -548,7 +557,7 @@ var ITEMS = [
 ['머리를 {짤랐다|잘랐다|잘럿다,짤럿다}.','S',"기본형은 '자르다'예요."],
 ['{숫가락으로|숟가락으로|숫갈락으로,숟갈락으로} 국을 떴다.','S',"'술'+'가락'이 줄어 'ㄷ' 받침이 된 말이라 '숟가락'이에요."],
 ['{젖가락질이|젓가락질이|젇가락질이,저까락질이} 서툴다.','S',"사이시옷이 들어간 말이라 '젓가락'이에요."],
-['동생은 {무릎쓰고|무릅쓰고|무릎스고,무릅스고} 앞으로 나갔다.','S',"어려움을 참고 견딘다는 뜻은 '무릅쓰다'예요."],
+['동생은 위험을 {무릎쓰고|무릅쓰고|무릎스고,무릅스고} 앞으로 나갔다.','S',"힘들고 어려운 일을 참고 견딘다는 뜻은 '무릅쓰다'예요."],
 ['키가 {작어서|작아서|작어써,잡아서} 앞자리에 앉았다.','S',"'작다'에는 '-아서'가 붙어요."],
 
 ['숙제를 {안했다|안 했다|않 했다,안했따}.','W',"'안'은 꾸미는 말(부사)이라 띄어 써요."],
@@ -584,7 +593,7 @@ var ITEMS = [
 ['아마 내일은 날씨가 {맑았다|맑을 것이다|맑았었다,맑아졌다}.','H',"'아마'는 짐작하는 말과 어울려요."],
 ['모름지기 학생은 열심히 {공부한다|공부해야 한다|공부했다,공부하겠다}.','H',"'모름지기'는 '-해야 한다'와 어울려요."],
 ['나는 그다지 배가 {고프다|고프지 않다|고팠다,고프겠다}.','H',"'그다지'는 부정하는 말과 어울려요."],
-['과연 그 소문은 {거짓이었을까|사실이었다|사실일까,거짓일까}.','H',"'과연'은 짐작이 맞았음을 확인하는 말과 어울려요."],
+['설령 내일 비가 {와서|오더라도|오니까,오므로} 소풍은 간다.','H',"'설령'은 '-더라도, -ㄹ지라도'와 어울려요."],
 
 ['할머니께서 방에 {있다|계신다|있는다,있으셔다}.','P',"웃어른이 어디에 있을 때는 '계시다'를 써요."],
 ['선생님, 제가 먼저 {말할게|말씀드릴게요|말씀하실게요,말하실게요}.','P',"내가 윗사람에게 말할 때는 '말씀드리다'로 나를 낮춰요."],
@@ -1027,6 +1036,7 @@ $('tools').addEventListener('click', function(e){
   var b=e.target.closest('.opt'); if(!b || !cur || cur.done) return;
   var good=b.dataset.o===cur.p.right;
   b.classList.add(good?'right':'wrong');
+  if(!good) document.querySelectorAll('#tools .opt').forEach(function(x){ if(x.dataset.o===cur.p.right) x.classList.add('right'); });
   resolve(good, good?'fix':'opt');
 });
 $('passBtn').onclick=function(){ if(!cur || cur.done || S.phase!=='play') return; resolve(!cur.p.err, cur.p.err?'pass':'clean'); };
@@ -1052,7 +1062,7 @@ function resolve(good, how){
     gain=100+Math.round(50*frac)+Math.min(S.combo,10)*10;
     S.score+=gain; S.ok++; S.combo++; S.best=Math.max(S.best,S.combo); c.ok++; S.lastOk=Date.now();
     var pp=$('gPop'); pp.textContent='+'+gain; pp.classList.remove('go'); void pp.offsetWidth; pp.classList.add('go');
-    if(how==='fix') document.querySelectorAll('#words .w.sel').forEach(function(x,k){ x.classList.remove('sel'); x.classList.add('fix'); x.textContent = k===0 ? p.right : ''; if(k>0) x.remove(); });
+    if(how==='fix') document.querySelectorAll('#words .w.sel').forEach(function(x,k){ x.classList.remove('sel'); x.classList.add('fix'); if(k===0) x.textContent=fixedWord(p); else x.remove(); });
     lamps('ok');
   } else {
     S.miss++; S.combo=0; if(S.role==='solo') S.lives--;
@@ -1069,6 +1079,10 @@ function resolve(good, how){
   memo(p, good, how);
   var wait = good ? (p.err ? 1700 : 900) : 3200;
   memoT=setTimeout(nextSlip, wait);
+}
+function fixedWord(p){
+  var a=p.fixed.lastIndexOf(' ',p.fa-1)+1, e=p.fixed.indexOf(' ',p.fb); if(e<0) e=p.fixed.length;
+  return p.fixed.slice(a,e);
 }
 function hiFixed(p){
   if(!p.err) return esc(p.fixed);
@@ -1090,6 +1104,7 @@ function memo(p, good, how){
     +(p.rule ? '<div class="rule" data-kr>'+esc(p.rule)+'</div>' : '')
     +'<button class="next">'+tr('다음 ▶')+'</button>';
   el.classList.remove('hide');
+  setTimeout(function(){ try{ el.scrollIntoView({ block:'nearest', behavior:'auto' }); }catch(e){} }, 60);
   el.querySelector('.next').onclick=function(){ nextSlip(); };
 }
 

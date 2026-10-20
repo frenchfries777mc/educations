@@ -229,9 +229,10 @@ canvas.stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 @media (max-width: 1180px) {
   .home-menu { top: auto; bottom: max(36px, env(safe-area-inset-bottom, 0px)); transform: none; }
 }
+@media (min-width: 1181px) { .home { padding-left: 220px; } }
 @media (max-width: 700px) {
-  .home { place-items: start center; padding-top: 20vh; }
-  .home-menu { left: max(24px, env(safe-area-inset-left, 0px)); }
+  .home { place-items: start center; padding-top: 16vh; }
+  .home-menu { left: max(24px, env(safe-area-inset-left, 0px)); bottom: max(84px, calc(env(safe-area-inset-bottom, 0px) + 72px)); }
 }
 .home-title h1 { word-spacing: -.32em; }
 @media (max-width: 600px) {
@@ -309,6 +310,13 @@ canvas.stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .pt td.mono { font-size: 12px; }
   .sheet section { break-inside: avoid; }
 }
+@keyframes msgin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+@keyframes msgbad { 0%, 100% { transform: none; } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.msg.ok, .msg.info { animation: msgin .25s ease-out; }
+.msg.bad { animation: msgbad .3s ease-out; }
+.menu-btn:active, .btn:active:not([disabled]) { transform: translateY(1px); }
+@media (pointer: coarse) { .btn.sm, .seg .btn, .colpick .btn { min-height: 44px; } .btn.sm { padding-inline: 14px; } }
+@media (max-width: 600px) { .formula { white-space: normal; } }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 
@@ -646,7 +654,7 @@ function summaryPanel(p, st) {
 function sigRow(p, sg) {
   const k = sg.k, v = p.t[k];
   const bulbs = h("div", { class: "bulbs" }, Array.from({ length: 8 }, (_, i) => { const b = 7 - i, lit = (v >> b) & 1; return h("div", { class: "bulb" }, h("div", { class: "b" + (lit ? " lit" : "") }, lit), h("small", {}, 2 ** b)); }));
-  const inp = h("input", { class: "num-in", type: "number", inputmode: "numeric", id: `dec-${p.id}-${k}`, "aria-label": `${sg.t} 10진수`, placeholder: "10진수" });
+  const inp = h("input", { class: "num-in", type: "number", inputmode: "numeric", id: `dec-${p.id}-${k}`, "aria-label": `${sg.t} 10진수`, placeholder: "10진수", min: 0, max: 255 });
   const ok = h("button", { class: "btn primary" }, "해독");
   ok.onclick = () => { if (inp.value === "") return; p.dec[k] = +inp.value;
     G.sec.dec++; G.tot.dec++; if (+inp.value === v) { G.sec.ok++; G.tot.ok++; G.sec.ex = G.sec.ex || { t: sg.t, v }; } explore(+inp.value === v ? `${sg.t}: ${bin8(v)}₍₂₎ = ${v}` : `${sg.t}: 해독 실패`); };
@@ -688,7 +696,7 @@ function gearFor(k) {
 }
 function mediaView(p, k) {
   const d = p.data[k];
-  if (k === "photo") { const cv = h("canvas", { class: "view", width: 240, height: 240 }); drawPhoto(cv, p.t.photo, d.res, d.bits); return h("div", { class: "row", style: "align-items:flex-end" }, cv, h("span", { class: "dim", style: "font-size:13px" }, "우주 · 땅 · ", h("b", { style: "color:#3d8bff" }, "물"), " · 얼음")); }
+  if (k === "photo") { const cv = h("canvas", { class: "view", width: 240, height: 240 }); drawPhoto(cv, p.t.photo, d.res, d.bits); return h("div", { class: "row", style: "align-items:flex-end" }, cv, h("span", { class: "dim", style: "font-size:13px" }, d.bits === 1 ? "검정 = 우주 · 하양 = 행성 (땅, 물, 얼음이 구분되지 않아요)" : ["우주 · 땅 · ", h("b", { style: "color:#3d8bff" }, "물"), " · 얼음"])); }
   if (k === "sound") { const cv = h("canvas", { class: "wave", width: 460, height: 150 }); drawWave(cv, d.s, d.rate, d.bits); return h("div", { style: "display:flex;flex-direction:column;gap:6px" }, cv, h("div", {}, h("button", { class: "btn sm", onclick: () => playSound(d.s, d.rate) }, "▶ 들어 보기"))); }
   return videoPlayer(p.t.video, d.fps, d.res);
 }
@@ -841,6 +849,7 @@ function drawTable(box) {
   const filters = [...sigs.map(sg => h("label", {}, sg.t, inp(sg.k + "Min", "최소", sg.t), "~", inp(sg.k + "Max", "최대", sg.t))),
     on("water") ? sel("water", "물", [["true", "있음"], ["false", "없음"]]) : null, on("sound") ? sel("sound", "소리", [["quiet", "조용함"], ["loud", "시끄러움"]]) : null, on("danger") ? sel("danger", "위험", [["false", "없음"], ["true", "있음"]]) : null].filter(Boolean);
   if (filters.length) box.append(h("div", { class: "filters" }, filters));
+  else box.append(h("p", { class: "dim", style: "font-size:14px" }, "위에서 열을 골라 표를 만들어 보세요. 고른 열만 표에 나타나요."));
   box.append(
     h("div", { class: "tbl-wrap" }, h("table", { class: "pt", style: `min-width:${Math.min(860, 260 + G.cols.length * 90)}px` },
       h("thead", {}, h("tr", {}, h("th", { scope: "col" }, "행성"), sigs.map(sg => h("th", { scope: "col" }, srt(sg.k, sg.t + (sg.u ? ` ${sg.u}` : "")))),
@@ -915,11 +924,11 @@ function resultCard() {
 function sectorRecap() {
   const S = G.sec, line = (t, v) => h("div", { class: "sum-row" }, h("span", { class: "label" }, t), h("span", { class: "mono", style: "text-align:right" }, v));
   const media = k => { const a = S.scans[k]; return a.length ? `${a.length}번 · 마지막 ${a[a.length - 1]}` : "스캔 안 함"; };
-  return h("div", { class: "box" }, h("div", { class: "phead" }, h("h3", {}, `섹터 ${G.sector} 데이터 정리`), h("span", { class: "code" }, `저장 ${fmt(S.bits)}비트 사용`)),
+  return h("div", { class: "box" }, h("div", { class: "phead" }, h("h3", {}, `섹터 ${G.sector} 데이터 정리`), h("span", { class: "code" }, `스캔한 자료 ${fmt(S.bits)}비트`)),
     h("div", {},
       line("이진수 해독", `${S.ok} / ${S.dec} 정답${S.ex ? ` · 예) ${bin8(S.ex.v)}₍₂₎ = ${S.ex.v}` : ""}`),
       line("사진", media("photo")), line("소리", media("sound")), line("영상", media("video")),
-      line("답장 신호", S.reply ? (S.reply.ok ? `${S.reply.target} → ${bin8(S.reply.target)}₍₂₎ 성공` : `${S.reply.target}를 ${bin8(S.reply.sent)}₍₂₎로 보냄 · 정답 ${bin8(S.reply.target)}₍₂₎`) : "없음")));
+      line("답장 신호", S.reply ? (S.reply.ok ? `${S.reply.target} → ${bin8(S.reply.target)}₍₂₎ 성공` : `인구 ${S.reply.target}명을 ${bin8(S.reply.sent)}₍₂₎로 보냄 · 정답 ${bin8(S.reply.target)}₍₂₎`) : "없음")));
 }
 const totalPop = () => Math.round(G.colonies.filter(c => c.alive).reduce((a, c) => a + c.pop, 0));
 
@@ -1090,7 +1099,7 @@ function pickSeg(label, key, redraw) {
 const svgBox = (svg, w) => { const d = h("div", { class: "chart", style: `--w:${w}px` }); d.innerHTML = svg; return d; };
 function arcBar(redraw) {
   const k = ARC.bar, sg = SIG.find(x => x.k === k), rows = G.all.filter(p => p.dec[k] != null);
-  const max = Math.max(1, ...rows.map(p => p.dec[k])), nice = Math.ceil(max / 10) * 10;
+  const max = Math.max(1, ...rows.map(p => p.dec[k])), nice = Math.ceil(max / 20) * 20;
   const L = 120, R = 60, W = 720, bh = 22, gap = 10, T = 30, H = T + rows.length * (bh + gap) + 10;
   const x = v => L + (W - L - R) * v / nice;
   let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(sg.t)} 막대그래프">`;
@@ -1107,7 +1116,7 @@ function arcScatter(redraw, list = G.all, onPick, label = p => p.name) {
   const kx = ARC.x, ky = ARC.y, sx = SIG.find(s => s.k === kx), sy = SIG.find(s => s.k === ky);
   const rows = list.filter(p => p.dec[kx] != null && p.dec[ky] != null);
   const W = 760, H = 460, L = 60, R = 90, T = 24, B = 56;
-  const mx = Math.ceil(Math.max(1, ...rows.map(p => p.dec[kx])) / 10) * 10, my = Math.ceil(Math.max(1, ...rows.map(p => p.dec[ky])) / 10) * 10;
+  const mx = Math.ceil(Math.max(1, ...rows.map(p => p.dec[kx])) / 20) * 20, my = Math.ceil(Math.max(1, ...rows.map(p => p.dec[ky])) / 20) * 20;
   const X = v => L + (W - L - R) * v / mx, Y = v => H - B - (H - T - B) * v / my;
   let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(sx.t)}와 ${esc(sy.t)} 산점도">`;
   for (let i = 0; i <= 4; i++) {
