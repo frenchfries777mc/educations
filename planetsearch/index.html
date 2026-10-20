@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<!-- © 2026 Frenchfries777 · CC BY-NC-ND 4.0 · https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko -->
 <html lang="ko">
 <head>
-<meta name="copyright" content="© 2026 Frenchfries777. CC BY-NC-ND 4.0 (https://creativecommons.org/licenses/by-nc-nd/4.0/)">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>행성 탐사</title>
+<!-- © 2026 Frenchfries777. CC BY-NC-ND 4.0 (https://creativecommons.org/licenses/by-nc-nd/4.0/) -->
+<meta name="copyright" content="© 2026 Frenchfries777. CC BY-NC-ND 4.0 (https://creativecommons.org/licenses/by-nc-nd/4.0/)">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -223,6 +223,8 @@ canvas.stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 .menu-btn:hover::before { width: 36px; }
 .menu-btn.primary { color: var(--signal); }
 .menu-btn.primary::before { height: 2px; }
+.ff-cr { position: absolute; right: max(16px, env(safe-area-inset-right, 0px)); bottom: max(10px, env(safe-area-inset-bottom, 0px)); font-family: var(--f-mono); font-size: 11px; color: var(--faint); text-decoration: none; z-index: 2; }
+.ff-cr:hover { color: var(--dim); }
 .menu-best { color: var(--faint); font-size: 13px; padding: 10px 0 0 36px; font-family: var(--f-mono); }
 @media (max-width: 1180px) {
   .home-menu { top: auto; bottom: max(36px, env(safe-area-inset-bottom, 0px)); transform: none; }
@@ -1006,7 +1008,8 @@ function home() {
       h("button", { class: "menu-btn primary", id: "start", onclick: () => newRun() }, "항해 시작"),
       h("button", { class: "menu-btn", id: "class-code", onclick: classCode }, "반 코드로 시작"),
       h("button", { class: "menu-btn", id: "notes", onclick: dataNotes }, "데이터 노트"),
-      save.best ? h("span", { class: "menu-best mono" }, `최고 기록 ${save.best}명`) : null)));
+      save.best ? h("span", { class: "menu-best mono" }, `최고 기록 ${save.best}명`) : null),
+    h("a", { class: "ff-cr", id: "ffCR", href: "https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko", target: "_blank", rel: "noopener" }, "© 2026 Frenchfries777 · CC BY-NC-ND 4.0")));
   drawHomePlanet($(".home-planet"));
   window.scrollTo(0, 0);
 }
@@ -1233,6 +1236,5 @@ window.__ps = { get G() { return G; }, newRun, planets, nextPlanet, totalPop, ma
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:5px}}
 </style>
 <script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기'};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
-<a id="ffCR" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener" style="position:fixed;right:10px;bottom:6px;z-index:40;font:11px/1.2 system-ui,sans-serif;color:#fff;opacity:.45;text-decoration:none;text-shadow:0 1px 2px #000;pointer-events:auto">© 2026 Frenchfries777 · CC BY-NC-ND 4.0</a>
 </body>
 </html>
