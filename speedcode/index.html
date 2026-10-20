@@ -226,6 +226,7 @@
   body.onHome .ship .win{top:60px; height:calc(96px + 56px*.95);} body.onHome #sHome{padding-top:26px; padding-bottom:96px;} body.onHome #sHome .homeGrid{margin-top:50px; gap:12px;} .ticker{font-size:13px; margin-top:10px;} }
   @media(prefers-reduced-motion:reduce){ *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;} }
   body:not(.onHome) .ship .win{opacity:.55;}
+  body.onResult .ship .win{opacity:0;} body.onResult .ship .floor{opacity:.3;} #sResult{padding-bottom:120px;}
   .skip{min-height:44px; padding:0 14px;} .skip:focus-visible,.btn:focus-visible,.pad button:focus-visible,.pad2 button:focus-visible,.seg button:focus-visible{outline:2px solid var(--fry); outline-offset:2px;}
   .seg button{min-height:40px;}
   .center{text-align:center;}
@@ -429,7 +430,7 @@ var token = lsGet('speedcode.token');
 if(!token){ token = Math.random().toString(36).slice(2)+Date.now().toString(36); lsSet('speedcode.token', token); }
 
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on', s.id===id); }); document.body.classList.toggle('onHome', id==='sHome'); window.scrollTo(0,0); }
+function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on', s.id===id); }); document.body.classList.toggle('onHome', id==='sHome'); document.body.classList.toggle('onResult', id==='sResult'); window.scrollTo(0,0); }
 var toastT;
 function toast(t){ var el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('on'); }, 2400); }
 var netNow=['','오프라인'];
@@ -467,7 +468,7 @@ var S = {
   board:null
 };
 
-// points per correct answer: 1, then +1 from the 3rd, 6th and 9th correct answer in a row (max 4)
+// points per correct answer: 1 + 1 for every 3 correct answers in a row (no cap)
 function comboPts(c){ return 1+Math.floor(c/3); }
 var PEN_MS=2000;
 function bitsFor(score, maxBits){
