@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<!-- © 2026 Frenchfries777. CC BY-NC-ND 4.0 (https://creativecommons.org/licenses/by-nc-nd/4.0/) -->
 <meta name="copyright" content="© 2026 Frenchfries777. CC BY-NC-ND 4.0 (https://creativecommons.org/licenses/by-nc-nd/4.0/)">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
@@ -225,6 +226,8 @@
   .langSel:hover{color:var(--text); border-color:var(--fry);}
   .toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%) translateY(20px); background:#1b2130; border:1px solid var(--line); border-radius:12px; padding:10px 16px; font-size:15px; opacity:0; transition:all .25s; z-index:30; pointer-events:none; max-width:90vw;}
   .toast.on{opacity:1; transform:translateX(-50%);}
+  .legal{text-align:center; font-size:11px; color:rgba(200,215,235,.55); padding:6px 12px 14px; position:relative; z-index:2;}
+  .legal a{color:inherit;}
 </style>
 </head>
 <body>
@@ -961,5 +964,6 @@ window.__sc = S; // for testing
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:5px}}
 </style>
 <script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기'};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
+<div class="legal">© 2026 Frenchfries777 · <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a></div>
 </body>
 </html>
