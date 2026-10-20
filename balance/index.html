@@ -1485,7 +1485,6 @@ $('stagesBtn').onclick=showStages;
 $('againBtn').onclick=function(){ if(S.role==='solo') startSolo(S.name, S.settings.stage); else if(S.role==='host') enterLobby(); };
 $('homeBtn').onclick=goHome;
 window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.phase!=='idle' && onlineCount()>0){ e.preventDefault(); e.returnValue=''; } });
-window.__mk=makeStages; window.__bl=S; window.__blAim=function(){ var A=stage().ans; S.anc=A.anc; setVec(A.vx, A.vy); return [S.anc,S.vx,S.vy]; };
 })();
 </script>
 <a id="ffBack" href="../" aria-label="Educations"><span class="ffb-i">🍟</span><span class="ffb-t">Educations</span></a>
@@ -1493,7 +1492,7 @@ window.__mk=makeStages; window.__bl=S; window.__blAim=function(){ var A=stage().
 #ffBack{position:fixed;left:12px;bottom:12px;z-index:99999;display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:14px;background:rgba(20,20,22,.88);color:#fff;font:600 13px/1 system-ui,-apple-system,"Noto Sans KR",sans-serif;text-decoration:none;border:1px solid rgba(255,255,255,.18);box-shadow:0 6px 18px rgba(0,0,0,.35);backdrop-filter:blur(6px)}
 #ffBack .ffb-i{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:18px;background:linear-gradient(135deg,#ffb23f,#ff5d8f)}
 #ffBack:hover{border-color:#ffb23f}
-@media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:5px}}
+@media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:8px;bottom:8px;opacity:.6;border-radius:12px}#ffBack .ffb-i{width:30px;height:30px;font-size:16px}#ffBack:active,#ffBack:focus-visible{opacity:1}}
 </style>
 <script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기'};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
 <a id="ffCR" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener" style="position:fixed;right:10px;bottom:6px;z-index:40;font:11px/1.2 system-ui,sans-serif;color:#fff;opacity:.45;text-decoration:none;text-shadow:0 1px 2px #000;pointer-events:auto">© 2026 Frenchfries777 · CC BY-NC-ND 4.0</a>
