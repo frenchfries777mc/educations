@@ -389,7 +389,11 @@
   .report .best b.nb{color:var(--bp);}
   @media(max-width:600px){ .strip .c{width:38px; height:38px;} .strip .c .ico{width:24px; height:16px;} }
   @media(prefers-reduced-motion:reduce){ .fire:not(:disabled){animation:none;} .hero svg .pu,.hero svg .gr{animation:none;} .frame.pass::after{animation:none; opacity:0;} }
+  .tbadge{font-style:normal; font-size:11px; font-weight:700; color:var(--amb); margin-left:6px; white-space:nowrap;}
+  .crowd span.me .tbadge{color:var(--bp);}
+  .clsLine{font-size:13px; color:var(--ink2); margin:10px 0 0; overflow-wrap:anywhere;}
 </style>
+<script src="../teacher.js" defer></script>
 </head>
 <body>
 <div class="wrap">
@@ -465,11 +469,13 @@
         <p class="lbl">방장도 참여</p>
         <div class="seg" id="segHostPlay"><button data-v="1">함께 하기</button><button data-v="0">지켜보기</button></div>
       </div>
+      <div id="clsSet" class="hide"><p class="lbl">반 이름</p><div class="rename" style="margin-top:0"><input id="clsIn" maxlength="12" aria-label="반 이름"></div></div>
       <div id="guestWait" class="hide"><p class="msg info" id="guestSet"></p><p class="msg info">방장이 시작하기를 기다리는 중</p></div>
     </div>
     <div class="sheet">
       <h3><span class="tag">TEAM</span>설계팀 <span class="mono" id="pNum">0</span></h3>
       <div class="crowd" id="chips"></div>
+      <p class="clsLine hide" id="clsLine"></p>
       <div class="rename"><input id="renameIn" maxlength="16" aria-label="이름"><button class="pill" id="renameBtn">이름 바꾸기</button></div>
       <div class="rowEnd"><button class="go" id="startBtn">설계 시작</button><button class="pill" id="leaveBtn">나가기</button></div>
     </div>
@@ -531,7 +537,7 @@
     </div>
   </div>
   <p class="msg info" id="resWait"></p>
-  <div class="resBtns"><button class="go" id="againBtn">다시 설계</button><button class="go line hide" id="stagesBtn">스테이지 고르기</button><button class="go line" id="homeBtn">처음으로</button></div>
+  <div class="resBtns"><button class="go line hide" id="csvBtn">결과 저장 (CSV)</button><button class="go" id="againBtn">다시 설계</button><button class="go line hide" id="stagesBtn">스테이지 고르기</button><button class="go line" id="homeBtn">처음으로</button></div>
 </section>
 </div>
 
@@ -815,7 +821,8 @@ var S = {
   phase:'idle', endAt:0, totalMs:0, seed:1,
   stages:[], cur:0, shot:0, score:0, hits:0, rec:[], miss:{size:0,dir:0,line:0}, done:false, doneAt:0,
   vx:0, vy:0, anc:0, anim:null,
-  players:{}, conn:null, board:null
+  players:{}, conn:null, board:null,
+  teacher:false, uid:null, cls:'', hu:null, hv:false, lastRank:null
 };
 
 function needName(){
@@ -837,7 +844,7 @@ function joinNow(){
 }
 var isBusy=false;
 function busy(on){ isBusy=on; $('hostBtn').disabled=on; $('soloBtn').disabled=on; }
-function destroyPeer(){ if(S.peer){ try{ S.peer.destroy(); }catch(e){} } S.peer=null; S.conn=null; S.players={}; setNet('','오프라인'); }
+function destroyPeer(){ S.teacher=false; S.uid=null; S.cls=''; S.hu=null; S.hv=false; S.lastRank=null; if(S.peer){ try{ S.peer.destroy(); }catch(e){} } S.peer=null; S.conn=null; S.players={}; setNet('','오프라인'); }
 function goHome(){ destroyPeer(); clearTimers(); $('intro').classList.remove('on'); S.role=null; S.phase='idle'; busy(false); show('sHome'); }
 function noPeerLib(){ if(window.Peer) return false; $('homeMsg').className='msg'; $('homeMsg').textContent=tr('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.'); return true; }
 
@@ -849,6 +856,7 @@ function startHost(name, tries){
   $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('설계실을 여는 중...');
   destroyPeer();
   S.role='host'; S.name=name; S.code=newCode(); S.players={};
+  if(window.EduTeacher){ EduTeacher.me().then(function(m){ if(S.role==='host' && S.peer===p && m && m.teacher && m.uid){ S.teacher=true; S.uid=String(m.uid).slice(0,40); teachUi(); renderChips(); broadcast(tx({ t:'lobby', settings:S.settings })); } }).catch(function(){}); }
   var p=new Peer(PREFIX+S.code, peerOpts()); S.peer=p;
   p.on('open', function(){ $('homeMsg').textContent=''; busy(false); setNet('on','연결됨'); enterLobby(); });
   p.on('connection', onGuestConn);
@@ -873,6 +881,36 @@ function dropConn(conn){
 function send(conn, m){ if(conn && conn.open){ try{ conn.send(m); }catch(e){} } }
 function broadcast(m){ for(var t in S.players) send(S.players[t].conn, m); }
 function onlineCount(){ var c=0; for(var t in S.players) if(S.players[t].online) c++; return c; }
+// ---------- teacher extras (optional fields only) ----------
+function tx(m){ if(S.teacher && S.uid){ m.uid=S.uid; m.cls=S.cls; } return m; }
+function cleanCls(v){ return String(v||'').replace(/\s+/g,' ').trim().slice(0,12); }
+function badgeHtml(){ return '<em class="tbadge">'+esc(tr('✅ 선생님'))+'</em>'; }
+function teachUi(){
+  var hostT=S.role==='host' && S.teacher;
+  $('clsSet').classList.toggle('hide', !(hostT && S.phase==='lobby'));
+  var c = S.cls, show = !!c && S.phase==='lobby' && S.role==='guest';
+  $('clsLine').classList.toggle('hide', !show); $('clsLine').textContent = show ? tr('반 이름: {0}', c) : '';
+  $('csvBtn').classList.toggle('hide', !(hostT && S.lastRank && S.lastRank.length));
+}
+function guestTeach(d){
+  if(S.role!=='guest') return;
+  if(typeof d.cls==='string') S.cls=cleanCls(d.cls);
+  if(typeof d.uid==='string' && d.uid && d.uid!==S.hu && window.EduTeacher){
+    var u=d.uid.slice(0,40); S.hu=u; S.hv=false;
+    EduTeacher.verify(u).then(function(ok){
+      if(ok && S.hu===u && !S.hv){ S.hv=true; if(S.phase==='lobby') renderChips(); else if(S.phase==='result' && S.lastRank) showResult(S.lastRank); }
+    }).catch(function(){});
+  }
+  teachUi();
+}
+function csvSave(){
+  if(!(S.role==='host' && S.teacher && S.lastRank && window.EduTeacher)) return;
+  var d=new Date(), p=function(n){ return (n<10?'0':'')+n; };
+  var when=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+  var rows=[['반 이름','날짜','순위','이름','점수','완료한 도면','전체 도면']];
+  S.lastRank.forEach(function(e){ rows.push([S.cls, when, e.r, e.n, e.s, e.st, S.settings.stages]); });
+  EduTeacher.csv('평형설계실-'+(S.cls||'결과')+'-'+EduTeacher.stamp()+'.csv', rows);
+}
 function uniqueName(name, tok){
   var base=name, n=name, i=2, taken=function(x){ if(S.settings.hostPlay && x===S.name && tok!==token) return true; for(var t in S.players) if(t!==tok && S.players[t].name===x) return true; return false; };
   while(taken(n)){ n=base.slice(0,14)+' '+i; i++; }
@@ -893,8 +931,8 @@ function handleHostMsg(conn, d){
     if(pl.conn && pl.conn!==conn){ try{ pl.conn.close(); }catch(e){} }
     pl.conn=conn; pl.online=true; conn._tok=tok;
     pl.name=uniqueName(cleanName(d.name), tok);
-    send(conn, { t:'welcome', name:pl.name, settings:S.settings, phase:S.phase, remain:S.endAt-Date.now(), total:S.totalMs, seed:S.seed, score:pl.score, stage:pl.stage, done:pl.done });
-    if(S.phase==='result') send(conn, { t:'end', ranking:ranking() });
+    send(conn, tx({ t:'welcome', name:pl.name, settings:S.settings, phase:S.phase, remain:S.endAt-Date.now(), total:S.totalMs, seed:S.seed, score:pl.score, stage:pl.stage, done:pl.done }));
+    if(S.phase==='result') send(conn, tx({ t:'end', ranking:ranking() }));
     if(S.phase==='lobby') renderChips();
     boardDirty=true; return;
   }
@@ -929,17 +967,17 @@ function enterLobby(){
     $('copyLnk').onclick=function(){ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){ toast(tr('링크를 복사했어요')); }, function(){ toast(url); }); };
     syncSegs();
     for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else { p.score=0; p.stage=0; p.done=false; p.doneAt=0; } }
-    broadcast({ t:'lobby', settings:S.settings });
+    broadcast(tx({ t:'lobby', settings:S.settings }));
   } else { $('lobbyLink').textContent=''; renderGuestSet(); }
-  $('renameIn').value=S.name;
-  renderChips(); show('sLobby');
+  $('renameIn').value=S.name; $('clsIn').value=S.cls;
+  renderChips(); teachUi(); show('sLobby');
 }
 function renderGuestSet(){ $('guestSet').textContent=tr('{0} · 도면 {1}장 · 제한 시간 {2}', tr(STAGEDEF[S.settings.stage||5].n), S.settings.stages, fmt(S.settings.time*1000)); }
 function bindSeg(id, key){
   $(id).addEventListener('click', function(e){
     var b=e.target.closest('button'); if(!b) return;
     S.settings[key]=+b.dataset.v; syncSegs(); renderChips();
-    broadcast({ t:'lobby', settings:S.settings });
+    broadcast(tx({ t:'lobby', settings:S.settings }));
   });
 }
 bindSeg('segStages','stages'); bindSeg('segStage','stage'); bindSeg('segTime','time'); bindSeg('segHostPlay','hostPlay');
@@ -951,12 +989,14 @@ function renderChips(){
     if(S.settings.hostPlay) names.push({n:S.name, me:true});
     for(var t in S.players){ var p=S.players[t]; if(p.online) names.push({n:p.name}); }
     lobbyNames=names.map(function(x){ return x.n; });
-    broadcast({ t:'players', names:lobbyNames, guests:onlineCount() });
+    var pm={ t:'players', names:lobbyNames, guests:onlineCount() }; if(S.teacher && S.settings.hostPlay) pm.hi=0;
+    broadcast(tx(pm));
     guestCount=onlineCount();
     $('startBtn').disabled = names.length===0;
-  } else names=lobbyNames.map(function(n){ return {n:n, me:n===S.name}; });
+    if(S.teacher && S.settings.hostPlay && names.length) names[0].t=true;
+  } else { names=lobbyNames.map(function(n){ return {n:n, me:n===S.name}; }); if(S.hv && S.hostIdx===0 && names.length) names[0].t=true; }
   $('pNum').textContent=names.length;
-  $('chips').innerHTML=names.map(function(x){ return '<span class="'+(x.me?'me':'')+'">'+esc(x.n)+'</span>'; }).join('') || '<span class="msg info" style="background:none;color:var(--mute)">'+tr('아직 아무도 없어요')+'</span>';
+  $('chips').innerHTML=names.map(function(x){ return '<span class="'+(x.me?'me':'')+'">'+esc(x.n)+(x.t?badgeHtml():'')+'</span>'; }).join('') || '<span class="msg info" style="background:none;color:var(--mute)">'+tr('아직 아무도 없어요')+'</span>';
 }
 $('startBtn').onclick=function(){
   if(S.role!=='host') return;
@@ -966,6 +1006,7 @@ $('startBtn').onclick=function(){
   beginRound(cd, S.settings.time*1000);
 };
 $('leaveBtn').onclick=goHome;
+$('clsIn').addEventListener('input', function(){ if(!S.teacher || S.role!=='host') return; S.cls=cleanCls(this.value.slice(0,12)); broadcast(tx({ t:'lobby', settings:S.settings })); });
 $('renameBtn').onclick=function(){
   var n=$('renameIn').value.trim(); if(!n || S.phase!=='lobby') return;
   n=cleanName(n);
@@ -1011,17 +1052,17 @@ function handleGuestMsg(d){
   switch(d.t){
     case 'full': $('homeMsg').className='msg'; $('homeMsg').textContent=tr('설계실이 가득 찼어요 (최대 40명).'); busy(false); destroyPeer(); show('sHome'); break;
     case 'welcome':
-      S.name=d.name; S.settings=d.settings; busy(false); $('homeMsg').textContent='';
+      S.name=d.name; S.settings=d.settings; busy(false); $('homeMsg').textContent=''; guestTeach(d);
       if(d.phase==='play' || d.phase==='count'){
         if(S.phase!=='play' && S.phase!=='count'){ S.seed=d.seed; beginRound(0, Math.max(0,d.remain), d.total, { score:d.score, stage:d.stage, done:d.done }); }
       } else if(d.phase==='lobby' && S.phase!=='lobby') enterLobby();
       break;
-    case 'lobby': S.settings=d.settings; if(S.phase!=='lobby') enterLobby(); else renderGuestSet(); break;
+    case 'lobby': S.settings=d.settings; guestTeach(d); if(S.phase!=='lobby') enterLobby(); else renderGuestSet(); break;
     case 'named': S.name=d.name; lsSet('balance.name', d.name); $('renameIn').value=d.name; renderChips(); toast(tr('이름을 바꿨어요')); break;
-    case 'players': lobbyNames=d.names||[]; guestCount=d.guests|0; if(S.phase==='lobby') renderChips(); break;
+    case 'players': lobbyNames=d.names||[]; guestCount=d.guests|0; S.hostIdx=(d.hi===0)?0:-1; guestTeach(d); if(S.phase==='lobby') renderChips(); break;
     case 'start': S.settings=d.settings; S.seed=d.seed; beginRound(d.cd, d.dur); break;
     case 'board': S.board=d; renderMyBoard(); break;
-    case 'end': showResult(d.ranking); break;
+    case 'end': guestTeach(d); S.hostIdx=-1; showResult(d.ranking); break;
   }
 }
 
@@ -1121,7 +1162,7 @@ function renderMyBoard(){
 function finishRound(){
   clearTimers(); S.phase='result';
   if(S.role==='solo'){ showResult(null); return; }
-  var r=ranking(); broadcast({ t:'end', ranking:r }); showResult(r);
+  var r=ranking(); broadcast(tx({ t:'end', ranking:r.map(function(e){ if(S.teacher && e.t===token) e.h=1; return e; }) })); showResult(r);
 }
 // ---------- the drawings: five kinds of "two forces in balance" (middle school grade 1 "forces") ----------
 // world is 16 x 10 grid cells; one cell of arrow = st.sc newtons. y grows downward like the screen.
@@ -1843,18 +1884,18 @@ function countUp(el, to, on){
   (function f(now){ var u=Math.min(1,(now-t0)/d), e=1-Math.pow(1-u,3); el.textContent=Math.round(to*e); if(u<1 && S.phase==='result') requestAnimationFrame(f); else el.textContent=to; })(t0);
 }
 function showResult(r){
-  clearTimers(); S.phase='result'; $('intro').classList.remove('on');
+  clearTimers(); S.phase='result'; S.lastRank=r||null; $('intro').classList.remove('on');
   var prevBest=bestGet()[S.settings.stage]||0, newBest=false;
   if(S.role==='solo'){ newBest = S.score>prevBest && S.score>0; bestSet(S.settings.stage, S.score); }
   var played=iPlay();
   sfx(520,780,.18,'triangle'); sfx(780,1170,.26,'triangle',.08,.15);
-  $('rWho').textContent = S.name+' · '+new Date().toLocaleDateString(lang==='ko'?'ko-KR':lang);
+  $('rWho').textContent = (S.cls && S.role!=='solo' ? S.cls+' · ' : '')+S.name+' · '+new Date().toLocaleDateString(lang==='ko'?'ko-KR':lang);
   countUp($('rTotal'), played ? S.score : 0, played);
   $('rSub').textContent = played ? tr(STAGEDEF[S.settings.stage||5].n)+' · '+tr('도면 {0}장 · 승인 {1}장', S.rec.length, S.hits) : '';
   var bestEl=$('rBest'); bestEl.classList.toggle('hide', S.role!=='solo' || !played || Math.max(prevBest, S.score)<=0);
   if(S.role==='solo') bestEl.innerHTML = newBest ? '<span class="rbest">'+esc(tr('새 최고 기록!'))+'</span>' : esc(tr('이 스테이지 최고 기록 {0}점', Math.max(prevBest, S.score)));
   $('rRankBox').classList.toggle('hide', !r);
-  if(r) $('rRank').innerHTML=r.map(function(e){ var me=e.t===token || (S.role==='guest' && e.n===S.name); return '<tr'+(me?' class="me"':'')+'><td class="num">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="num">'+e.s+'</td><td>'+e.st+'/'+S.settings.stages+'</td></tr>'; }).join('');
+  if(r) $('rRank').innerHTML=r.map(function(e){ var me=e.t===token || (S.role==='guest' && e.n===S.name); return '<tr'+(me?' class="me"':'')+'><td class="num">'+e.r+'</td><td>'+esc(e.n)+((S.role==='host'?(S.teacher && e.t===token):(S.hv && e.h===1))?badgeHtml():'')+'</td><td class="num">'+e.s+'</td><td>'+e.st+'/'+S.settings.stages+'</td></tr>'; }).join('');
   $('rMine').classList.toggle('hide', !played || !S.rec.length);
   $('rStages').innerHTML=S.rec.map(function(x,i){ var st=x.st; return '<tr style="animation-delay:'+Math.min(i,14)*40+'ms"'+(x.pts?'':' class="miss"')+'><td class="num">'+pad2(i+1)+'</td><td><span class="ki ico">'+KICON[st.t]+'</span>'+esc(st.t==='hang'?tr('매달린 {0}', tr(st.obj)):tr(KINDS[st.t].n))+'</td><td>'+esc(tr(KINDS[st.t].f))+'</td><td class="num">'+esc(ansText(st))+'</td><td>'+x.shots+'</td><td class="num pt">'+x.pts+'</td></tr>'; }).join('');
   $('rStrip').innerHTML=S.rec.map(function(x,i){ var cl= x.pts>=100 ? 'ok' : x.pts>0 ? 'ok2' : 'no'; return '<span class="c '+cl+'" style="animation-delay:'+Math.min(i,24)*35+'ms"><i>'+pad2(i+1)+'</i>'+kindIco(x.st.t)+'</span>'; }).join('');
@@ -1864,8 +1905,10 @@ function showResult(r){
   $('rBars').innerHTML=rows.map(function(x){ return '<div class="bar"><span>'+esc(tr(x[0]))+'</span><div class="t"><i class="'+(x[1]?'':'zero')+'" style="width:'+(x[1]/mx*100)+'%"></i></div><span class="v">'+tr('{0}번', x[1])+'</span></div>'; }).join('');
   $('againBtn').classList.toggle('hide', S.role==='guest'); $('stagesBtn').classList.toggle('hide', S.role!=='solo');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
+  teachUi();
   show('sResult');
 }
+$('csvBtn').onclick=csvSave;
 $('stagesBtn').onclick=showStages;
 $('againBtn').onclick=function(){ if(S.role==='solo') startSolo(S.name, S.settings.stage); else if(S.role==='host') enterLobby(); };
 $('homeBtn').onclick=goHome;

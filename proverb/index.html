@@ -203,7 +203,10 @@
   #sResult .btn.ghost{color:var(--pen); border-color:rgba(123,98,64,.6);}
   @media(max-width:520px){ .paper{padding:20px 18px 18px;} .paper .tag{margin-right:84px; font-size:12px; letter-spacing:.06em;} .paper .stamp{font-size:20px; right:12px; top:16px;} .case::after{background-size:44px; background-position:right 12px top 12px;} #sResult .desk{padding:26px 16px 20px;} .rstamp{font-size:15px; right:12px; top:12px;} .opt{font-size:16px;} .code{letter-spacing:.08em;} }
   @media (prefers-reduced-motion:reduce){ .opt,.paper .exp,.wr,#sResult .big .sc{animation:none !important;} .paper .stamp.ok,.paper .stamp.no{opacity:.9; transform:rotate(-10deg) !important;} .rstamp{opacity:.88;} }
+  .tb{font-style:normal; font-size:11px; font-weight:700; color:#1d5f3b; background:rgba(47,138,87,.18); border:1px solid rgba(47,138,87,.55); border-radius:99px; padding:0 7px; margin-left:6px; white-space:nowrap; flex:none; line-height:1.6;} .rrow .tb{margin-left:0;} #sResult .tb{color:#1d5f3b;} .chips span .tb{border-radius:99px; padding:0 7px; font-size:11px; background:rgba(47,138,87,.18);}
+  #clsShow{margin:6px 0 2px; font-weight:700; color:var(--brass); overflow-wrap:anywhere;}
 </style>
+<script src="../teacher.js" defer></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.8 2.0" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter></svg>
@@ -689,6 +692,60 @@ if(qs.get('room')) $('codeIn').value=qs.get('room').toUpperCase().slice(0,5);
 var S={role:null,peer:null,code:'',name:'',settings:{cnt:10,time:300,hostPlay:1,stage:1},phase:'idle',endAt:0,totalMs:0,seed:1,
   cases:[],cur:0,score:0,right:0,wrongs:[],done:false,doneAt:0,locked:false,t0:0,players:{},conn:null,board:null};
 
+var T={sub:'',teacher:false,uid:null,cls:'',hUid:null,hCls:'',hOk:false,at:null,rk:null};
+function EDU(){ return window.EduTeacher||null; }
+function cleanCls(c){ return String(c==null?'':c).replace(/\s+/g,' ').trim().slice(0,12); }
+function clsNow(){ return S.role==='host'?(T.teacher?T.cls:''):(S.role==='guest'&&T.hOk?T.hCls:''); }
+function isTeacherUid(u){ return !!u&&((S.role==='host'&&T.teacher&&u===T.uid)||(S.role==='guest'&&T.hOk&&u===T.hUid)); }
+function tbHtml(){ return '<i class="tb">'+esc((EDU()&&EDU().BADGE)||'✅ 선생님')+'</i>'; }
+function tInfo(){ return T.teacher?{uid:T.uid,cls:T.cls}:{}; }
+function setHostInfo(uid,cls){
+  if(S.role!=='guest') return;
+  uid=(typeof uid==='string'&&uid.length<=40)?uid:null; var c=cleanCls(cls);
+  if(uid!==T.hUid){ T.hUid=uid; T.hOk=false; }
+  T.hCls=c; if(!uid||!EDU()) { T.hOk=false; return; }
+  if(T.hOk) return;
+  var u=uid; EDU().verify(u).then(function(ok){ if(ok&&T.hUid===u&&S.role==='guest'){ T.hOk=true; paintTeacher(); } }).catch(function(){});
+}
+function paintTeacher(){
+  var el=$('clsShow'), c=clsNow();
+  if(el){ el.textContent=c; el.classList.toggle('hide',!c); }
+  if(S.phase==='lobby') renderChips();
+  if(S.phase==='result'&&S.role!=='solo') paintRank();
+}
+function applyTeacherUI(){
+  var on=S.role==='host'&&T.teacher;
+  var row=$('clsRow'), show=$('clsShow');
+  if(on){
+    if(!row){
+      row=document.createElement('div'); row.className='set-row'; row.id='clsRow';
+      var l=document.createElement('div'); l.className='lbl'; l.textContent=tr('반 이름');
+      var inp=document.createElement('input'); inp.type='text'; inp.id='clsIn'; inp.maxLength=12; inp.autocomplete='off'; inp.placeholder=tr('예: 3학년 2반');
+      inp.addEventListener('input',function(){ T.cls=cleanCls(inp.value); paintTeacher(); });
+      row.appendChild(l); row.appendChild(inp); $('hostSet').insertBefore(row,$('hostSet').firstChild);
+    }
+    $('clsIn').value=T.cls;
+  } else if(row) row.remove();
+  if(!show){ show=document.createElement('div'); show.id='clsShow'; show.className='hide'; $('lobbyCode').insertAdjacentElement('afterend',show); }
+  paintTeacher();
+}
+function csvDate(d){ var p=function(n){ return (n<10?'0':'')+n; }; return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes()); }
+function csvRows(rk){
+  var rows=[[tr('반 이름'),tr('날짜'),tr('순위'),tr('이름'),tr('점수'),tr('푼 사건 수'),tr('전체 사건 수')]], d=csvDate(T.at||new Date());
+  (rk||[]).forEach(function(e){ rows.push([T.cls,d,e.r,e.n,e.s,e.st,S.settings.cnt]); });
+  return rows;
+}
+function saveCsv(){ var E=EDU(); if(!E||!T.teacher||S.role!=='host'||!T.rk) return; E.csv(tr('속담탐정')+'-'+(T.cls||tr('결과'))+'-'+E.stamp()+'.csv',csvRows(T.rk)); }
+function paintRank(){
+  var rk=T.rk||[], me=null; rk.forEach(function(e){ if(e.t===token||(S.role!=='host'&&e.n===S.name)) me=e; });
+  var c=clsNow(); $('rTitle').textContent=tr('수사 결과'); $('rSub').textContent=(c?c+'\n':'')+T.sub;
+  $('rRank').innerHTML='<div class="board">'+rk.map(function(e){ return rowHtml(e,me&&e.r===me.r&&e.n===me.n,isTeacherUid(e.u)); }).join('')+'</div>';
+}
+function paintCsvBtn(){
+  var b=$('csvBtn'), on=S.role==='host'&&T.teacher&&!!EDU();
+  if(on&&!b){ b=document.createElement('button'); b.className='btn ghost'; b.id='csvBtn'; b.textContent=tr('결과 저장 (CSV)'); b.onclick=saveCsv; $('againBtn').insertAdjacentElement('beforebegin',b); }
+  else if(!on&&b) b.remove();
+}
 $('sndBtn').onclick=function(){ snd=!snd; lsSet('proverb.snd',snd?'1':'0'); syncSnd(); sfx('ok'); };
 syncSnd();
 function needName(){
@@ -708,7 +765,7 @@ function joinNow(){
 }
 var isBusy=false;
 function busy(on){ isBusy=on; $('hostBtn').disabled=on; $('soloBtn').disabled=on; }
-function destroyPeer(){ if(S.peer){ try{ S.peer.destroy(); }catch(e){} } S.peer=null; S.conn=null; S.players={}; setNet('','오프라인'); }
+function destroyPeer(){ if(S.peer){ try{ S.peer.destroy(); }catch(e){} } S.peer=null; S.conn=null; S.players={}; T.teacher=false; T.uid=null; T.cls=''; T.hUid=null; T.hCls=''; T.hOk=false; T.rk=null; setNet('','오프라인'); }
 function goHome(){ destroyPeer(); clearTimers(); S.role=null; S.phase='idle'; busy(false); $('cd').classList.remove('on'); show('sHome'); }
 function noPeerLib(){ if(window.Peer) return false; $('homeMsg').className='msg'; $('homeMsg').textContent=tr('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.'); return true; }
 
@@ -718,6 +775,8 @@ function startHost(name,tries){
   if(noPeerLib()) return; tries=tries||0; busy(true);
   $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('사무소를 여는 중...');
   destroyPeer(); S.role='host'; S.name=name; S.code=newCode(); S.players={};
+  T.teacher=false; T.uid=null; T.cls=''; T.rk=null;
+  if(EDU()){ EDU().me().then(function(m){ if(m&&m.teacher&&typeof m.uid==='string'&&S.role==='host'&&S.name===name&&S.code){ T.teacher=true; T.uid=m.uid; if(S.phase==='lobby'||S.phase==='result') applyTeacherUI(); if(S.phase==='result') paintCsvBtn(); } }).catch(function(){}); }
   var p=new Peer(PREFIX+S.code,peerOpts()); S.peer=p;
   p.on('open',function(){ $('homeMsg').textContent=''; busy(false); setNet('on','연결됨'); enterLobby(); });
   p.on('connection',onGuestConn);
@@ -752,8 +811,8 @@ function handleHostMsg(conn,d){
     }
     if(pl.conn&&pl.conn!==conn){ try{ pl.conn.close(); }catch(e){} }
     pl.conn=conn; pl.online=true; conn._tok=tok; pl.name=uniqueName(cleanName(d.name),tok);
-    send(conn,{t:'welcome',name:pl.name,settings:S.settings,phase:S.phase,remain:S.endAt-Date.now(),total:S.totalMs,seed:S.seed,score:pl.score,stage:pl.stage,done:pl.done});
-    if(S.phase==='result') send(conn,{t:'end',ranking:ranking()});
+    send(conn,Object.assign({t:'welcome',name:pl.name,settings:S.settings,phase:S.phase,remain:S.endAt-Date.now(),total:S.totalMs,seed:S.seed,score:pl.score,stage:pl.stage,done:pl.done},tInfo()));
+    if(S.phase==='result') send(conn,Object.assign({t:'end',ranking:ranking()},tInfo()));
     if(S.phase==='lobby') renderChips();
     boardDirty=true; return;
   }
@@ -785,7 +844,7 @@ function enterLobby(){
     for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else{ p.score=0; p.stage=0; p.done=false; p.doneAt=0; } }
     broadcast({t:'lobby',settings:S.settings});
   } else{ $('lobbyLink').textContent=''; renderGuestSet(); }
-  $('renameIn').value=S.name; renderChips(); show('sLobby');
+  $('renameIn').value=S.name; renderChips(); applyTeacherUI(); show('sLobby');
 }
 function renderGuestSet(){ $('guestSet').textContent=tr('{0} · 사건 {1}건 · 제한 시간 {2}',tr(STAGEDEF[S.settings.stage||1].n),S.settings.cnt,fmt(S.settings.time*1000)); }
 (function(){ var h=''; for(var i=1;i<=RSTAGES;i++) h+='<button data-v="'+i+'">'+esc(tr(STAGEDEF[i].n))+'</button>'; $('segStage').innerHTML=h; })();
@@ -796,14 +855,14 @@ var lobbyNames=[],guestCount=0;
 function renderChips(){
   var names=[];
   if(S.role==='host'){
-    if(S.settings.hostPlay) names.push({n:S.name,me:true});
+    if(S.settings.hostPlay) names.push({n:S.name,me:true,b:T.teacher});
     for(var t in S.players){ var p=S.players[t]; if(p.online) names.push({n:p.name}); }
     lobbyNames=names.map(function(x){ return x.n; });
-    broadcast({t:'players',names:lobbyNames,guests:onlineCount()}); guestCount=onlineCount();
+    broadcast(Object.assign({t:'players',names:lobbyNames,guests:onlineCount()},tInfo())); guestCount=onlineCount();
     $('startBtn').disabled=names.length===0;
-  } else names=lobbyNames.map(function(n){ return {n:n,me:n===S.name}; });
+  } else names=lobbyNames.map(function(n,i){ return {n:n,me:n===S.name,b:i===0&&!!S.settings.hostPlay&&T.hOk}; });
   $('pNum').textContent=guestCount;
-  $('chips').innerHTML=names.map(function(x){ return '<span class="'+(x.me?'me':'')+'">'+esc(x.n)+'</span>'; }).join('')||'<span style="background:none;border:0;color:var(--mute)">'+esc(tr('아직 아무도 없어요'))+'</span>';
+  $('chips').innerHTML=names.map(function(x){ return '<span class="'+(x.me?'me':'')+'">'+esc(x.n)+(x.b?tbHtml():'')+'</span>'; }).join('')||'<span style="background:none;border:0;color:var(--mute)">'+esc(tr('아직 아무도 없어요'))+'</span>';
 }
 $('startBtn').onclick=function(){
   if(S.role!=='host') return;
@@ -850,16 +909,16 @@ function handleGuestMsg(d){
   switch(d.t){
     case 'full': $('homeMsg').className='msg'; $('homeMsg').textContent=tr('사무소가 가득 찼어요 (최대 40명).'); busy(false); destroyPeer(); show('sHome'); break;
     case 'welcome':
-      S.name=d.name; S.settings=d.settings; busy(false); $('homeMsg').textContent='';
+      S.name=d.name; S.settings=d.settings; setHostInfo(d.uid,d.cls); busy(false); $('homeMsg').textContent='';
       if(d.phase==='play'||d.phase==='count'){ if(S.phase!=='play'&&S.phase!=='count'){ S.seed=d.seed; beginRound(0,Math.max(0,d.remain),d.total,{score:d.score,stage:d.stage,done:d.done}); } }
       else if(d.phase==='lobby'&&S.phase!=='lobby') enterLobby();
       break;
     case 'lobby': S.settings=d.settings; if(S.phase!=='lobby') enterLobby(); else renderGuestSet(); break;
     case 'named': S.name=d.name; lsSet('proverb.name',d.name); $('renameIn').value=d.name; renderChips(); toast(tr('이름을 바꿨어요')); break;
-    case 'players': lobbyNames=d.names||[]; guestCount=d.guests|0; if(S.phase==='lobby') renderChips(); break;
+    case 'players': setHostInfo(d.uid,d.cls); lobbyNames=d.names||[]; guestCount=d.guests|0; if(S.phase==='lobby') renderChips(); break;
     case 'start': S.settings=d.settings; S.seed=d.seed; beginRound(d.cd,d.dur); break;
     case 'board': S.board=d; renderMyBoard(); break;
-    case 'end': showResult(d.ranking); break;
+    case 'end': setHostInfo(d.uid,d.cls); showResult(d.ranking); break;
   }
 }
 
@@ -968,8 +1027,8 @@ function hostEntries(){
   if(S.settings.hostPlay) arr.push({n:S.name,s:S.score,st:S.cur,d:S.doneAt||Infinity,o:true,t:token});
   arr.sort(function(a,b){ return b.s-a.s||b.st-a.st||a.d-b.d||a.n.localeCompare(b.n); }); return arr;
 }
-function ranking(){ var rk=0,prev=null; return hostEntries().map(function(e,i){ if(!prev||e.s!==prev.s||e.st!==prev.st) rk=i+1; prev=e; return {r:rk,n:e.n,s:e.s,st:e.st,t:e.t,o:e.o}; }); }
-function rowHtml(e,me){ return '<div class="rrow'+(me?' me':'')+(e.r===1?' r1':'')+(e.o===false?' off':'')+'"><span class="r">'+e.r+'</span><span class="n">'+esc(e.n)+'</span><span class="p">'+e.st+'/'+S.settings.cnt+'</span><span class="s">'+e.s+'</span></div>'; }
+function ranking(){ var rk=0,prev=null; return hostEntries().map(function(e,i){ if(!prev||e.s!==prev.s||e.st!==prev.st) rk=i+1; prev=e; var o={r:rk,n:e.n,s:e.s,st:e.st,t:e.t,o:e.o}; if(T.teacher&&e.t===token) o.u=T.uid; return o; }); }
+function rowHtml(e,me,tb){ return '<div class="rrow'+(me?' me':'')+(e.r===1?' r1':'')+(e.o===false?' off':'')+'"><span class="r">'+e.r+'</span><span class="n">'+esc(e.n)+'</span>'+(tb?tbHtml():'')+'<span class="p">'+e.st+'/'+S.settings.cnt+'</span><span class="s">'+e.s+'</span></div>'; }
 function pushBoard(){
   var r=ranking(),byTok={},done=0; r.forEach(function(e){ byTok[e.t]=e; if(e.st>=S.settings.cnt) done++; });
   var top=r.slice(0,6).map(function(e){ return {r:e.r,n:e.n,s:e.s,st:e.st}; });
@@ -979,7 +1038,7 @@ function pushBoard(){
   if(S.settings.hostPlay){ S.board={top:top,n:r.length,me:byTok[token]?{r:byTok[token].r}:null}; renderMyBoard(); }
 }
 function renderMyBoard(){ var b=S.board; if(!b) return; $('gBoard').innerHTML=b.top.map(function(e){ return rowHtml(e,b.me&&e.r===b.me.r&&e.n===S.name); }).join(''); if(b.me) $('gMeRank').innerHTML=tr('내 순위 <b>{0}</b>위 / {1}명',b.me.r,b.n); }
-function finishRound(){ clearTimers(); $('cd').classList.remove('on'); S.phase='result'; if(S.role==='solo'){ showResult(null); return; } var r=ranking(); broadcast({t:'end',ranking:r}); showResult(r); }
+function finishRound(){ clearTimers(); $('cd').classList.remove('on'); S.phase='result'; if(S.role==='solo'){ showResult(null); return; } var r=ranking(); broadcast(Object.assign({t:'end',ranking:r},tInfo())); showResult(r); }
 function showResult(rk){
   clearTimers(); S.phase='result'; $('cd').classList.remove('on');
   var total=endless()?S.cur:S.cases.length, sid=S.settings.stage;
@@ -990,13 +1049,12 @@ function showResult(rk){
   $('rScore').textContent=S.score; $('rSub').textContent=sub; var oldNb=document.querySelector('#sResult .nb'); if(oldNb) oldNb.remove();
   if(S.role==='solo'){ var prevBest=bestGet()[sid]||0; bestSet(sid,S.score); var b=bestGet()[sid]||0; $('rTitle').textContent=tr('{0} · 최고 {1}점',tr(STAGEDEF[sid].n),b); $('rRank').innerHTML='';
     if(S.score>0&&S.score>prevBest){ var nb=document.createElement('div'); nb.className='nb'; nb.textContent=tr('새 최고 기록!'); $('rSub').insertAdjacentElement('afterend',nb); } }
-  else{ $('rTitle').textContent=tr('수사 결과'); var me=null; (rk||[]).forEach(function(e){ if(e.t===token||(S.role!=='host'&&e.n===S.name)) me=e; });
-    $('rRank').innerHTML='<div class="board">'+(rk||[]).map(function(e){ return rowHtml(e,me&&e.r===me.r&&e.n===me.n); }).join('')+'</div>'; }
+  else{ T.rk=rk||[]; T.at=new Date(); T.sub=sub; paintRank(); }
   $('wCnt').textContent=S.wrongs.length?'('+S.wrongs.length+')':''; var old=document.querySelector('#sResult .rstamp'); if(old) old.remove(); var rs=document.createElement('div'); rs.className='rstamp'; rs.setAttribute('aria-hidden','true'); rs.textContent=tr('수사 완료'); $('sResult').firstElementChild.appendChild(rs);
   $('rWrong').innerHTML=S.wrongs.length?S.wrongs.map(function(w,wi){ return '<div class="wr" style="--d:'+Math.min(wi,10)+'"><span class="wt">'+esc(w.tag)+'</span><b>'+esc(w.full)+'</b><small>'+esc(tr('뜻: {0}',w.meaning))+'</small><small>'+esc(tr('내 답: {0} → 정답: {1}','\u0001'+w.picked+'\u0002','\u0003'+w.answer+'\u0004')).replace('\u0001','<span class="mine">').replace('\u0002','</span>').replace('\u0003','<span class="ans">').replace('\u0004','</span>')+'</small></div>'; }).join(''):'<div class="msg info">'+esc(tr('틀린 사건이 없어요. 완벽한 수사였어요!'))+'</div>';
   sfx('end');
   $('againBtn').classList.toggle('hide',S.role==='guest'); $('againBtn').textContent=tr(S.role==='host'?'사무소로 돌아가기':'다시 수사');
-  show('sResult');
+  paintCsvBtn(); show('sResult');
 }
 $('homeBtn').onclick=goHome;
 $('againBtn').onclick=function(){ if(S.role==='host'){ enterLobby(); } else if(S.role==='solo'){ showStages(); } };
