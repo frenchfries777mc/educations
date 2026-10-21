@@ -205,6 +205,20 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .why{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:40px 0 0;}
   .why > div{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px;}
   .why .ic{font-size:24px;} .why h3{margin:6px 0 4px; font-size:16.5px;} .why p{margin:0; color:var(--dim); font-size:14.5px;}
+  .tc-ov{position:fixed; inset:0; z-index:9000; background:rgba(5,6,10,.72); display:none; align-items:center; justify-content:center; padding:16px;}
+  .tc-ov.on{display:flex;}
+  .tc-b{width:100%; max-width:440px; max-height:calc(100vh - 32px); overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px 22px 20px; box-sizing:border-box; position:relative;}
+  .tc-b h2{margin:0 0 6px; font-size:20px;}
+  .tc-b p{margin:0 0 14px; color:var(--dim); font-size:14px; line-height:1.6;}
+  .tc-b input{width:100%; box-sizing:border-box; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font:inherit; font-size:16px; margin-bottom:10px;}
+  .tc-b input.code{text-align:center; letter-spacing:.35em; font-size:22px;}
+  .tc-b button.go{width:100%; border:0; border-radius:12px; padding:12px; font:inherit; font-weight:700; font-size:16px; color:#1a1300; background:linear-gradient(90deg,var(--fry),var(--fry2)); cursor:pointer;}
+  .tc-b button.go:disabled{opacity:.5; cursor:default;}
+  .tc-x{position:absolute; top:10px; right:12px; background:none; border:0; color:var(--dim); font-size:22px; cursor:pointer; line-height:1;}
+  .tc-msg{min-height:20px; margin:10px 0 0; font-size:14px; color:var(--dim);}
+  .tc-msg.err{color:#ff8a8a;}
+  .tc-ok{font-size:42px; text-align:center; margin:6px 0;}
+  .tc-lnk{background:none; border:0; color:var(--dim); text-decoration:underline; font:inherit; font-size:13px; cursor:pointer; padding:8px 0 0;}
   footer{margin:56px 0 40px; padding-top:20px; border-top:1px solid var(--line); color:var(--dim); font-size:14px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;}
   footer a{color:var(--dim);}
   /* 행성 탐사: probe console, deep space with ice blue, amber only for the main button */
@@ -428,7 +442,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <div><div class="ic">📊</div><h3>놀면서 배우기</h3><p>문제를 푸는 대신 게임 속에서 직접 데이터를 모으고 정리해요.</p></div>
   </section>
 
-  <footer><span>Made by Frenchfries777 with Claude AI</span> <span class="ff-copy">© 2026 Frenchfries777 · <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a></span><a href="https://frenchfries777mc.github.io/games/settings/">설정</a><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">github.com/frenchfries777mc</a></footer>
+  <footer><span>Made by Frenchfries777 with Claude AI</span> <span class="ff-copy">© 2026 Frenchfries777 · <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a></span><a href="#teacher" id="tcOpen">선생님 인증</a><a href="https://frenchfries777mc.github.io/games/settings/">설정</a><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">github.com/frenchfries777mc</a></footer>
 </div>
 <script src="https://frenchfries777mc.github.io/games/ff-auth.js"></script>
 <script src="https://frenchfries777mc.github.io/games/ff-splash.js" defer></script>
@@ -514,6 +528,98 @@ document.addEventListener('keydown',function(e){ var t=e.target, typing=t&&(t.ta
   ['touchstart','pointerdown','scroll','keydown'].forEach(function(ev){ addEventListener(ev,function(){ if(vis&&tab) go(true); },{once:true,passive:true}); });
   new IntersectionObserver(function(e){ vis=e[0].isIntersecting; upd(); }).observe(document.querySelector('.hero'));
   document.addEventListener('visibilitychange',function(){ tab=!document.hidden; upd(); });
+})();
+</script>
+<div class="tc-ov" id="tcOv" role="dialog" aria-modal="true" aria-labelledby="tcT"><div class="tc-b" id="tcB"></div></div>
+<script>
+/* 선생님 인증: 학교(교육청) 메일로 6자리 코드를 받아 확인해요. 메일 주소는 저장하지 않고 도메인만 남겨요. */
+(function(){
+  var ov=document.getElementById('tcOv'), box=document.getElementById('tcB'), open=document.getElementById('tcOpen');
+  if(!ov||!open) return;
+  var ALLOW=['go.kr','korea.kr'], token='', mail='', v=null;
+  function ok(m){ var d=(m.split('@')[1]||'').toLowerCase(); return ALLOW.some(function(x){ return d===x||d.slice(-x.length-1)==='.'+x; }); }
+  function sb(){ return window.FFAuth&&FFAuth.ready?FFAuth.ready:Promise.reject(new Error('login module')); }
+  function msg(t,e){ var m=box.querySelector('.tc-msg'); if(m){ m.textContent=t||''; m.className='tc-msg'+(e?' err':''); } }
+  function frame(h){ box.innerHTML='<button class="tc-x" aria-label="닫기">×</button>'+h; box.querySelector('.tc-x').onclick=close; }
+  function close(){ ov.classList.remove('on'); if(location.hash==='#teacher') history.replaceState(null,'',location.pathname+location.search); }
+  function friendly(e){
+    var t=(e&&e.message||'')+'';
+    if(/function .* does not exist|schema cache|ff_teacher_claim/i.test(t)) return '선생님 인증이 아직 준비 중이에요. 조금 뒤에 다시 시도해 주세요.';
+    if(/domain not allowed/.test(t)) return '이 메일은 선생님 인증에 쓸 수 없어요. 교육청·정부 메일(.go.kr)만 돼요.';
+    if(/claim expired/.test(t)) return '시간이 지났어요. 처음부터 다시 해 주세요.';
+    if(/rate limit|too many|after \d+ seconds/i.test(t)) return '메일을 너무 자주 보냈어요. 잠시 뒤에 다시 해 주세요.';
+    if(/expired|invalid/i.test(t)) return '코드가 맞지 않거나 시간이 지났어요.';
+    return '잘 안 됐어요. 잠시 뒤에 다시 해 주세요.';
+  }
+  function status(c){
+    return c.rpc('ff_teacher_me').then(function(r){ return r.error?null:r.data; }).catch(function(){ return null; });
+  }
+  function step0(){
+    frame('<h2 id="tcT">선생님 인증</h2><p>선생님이신지 확인해요. 교육청·정부 메일(.go.kr)로 받은 코드를 입력하면 끝나요. 메일 주소는 저장하지 않고, 어느 기관인지(도메인)만 남겨요.</p><input id="tcM" type="email" inputmode="email" autocomplete="email" placeholder="이름@교육청.go.kr"><button class="go" id="tcS">코드 받기</button><div class="tc-msg" role="status"></div>');
+    var inp=box.querySelector('#tcM'), b=box.querySelector('#tcS');
+    function send(){
+      var m=inp.value.trim().toLowerCase();
+      if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m)) return msg('메일 주소를 확인해 주세요.',1);
+      if(!ok(m)) return msg('교육청·정부 메일(.go.kr)만 쓸 수 있어요.',1);
+      b.disabled=true; msg('코드를 보내는 중이에요…');
+      sb().then(function(c){
+        return c.rpc('ff_teacher_claim_start').then(function(r){
+          if(r.error) throw r.error; token=r.data; mail=m;
+          v=window.supabase.createClient(c.supabaseUrl,c.supabaseKey,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false,storageKey:'ff-teacher-verify'}});
+          return v.auth.signInWithOtp({email:m,options:{shouldCreateUser:true}});
+        });
+      }).then(function(r){ if(r.error) throw r.error; step1(); })
+        .catch(function(e){ b.disabled=false; msg(friendly(e),1); });
+    }
+    b.onclick=send; inp.onkeydown=function(e){ if(e.key==='Enter') send(); }; setTimeout(function(){ inp.focus(); },50);
+  }
+  function step1(){
+    frame('<h2 id="tcT">코드를 입력해 주세요</h2><p>'+mail.replace(/[<>&"]/g,'')+' 로 6자리 코드를 보냈어요. 메일이 안 보이면 스팸함도 확인해 주세요.</p><input id="tcC" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······"><button class="go" id="tcV">확인</button><div class="tc-msg" role="status"></div><button class="tc-lnk" id="tcBack">다른 메일로 다시</button>');
+    var inp=box.querySelector('#tcC'), b=box.querySelector('#tcV');
+    function chk(){
+      var c=inp.value.replace(/\D/g,'');
+      if(c.length!==6) return msg('숫자 6자리를 입력해 주세요.',1);
+      b.disabled=true; msg('확인하는 중이에요…');
+      v.auth.verifyOtp({email:mail,token:c,type:'email'}).then(function(r){
+        if(r.error) throw r.error;
+        return v.rpc('ff_teacher_claim_finish',{p_token:token});
+      }).then(function(r){
+        if(r.error) throw r.error; var d=r.data;
+        return v.auth.signOut({scope:'local'}).catch(function(){}).then(function(){ done(d); });
+      }).catch(function(e){ b.disabled=false; msg(friendly(e),1); });
+    }
+    b.onclick=chk; inp.oninput=function(){ if(inp.value.replace(/\D/g,'').length===6) chk(); };
+    box.querySelector('#tcBack').onclick=function(){ if(v) v.auth.signOut({scope:'local'}).catch(function(){}); step0(); };
+    setTimeout(function(){ inp.focus(); },50);
+  }
+  function done(d){
+    mark(d);
+    frame('<div class="tc-ok">✅</div><h2 id="tcT" style="text-align:center">선생님으로 인증됐어요</h2><p style="text-align:center">'+String(d||'').replace(/[<>&"]/g,'')+' 메일로 확인했어요. 이 계정에 인증 표시가 붙었어요.</p><button class="go" id="tcD">닫기</button>');
+    box.querySelector('#tcD').onclick=close;
+  }
+  function mark(d){ try{ open.textContent='✅ 선생님 인증됨'; open.title=d||''; }catch(e){} }
+  function already(d){
+    frame('<div class="tc-ok">✅</div><h2 id="tcT" style="text-align:center">이미 인증됐어요</h2><p style="text-align:center">'+String(d).replace(/[<>&"]/g,'')+' 메일로 확인된 선생님 계정이에요.</p><button class="go" id="tcD">닫기</button>');
+    box.querySelector('#tcD').onclick=close;
+  }
+  function show(){
+    ov.classList.add('on');
+    frame('<h2 id="tcT">선생님 인증</h2><p>불러오는 중이에요…</p>');
+    sb().then(function(c){
+      return c.auth.getSession().then(function(r){
+        if(!r.data||!r.data.session){
+          frame('<h2 id="tcT">선생님 인증</h2><p>먼저 Frenchfries777 계정으로 로그인해 주세요. 인증 표시가 그 계정에 붙어요.</p><button class="go" id="tcL">로그인</button>');
+          box.querySelector('#tcL').onclick=function(){ close(); if(FFAuth.openLogin) FFAuth.openLogin(); };
+          return;
+        }
+        return status(c).then(function(d){ d?(mark(d),already(d)):step0(); });
+      });
+    }).catch(function(){ frame('<h2 id="tcT">선생님 인증</h2><p>로그인 모듈을 불러오지 못했어요. 잠시 뒤에 다시 시도해 주세요.</p>'); });
+  }
+  open.addEventListener('click',function(e){ e.preventDefault(); history.replaceState(null,'','#teacher'); show(); });
+  ov.addEventListener('click',function(e){ if(e.target===ov) close(); });
+  addEventListener('keydown',function(e){ if(e.key==='Escape'&&ov.classList.contains('on')) close(); });
+  if(location.hash==='#teacher') show();
 })();
 </script>
 </body>
