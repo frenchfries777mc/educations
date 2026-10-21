@@ -384,6 +384,22 @@
   .pod.p1 .who{color:var(--wine); font-size:21px;}
   .hard .h{transition:transform .15s;} .hard .h:hover{transform:rotate(0) translateY(-4px);}
   @media(max-width:700px){ .note{padding-top:14px; margin-top:8px;} .note .hd{padding-right:0;} .note .stk{margin-left:6px; font-size:12px; padding:0 5px;} .note .st{top:-18px; right:8px;} .tl::before{height:auto; margin:0; width:3px; background:var(--ink);} .tl::after{display:none;} .tc .dot{width:16px; height:16px; margin:0 0 0 4px;} .tc .bx{padding:8px 10px;} .tc .y{font-size:14px;} .soloRes .trio > div{padding:10px 2px 8px;} }
+
+  /* 3rd polish: fading exhibit edges, clearer gaps, labelled score, readable result stats */
+  .exhibit{-webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent); mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);}
+  .exItem .yr{font-size:15px;} .exItem .lbl{color:var(--ink); font-family:'Nanum Myeongjo',serif; font-weight:700;}
+  .exItem .pin{background:var(--wine); border-color:var(--paper); box-shadow:0 0 0 1.5px var(--ink);}
+  .gap span{background:#fffaf0; border-color:#9a6f1f; color:#8a6014; box-shadow:0 2px 6px rgba(92,60,30,.18);}
+  .tl.lock .gap span{box-shadow:none;}
+  .side .q{font-size:clamp(28px,3.4vw,40px);}
+  .hint{font-size:16px; color:var(--ink2);}
+  .soloRes .bl{display:block; font-family:'IBM Plex Mono',monospace; font-size:13px; letter-spacing:.28em; color:var(--mute); margin:22px 0 -4px;}
+  .soloRes .trio small{font-size:13.5px; color:var(--ink2); letter-spacing:.12em;}
+  .hard{display:flex; flex-wrap:wrap; justify-content:center;} .hard .h{width:210px;}
+  @media(max-width:700px){
+    .hard{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px;} .hard .h{width:auto;}
+    .hard .h .e{height:64px; font-size:36px;} .hard .h .t{font-size:15px;} .hard .h .f{font-size:13px;}
+  }
 </style>
 <script src="../teacher.js" defer></script>
 <script src="https://frenchfries777mc.github.io/games/ff-lang.js"></script>
@@ -737,7 +753,7 @@ function endSolo(){
   if(rec && m.score>0){ save.best[d]=m.score; lsSet(SAVE_KEY, JSON.stringify(save)); }
   $('raceRes').classList.add('hide'); $('soloRes').classList.remove('hide');
   var acc=Math.round(m.correct/Math.max(1,m.correct+m.wrong)*100);
-  $('soloRes').innerHTML='<div class="big" id="bigScore">0</div><p class="why">'+esc(m.lives<=0 ? tr('목숨을 모두 잃었어요') : m.done ? tr('모든 카드를 놓았어요') : tr('여기까지 도전했어요'))+'</p><div class="trio"><div><b>'+m.correct+'</b><small>'+esc(tr('정답'))+'</small></div><div><b>'+m.best+'</b><small>'+esc(tr('최고 연속'))+'</small></div><div><b>'+acc+'%</b><small>'+esc(tr('정확도'))+'</small></div></div>'+(rec&&m.score>0?'<span class="nb">'+esc(tr('최고 기록!'))+'</span>':'');
+  $('soloRes').innerHTML='<small class="bl">'+esc(tr('점수'))+'</small><div class="big" id="bigScore">0</div><p class="why">'+esc(m.lives<=0 ? tr('목숨을 모두 잃었어요') : m.done ? tr('모든 카드를 놓았어요') : tr('여기까지 도전했어요'))+'</p><div class="trio"><div><b>'+m.correct+'</b><small>'+esc(tr('정답'))+'</small></div><div><b>'+m.best+'</b><small>'+esc(tr('최고 연속'))+'</small></div><div><b>'+acc+'%</b><small>'+esc(tr('정확도'))+'</small></div></div>'+(rec&&m.score>0?'<span class="nb">'+esc(tr('최고 기록!'))+'</span>':'');
   (function(){ var el=$('bigScore'), to=m.score, t0=Date.now(), dur=900; if(!to || window.matchMedia('(prefers-reduced-motion:reduce)').matches){ el.textContent=to; return; } requestAnimationFrame(function f(){ var k=Math.min(1,(Date.now()-t0)/dur); el.textContent=Math.round(to*(1-Math.pow(1-k,3))); if(k<1 && $('sResult').classList.contains('on')) requestAnimationFrame(f); else el.textContent=to; }); })();
   var miss=S.missList||[];
   SND.end();
