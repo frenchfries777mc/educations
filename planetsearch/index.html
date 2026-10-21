@@ -421,6 +421,41 @@ input[type=range] { accent-color: var(--signal); }
 .menu-btn:active, .btn:active:not([disabled]) { transform: translateY(1px); }
 @media (pointer: coarse) { .btn.sm, .seg .btn, .colpick .btn { min-height: 44px; } .btn.sm { padding-inline: 14px; } }
 @media (max-width: 600px) { .formula { white-space: normal; } }
+/* Third pass: finish, reply, shop, end */
+.done-body { display: flex; align-items: center; gap: 20px; padding-block: 8px; }
+.seal { width: 72px; height: 72px; flex: none; }
+.seal svg { width: 100%; height: 100%; overflow: visible; }
+.seal .r1 { fill: #67e3a70f; stroke: #67e3a7; stroke-width: 1.5; }
+.seal .r2 { fill: none; stroke: #67e3a766; stroke-width: 1; stroke-dasharray: 3 5; transform-origin: 36px 36px; animation: sealspin 14s linear infinite; }
+.seal .tk { fill: none; stroke: var(--ok); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; animation: draw .5s .15s ease-out backwards; }
+.seal .r1 { animation: sealpop .5s cubic-bezier(.2, 1.4, .4, 1) backwards; transform-origin: 36px 36px; }
+@keyframes sealspin { to { transform: rotate(360deg); } }
+@keyframes sealpop { from { transform: scale(.6); opacity: 0; } }
+.done-sum { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.done-sum .mono { font-size: 17px; }
+.reply .bulbs { width: 100%; }
+.reply .bulb { flex: 1 1 0; min-width: 0; max-width: 88px; }
+.reply .bulb .b { width: 100%; height: 72px; font-size: 26px; }
+.reply .bulb small { font-size: 13px; }
+@media (max-width: 520px) { .reply .bulb .b { height: 52px; font-size: 20px; } .reply .bulb small { font-size: 11px; } }
+.shop { align-items: stretch; }
+.item .btn { margin-top: auto; }
+.item p { flex: 0 0 auto; }
+.item .btn[disabled] { opacity: .6; border-style: dashed; cursor: not-allowed; }
+.item .btn[disabled] .price { color: var(--dim); }
+.item .btn:not([disabled]) { border-color: var(--signal); }
+.item .btn:not([disabled]):hover { background: #ffb5471a; }
+.endscore { display: flex; align-items: baseline; gap: 6px 10px; flex-wrap: wrap; }
+.endscore .label { width: 100%; font-size: 13px; letter-spacing: .06em; color: var(--faint); }
+.endscore .n { font-size: clamp(56px, 12vw, 92px); line-height: 1; color: var(--signal); text-shadow: 0 0 36px #ffb54755; animation: scorein .7s cubic-bezier(.2, 1.2, .4, 1) backwards; }
+.endscore .u { font-family: var(--f-display); font-size: 24px; color: var(--dim); word-spacing: -.22em; }
+@keyframes scorein { from { opacity: 0; transform: translateY(10px) scale(.92); } }
+.rc-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+@media (min-width: 900px) { .rc-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } .rc-cell:last-child:nth-child(4n + 3) { grid-column: span 2; } }
+.rc-cell { padding-top: 10px; border-top: 1px solid var(--hair); }
+.colpick .seg { border: 0; gap: 6px; overflow: visible; }
+.colpick .seg .btn, .colpick .seg .btn + .btn { border: 1px solid var(--hair-2); border-radius: 6px; }
+.colpick .seg .btn.on { border-color: var(--ice); }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 </style>
 
@@ -721,9 +756,11 @@ function drawScope(cv, p) {
   const drawRing = front => { ctx.save(); ctx.translate(c, c); ctx.rotate(tilt); ctx.strokeStyle = `hsla(${hue},70%,80%,.55)`; ctx.lineWidth = 6; ctx.beginPath(); ctx.ellipse(0, 0, r * 1.7, r * .34, 0, front ? 0 : Math.PI, front ? Math.PI : Math.PI * 2); ctx.stroke(); ctx.restore(); };
   if (ring) drawRing(false);
   const body = ctx.createRadialGradient(c - r * .4, c - r * .45, r * .05, c, c, r);
-  body.addColorStop(0, `hsl(${hue},45%,34%)`); body.addColorStop(.6, `hsl(${hue},55%,14%)`); body.addColorStop(1, "#04051a");
+  body.addColorStop(0, `hsl(${hue},58%,56%)`); body.addColorStop(.5, `hsl(${hue},52%,30%)`); body.addColorStop(.85, `hsl(${hue},55%,13%)`); body.addColorStop(1, "#04051a");
   ctx.fillStyle = body; ctx.beginPath(); ctx.arc(c, c, r, 0, 7); ctx.fill();
   ctx.save(); ctx.beginPath(); ctx.arc(c, c, r, 0, 7); ctx.clip();
+  for (let i = 0; i < 9; i++) { const y = c - r + (i + R() * .6) * r * .22, hgt = r * (.05 + R() * .12); ctx.fillStyle = R() < .5 ? `hsla(${hue + 20},60%,80%,${.05 + R() * .08})` : `hsla(${hue - 10},60%,8%,${.1 + R() * .15})`; ctx.fillRect(c - r, y, r * 2, hgt); }
+  const night = ctx.createRadialGradient(c - r * .5, c - r * .5, r * .3, c + r * .15, c + r * .15, r * 1.25); night.addColorStop(0, "#00000000"); night.addColorStop(1, "#02031acc"); ctx.fillStyle = night; ctx.fillRect(c - r, c - r, r * 2, r * 2);
   ctx.strokeStyle = `hsla(${hue},80%,80%,.16)`; ctx.lineWidth = 1.5;
   for (let i = -3; i <= 3; i++) { ctx.beginPath(); ctx.ellipse(c, c + i * r * .27, Math.sqrt(Math.max(0, 1 - (i * .27) ** 2)) * r, r * .06, 0, 0, 7); ctx.stroke(); }
   for (let i = 1; i < 6; i++) { ctx.beginPath(); ctx.ellipse(c, c, r * Math.abs(Math.cos(i * Math.PI / 6)), r, 0, 0, 7); ctx.stroke(); }
@@ -744,9 +781,16 @@ function stagePanel(p, st, flash, last) {
     return h("div", { class: "box stage" }, h("div", { class: "phead" }, h("h3", {}, `${sg.t} 신호 해독`), h("span", { class: "code" }, `신호 ${n + 1} / ${SIG.length}`)),
       sigRow(p, sg), msg);
   }
-  if (st === "done") return h("div", { class: "box stage" }, h("div", { class: "phead" }, h("h3", {}, "조사 완료"), h("span", { class: "code" }, `${p.name}`)), msg,
-    h("p", { class: "dim" }, last ? "이 섹터의 마지막 행성이에요." : `남은 행성 ${G.list.length - G.idx - 1}개`),
-    h("button", { class: "btn primary big", id: "next-planet", onclick: nextPlanet }, last ? "정거장으로 →" : "다음 행성으로 →"));
+  if (st === "done") {
+    const okN = SIG.filter(sg => p.dec[sg.k] === p.t[sg.k]).length, noted = ["photo", "sound", "video"].filter(k => p.note[NOTE[k].key] != null).length;
+    const seal = h("span", { class: "seal", "aria-hidden": "true" });
+    seal.innerHTML = '<svg viewBox="0 0 72 72"><circle class="r1" cx="36" cy="36" r="33"/><circle class="r2" cx="36" cy="36" r="26"/><path class="tk" pathLength="1" d="M23 37.5l9.5 9.5L50 27"/></svg>';
+    return h("div", { class: "box stage done-box" }, h("div", { class: "phead" }, h("h3", {}, "조사 완료"), h("span", { class: "code" }, `${p.name}`)), msg,
+      h("div", { class: "done-body" }, seal,
+        h("div", { class: "done-sum" }, h("p", { class: "mono" }, `신호 ${okN} / ${SIG.length} 정확 · 기록 ${noted} / 3`),
+          h("p", { class: "dim" }, last ? "이 섹터의 마지막 행성이에요." : `남은 행성 ${G.list.length - G.idx - 1}개`))),
+      h("button", { class: "btn primary big", id: "next-planet", onclick: nextPlanet }, last ? "정거장으로 →" : "다음 행성으로 →"));
+  }
   const k = st, d = p.data[k];
   const go = h("button", { class: "btn" + (d ? "" : " primary"), id: `scan-${k}`, onclick: () => { const ok = scanOne(p, k); fresh = ok ? k : null; explore(ok ? `${MEDIA[k]} 수신 완료` : "저장 공간이 모자라요"); } }, d ? "다시 스캔" : `${MEDIA[k]} 스캔`);
   const skip = h("button", { class: "btn ghost", id: `skip-${k}`, onclick: () => { p.skip[k] = true; explore(); } }, "건너뛰기");
@@ -919,7 +963,7 @@ function replySignal() {
   if (!mine.length) return report();
   const col = mine[Math.floor(Math.random() * mine.length)], target = clamp(Math.round(col.pop), 1, 255);
   const bits = [0, 0, 0, 0, 0, 0, 0, 0];
-  const box = h("div", { class: "box stage" });
+  const box = h("div", { class: "box stage reply" });
   const draw = (result) => {
     const cells = h("div", { class: "bulbs" }, bits.map((b, i) => h("div", { class: "bulb" },
       h("div", { class: "pulse " + (b ? "hi" : "lo") + (i && bits[i - 1] !== b ? " edge" : "") }),
@@ -934,7 +978,7 @@ function replySignal() {
         : h("button", { class: "btn primary big", id: "send-reply", onclick: () => { const ok = sent === target; G.sec.reply = { target, sent, ok }; G.tot.reply++; if (ok) { G.tot.replyOk++; G.credits += 15; } draw(ok ? "ok" : "bad"); } }, "신호 보내기")].filter(Boolean));
   };
   draw();
-  $("#app").replaceChildren(hud("답장 신호"), h("div", { class: "wrap" }, h("div", { style: "max-width:760px;width:100%" }, box)));
+  $("#app").replaceChildren(hud("답장 신호"), h("div", { class: "wrap" }, h("div", { style: "max-width:760px;width:100%;margin-inline:auto" }, box)));
   window.scrollTo(0, 0);
 }
 const COLS = [...SIG.map(sg => ({ k: sg.k, t: sg.t })), { k: "water", t: "물" }, { k: "sound", t: "소리" }, { k: "danger", t: "위험" }];
@@ -1098,12 +1142,12 @@ function shop() {
   const troubled = G.colonies.filter(c => c.alive && c.conds.some(k => G.colonies && c.known[k.k] && !c.fixes[k.k]));
   const fixes = troubled.length ? h("div", { class: "shop" }, troubled.flatMap(c => c.conds.filter(k => c.known[k.k] && !c.fixes[k.k]).map(k =>
     h("div", { class: "item" }, h("h3", {}, FIX[k.k]), h("p", { class: "dim", style: "font-size:14px" }, `${c.name}족 · ${c.planet.name}: ${eventText(c, k.k)}`),
-      h("button", { class: "btn sm", disabled: G.credits < FIX_COST, onclick: () => { G.credits -= FIX_COST; c.fixes[k.k] = true; shop(); } }, h("span", { class: "price" }, `${FIX_COST} 크레딧`), " 짓기")))))
+      h("button", { class: "btn sm", disabled: G.credits < FIX_COST, onclick: () => { G.credits -= FIX_COST; c.fixes[k.k] = true; shop(); } }, h("span", { class: "price" }, `${FIX_COST} 크레딧`), G.credits < FIX_COST ? ` · ${FIX_COST - G.credits} 부족` : " 짓기")))))
     : h("p", { class: "dim" }, "고칠 문제가 있는 정착지가 없어요.");
   const items = h("div", { class: "shop" }, UPG.map(u => {
     const owned = G.upg[u.k];
     return h("div", { class: "item" + (owned ? " owned" : "") }, h("h3", {}, u.t), h("p", { class: "dim", style: "font-size:14px" }, u.d),
-      owned ? h("span", { class: "chip yes" }, "장착됨") : h("button", { class: "btn sm", disabled: G.credits < u.c, onclick: () => { G.credits -= u.c; G.upg[u.k] = true; shop(); } }, h("span", { class: "price" }, `${u.c} 크레딧`), " 구매"));
+      owned ? h("span", { class: "chip yes" }, "장착됨") : h("button", { class: "btn sm", disabled: G.credits < u.c, onclick: () => { G.credits -= u.c; G.upg[u.k] = true; shop(); } }, h("span", { class: "price" }, `${u.c} 크레딧`), G.credits < u.c ? ` · ${u.c - G.credits} 부족` : " 구매"));
   }));
   $("#app").replaceChildren(hud("정비소"), h("div", { class: "wrap" },
     h("div", { class: "box" }, h("h2", {}, "정착지 시설"), fixes),
@@ -1132,7 +1176,7 @@ function endScreen() {
       h("span", { class: "kicker" }, won ? "항해 완료" : "항해 실패"),
       h("h1", { style: "font-size:clamp(40px,9vw,64px)" }, won ? "세 섹터 모두 통과!" : "이주선 귀환"),
       why ? h("p", { class: "msg bad" }, why) : null,
-      h("p", { class: "mono", style: "font-size:20px" }, `총 인구 ${score}${newBest ? " · 최고 기록!" : ""}`),
+      h("div", { class: "endscore" }, h("span", { class: "label" }, "총 인구"), h("span", { class: "n mono" }, score), h("span", { class: "u" }, "명"), newBest ? h("span", { class: "chip yes" }, "최고 기록!") : null),
       h("p", { class: "dim" }, `살아남은 정착지 ${alive} / ${G.colonies.length}곳 · 최고 기록 ${save.best}명`),
       resultCard(),
       h("div", { class: "row" }, h("button", { class: "btn primary", onclick: () => newRun() }, "새 항해 시작"), h("button", { class: "btn", id: "to-sheet", onclick: sheet }, "결과지"), h("button", { class: "btn", onclick: home }, "처음 화면"), G.all.length ? h("button", { class: "btn", onclick: openArchive }, "탐사 기록 보기") : null)),
@@ -1171,7 +1215,7 @@ function sheet() {
 
 function home() {
   $("#app").replaceChildren(h("main", { class: "home" },
-    h("canvas", { class: "home-planet", width: 640, height: 640, "aria-hidden": "true" }),
+    h("canvas", { class: "home-planet", width: 960, height: 960, "aria-hidden": "true" }),
     h("div", { class: "home-title" }, h("span", { class: "home-kicker" }, "PLANET SEARCH"), h("h1", {}, "행성 탐사")),
     h("nav", { class: "home-menu", "aria-label": "메뉴" },
       h("button", { class: "menu-btn primary", id: "start", onclick: () => newRun() }, "항해 시작"),
@@ -1204,23 +1248,49 @@ function dataNotes() {
 }
 function drawHomePlanet(cv) {
   if (!cv) return;
-  const ctx = cv.getContext("2d"), W = cv.width, c = W / 2, r = W * 0.29;
-  const glow = ctx.createRadialGradient(c, c, r * 0.9, c, c, r * 1.35);
-  glow.addColorStop(0, "#5b7cff55"); glow.addColorStop(1, "#5b7cff00");
+  const ctx = cv.getContext("2d"), W = cv.width, c = W / 2, r = W * 0.29, R = seeded(7);
+  const glow = ctx.createRadialGradient(c, c, r * 0.92, c, c, r * 1.42);
+  glow.addColorStop(0, "#6f9cff66"); glow.addColorStop(.35, "#4a6cff22"); glow.addColorStop(1, "#5b7cff00");
   ctx.fillStyle = glow; ctx.fillRect(0, 0, W, W);
+  /* back half of the ring, behind the globe */
+  const ringBand = (a0, a1, A = 1) => { for (const [k, w, col] of [[1.62, 7, "#ffd59a"], [1.74, 3, "#ffd59a"], [1.52, 2, "#ffd59a"]]) { ctx.lineWidth = w; ctx.globalAlpha = (w > 5 ? .38 : .24) * A; ctx.strokeStyle = col; ctx.beginPath(); ctx.ellipse(c, c, r * k, r * k * .21, -.35, a0, a1); ctx.stroke(); } ctx.globalAlpha = 1; };
+  ringBand(Math.PI, Math.PI * 2);
   ctx.save(); ctx.beginPath(); ctx.arc(c, c, r, 0, 7); ctx.clip();
-  const body = ctx.createRadialGradient(c - r * .35, c - r * .4, r * .1, c, c, r);
-  body.addColorStop(0, "#6fa8ff"); body.addColorStop(.55, "#2f4fb8"); body.addColorStop(1, "#141a52");
+  const body = ctx.createRadialGradient(c - r * .38, c - r * .42, r * .08, c, c, r);
+  body.addColorStop(0, "#7db4ff"); body.addColorStop(.5, "#2f56c4"); body.addColorStop(1, "#101650");
   ctx.fillStyle = body; ctx.fillRect(0, 0, W, W);
-  const R = seeded(7);
-  for (let i = 0; i < 14; i++) { ctx.fillStyle = `rgba(201,154,91,${.35 + R() * .3})`; ctx.beginPath(); ctx.ellipse(c - r + R() * r * 2, c - r + R() * r * 2, r * (.08 + R() * .2), r * (.05 + R() * .12), R() * 3, 0, 7); ctx.fill(); }
-  const shade = ctx.createRadialGradient(c - r * .5, c - r * .5, r * .2, c + r * .2, c + r * .2, r * 1.2);
-  shade.addColorStop(0, "#00000000"); shade.addColorStop(1, "#000018dd");
+  /* continents: spherical fractal noise, so coasts curve with the globe */
+  {
+    const N = 360, off = document.createElement("canvas"); off.width = off.height = N;
+    const o = off.getContext("2d"), img = o.createImageData(N, N), G = 24, grid = Array.from({ length: G * G * G }, () => R());
+    const sm = t => t * t * (3 - 2 * t), g3 = (x, y, z) => grid[((x % G + G) % G) * G * G + ((y % G + G) % G) * G + ((z % G + G) % G)];
+    const vn = (x, y, z) => { const xi = Math.floor(x), yi = Math.floor(y), zi = Math.floor(z), fx = sm(x - xi), fy = sm(y - yi), fz = sm(z - zi), L = (a, b, t) => a + (b - a) * t;
+      return L(L(L(g3(xi, yi, zi), g3(xi + 1, yi, zi), fx), L(g3(xi, yi + 1, zi), g3(xi + 1, yi + 1, zi), fx), fy), L(L(g3(xi, yi, zi + 1), g3(xi + 1, yi, zi + 1), fx), L(g3(xi, yi + 1, zi + 1), g3(xi + 1, yi + 1, zi + 1), fx), fy), fz); };
+    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
+      const x = (i + .5) / N * 2 - 1, y = (j + .5) / N * 2 - 1, d2 = x * x + y * y; if (d2 >= 1) continue;
+      const z = Math.sqrt(1 - d2), px = x * 2.2 + 12, py = y * 2.2 + 12, pz = z * 2.2 + 12;
+      const hgt = vn(px, py, pz) * .55 + vn(px * 2.1, py * 2.1, pz * 2.1) * .3 + vn(px * 4.3, py * 4.3, pz * 4.3) * .15;
+      const t = sm(clamp((hgt - .545) / .035, 0, 1)), shallow = sm(clamp((hgt - .5) / .06, 0, 1)) * (1 - t), k = (i + j * N) * 4, hi = clamp((hgt - .6) / .2, 0, 1);
+      if (t > 0) { img.data[k] = 214 - hi * 52; img.data[k + 1] = 174 - hi * 48; img.data[k + 2] = 108 - hi * 34; img.data[k + 3] = 255 * t; }
+      else { img.data[k] = 110; img.data[k + 1] = 178; img.data[k + 2] = 255; img.data[k + 3] = 110 * shallow; }
+    }
+    o.putImageData(img, 0, 0); ctx.imageSmoothingQuality = "high"; ctx.drawImage(off, c - r, c - r, r * 2, r * 2);
+  }
+  /* polar ice */
+  for (const [y, dir] of [[c - r * .98, 1], [c + r * .98, -1]]) { const g = ctx.createRadialGradient(c, y, 0, c, y, r * .42); g.addColorStop(0, "rgba(240,248,255,.9)"); g.addColorStop(1, "rgba(240,248,255,0)"); ctx.fillStyle = g; ctx.fillRect(0, 0, W, W); }
+  /* cloud streaks */
+  ctx.save(); ctx.rotate(-.12); ctx.translate(-W * .02, W * .06);
+  for (let i = 0; i < 16; i++) { const x = c - r + R() * r * 2, y = c - r * .8 + R() * r * 1.6; ctx.fillStyle = `rgba(255,255,255,${.06 + R() * .1})`; ctx.beginPath(); ctx.ellipse(x, y, r * (.14 + R() * .3), r * (.012 + R() * .022), 0, 0, 7); ctx.fill(); }
+  ctx.restore();
+  /* terminator: night side falls to the lower right */
+  const shade = ctx.createRadialGradient(c - r * .55, c - r * .55, r * .25, c + r * .15, c + r * .15, r * 1.25);
+  shade.addColorStop(0, "#00000000"); shade.addColorStop(.6, "#00001655"); shade.addColorStop(1, "#000018ee");
   ctx.fillStyle = shade; ctx.fillRect(0, 0, W, W); ctx.restore();
-  ctx.strokeStyle = "#ffd59a88"; ctx.lineWidth = 3;
-  ctx.beginPath(); ctx.ellipse(c, c, r * 1.55, r * .32, -.35, Math.PI * 1.04, Math.PI * 1.96); ctx.stroke();
-  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, W, W); ctx.arc(c, c, r, 0, 7, true); ctx.clip("evenodd");
-  ctx.beginPath(); ctx.ellipse(c, c, r * 1.55, r * .32, -.35, 0, Math.PI); ctx.stroke(); ctx.restore();
+  /* atmosphere rim on the lit edge */
+  ctx.save(); ctx.lineCap = "round"; ctx.shadowColor = "#8cc2ff"; ctx.shadowBlur = W * .02;
+  ctx.strokeStyle = "#bfe0ffcc"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(c, c, r - 1, Math.PI * .86, Math.PI * 1.62); ctx.stroke(); ctx.restore();
+  /* front half of the ring, over the globe */
+  ringBand(0, Math.PI, 2.2);
 }
 
 /* ---------- archive: every planet the player measured, as a table and diagrams ---------- */
