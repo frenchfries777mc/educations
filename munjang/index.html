@@ -12,6 +12,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Batang:wght@400;700&family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="../teacher.js" defer></script>
 <style>
   :root{ --bg:#1b1916; --plate:#262320; --plate2:#302c27; --line:#47403a; --ink:#f4ebd9; --mute:#a89e8e; --yel:#f5c518; --yel2:#d9a400;
     --rust:#d4552f; --ok:#4cb276; --blue:#4a8fd8; --paper:#f1e4c8; --paper2:#e6d3ae; --pink:#2a2219; }
@@ -121,6 +122,8 @@
   .tcard{background:var(--paper2); color:var(--pink); font-family:'Gowun Batang',serif; font-weight:700; padding:6px 12px 6px 10px; border-radius:3px; border-left:6px solid var(--rust); font-size:15px; box-shadow:0 3px 0 rgba(0,0,0,.35);}
   .tcard.me{border-left-color:var(--yel); background:#fff3c9;}
   .rowEnd{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px;}
+  .tbadge{display:inline-block; margin-left:6px; padding:0 6px; border-radius:9px; background:rgba(44,138,82,.18); color:#1d6b3f; font:700 11px/18px 'Noto Sans KR',sans-serif; white-space:nowrap; vertical-align:middle;}
+  .clsLine{margin:10px 0 0; color:var(--ink);}
   .rename{display:flex; gap:6px; margin-top:14px;}
   .rename input{flex:1; min-width:0; background:#141210; border:1px solid var(--line); border-radius:6px; padding:8px 10px; outline:none;}
   .rename button,.small{border:1px solid var(--line); background:#2b2723; border-radius:6px; padding:8px 14px;}
@@ -382,6 +385,8 @@
         <p class="lbl">방장도 작업</p>
         <div class="seg" id="segHostPlay"><button data-v="1">함께 하기</button><button data-v="0">지켜보기</button></div>
       </div>
+      <div id="clsBox" class="hide"><p class="lbl">반 이름</p><div class="rename" style="margin-top:0"><input id="clsIn" maxlength="12" placeholder="예: 3학년 2반" aria-label="반 이름"></div></div>
+      <p class="lbl clsLine hide" id="clsLine"></p>
       <div id="guestWait" class="hide"><p class="msg info" id="guestSet"></p><p class="msg info">방장이 시작하기를 기다리는 중</p></div>
     </div>
     <div class="plate"><i class="b3"></i><i class="b4"></i>
@@ -463,6 +468,7 @@
   <p class="msg info" id="resWait" style="text-align:center"></p>
   <div class="resBtns">
     <button class="big grn" id="againBtn"><span class="k">↻</span><span><b>다시 하기</b></span></button>
+    <button class="big hide" id="csvBtn"><span class="k">⇩</span><span><b>결과 저장 (CSV)</b></span></button>
     <button class="big" id="homeBtn"><span class="k">⌂</span><span><b>처음으로</b></span></button>
   </div>
 </section>
@@ -806,8 +812,28 @@ var S = {
   settings:{ time:180, hostPlay:1 },
   phase:'idle', endAt:0, totalMs:0, seed:1,
   score:0, ok:0, miss:0, combo:0, best:0, lives:LIVES, n:0, order:[], log:[], cat:{},
-  players:{}, conn:null, board:null, lastOk:0
+  players:{}, conn:null, board:null, lastOk:0,
+  teacher:false, uid:null, cls:'', hostUid:null, hostOk:false, lastRank:null
 };
+function clsClean(v){ return String(v==null?'':v).replace(/\s+/g,' ').trim().slice(0,12); }
+function teacherInit(){
+  if(!window.EduTeacher) return;
+  try{ EduTeacher.me().then(function(m){ if(m && m.teacher && m.uid && S.role==='host'){ S.teacher=true; S.uid=String(m.uid); teacherUi(); if(S.phase==='lobby'){ broadcast({ t:'lobby', settings:S.settings, uid:S.uid, cls:S.cls }); renderChips(); } } }, function(){}); }catch(e){}
+}
+function guestVerify(uid){
+  if(!window.EduTeacher || typeof uid!=='string' || !uid || uid.length>40) return;
+  if(S.hostUid===uid) return;
+  S.hostUid=uid; S.hostOk=false;
+  try{ EduTeacher.verify(uid).then(function(ok){ if(S.hostUid===uid && ok===true){ S.hostOk=true; teacherUi(); if(S.phase==='lobby') renderChips(); if(S.phase==='result' && S.lastEnd) showResult(S.lastEnd); } }, function(){}); }catch(e){}
+}
+function teacherUi(){
+  var host=S.role==='host';
+  $('clsBox').classList.toggle('hide', !(host && S.teacher));
+  var c = host ? (S.teacher?S.cls:'') : (S.hostOk?S.cls:'');
+  $('clsLine').textContent = c ? c : '';
+  $('clsLine').classList.toggle('hide', !c || (host && S.teacher));
+}
+
 
 function needName(){
   var n=$('nameIn').value.trim();
@@ -837,6 +863,7 @@ function startHost(name, tries){
   $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('공장을 여는 중...');
   destroyPeer();
   S.role='host'; S.name=name; S.code=newCode(); S.players={};
+  S.teacher=false; S.uid=null; S.cls=''; S.hostUid=null; S.hostOk=false; S.lastRank=null; $('clsIn').value=''; teacherInit();
   var p=new Peer(PREFIX+S.code, peerOpts()); S.peer=p;
   p.on('open', function(){ $('homeMsg').textContent=''; busy(false); setNet('on','연결됨'); enterLobby(); });
   p.on('connection', onGuestConn);
@@ -866,6 +893,7 @@ function uniqueName(name, tok){
   while(taken(n)){ n=base.slice(0,14)+' '+i; i++; }
   return n;
 }
+function tchExtra(m){ if(S.teacher && S.uid){ m.uid=S.uid; if(S.cls) m.cls=S.cls; } return m; }
 function handleHostMsg(conn, d){
   if(!d || typeof d!=='object') return;
   if(d.t==='hello'){
@@ -881,8 +909,8 @@ function handleHostMsg(conn, d){
     if(pl.conn && pl.conn!==conn){ try{ pl.conn.close(); }catch(e){} }
     pl.conn=conn; pl.online=true; conn._tok=tok;
     pl.name=uniqueName(cleanName(d.name), tok);
-    send(conn, { t:'welcome', name:pl.name, settings:S.settings, phase:S.phase, remain:S.endAt-Date.now(), total:S.totalMs, seed:S.seed, score:pl.score, ok:pl.ok, miss:pl.miss });
-    if(S.phase==='result') send(conn, { t:'end', ranking:ranking() });
+    send(conn, tchExtra({ t:'welcome', name:pl.name, settings:S.settings, phase:S.phase, remain:S.endAt-Date.now(), total:S.totalMs, seed:S.seed, score:pl.score, ok:pl.ok, miss:pl.miss }));
+    if(S.phase==='result') send(conn, tchExtra({ t:'end', ranking:ranking() }));
     if(S.phase==='lobby') renderChips();
     boardDirty=true; return;
   }
@@ -908,8 +936,9 @@ function enterLobby(){
     $('copyLnk').onclick=function(){ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){ toast(tr('링크를 복사했어요')); }, function(){ toast(url); }); };
     syncSegs();
     for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else { p.score=0; p.ok=0; p.miss=0; p.last=0; } }
-    broadcast({ t:'lobby', settings:S.settings });
+    broadcast(tchExtra({ t:'lobby', settings:S.settings }));
   } else { $('lobbyLink').textContent=''; renderGuestSet(); }
+  teacherUi();
   $('renameIn').value=S.name;
   renderChips(); show('sLobby');
 }
@@ -918,7 +947,7 @@ function bindSeg(id, key){
   $(id).addEventListener('click', function(e){
     var b=e.target.closest('button'); if(!b) return;
     S.settings[key]=+b.dataset.v; syncSegs(); renderChips();
-    broadcast({ t:'lobby', settings:S.settings });
+    broadcast(tchExtra({ t:'lobby', settings:S.settings }));
   });
 }
 bindSeg('segTime','time'); bindSeg('segHostPlay','hostPlay');
@@ -927,15 +956,15 @@ var lobbyNames=[], guestCount=0;
 function renderChips(){
   var names=[];
   if(S.role==='host'){
-    if(S.settings.hostPlay) names.push({n:S.name, me:true});
+    if(S.settings.hostPlay) names.push({n:S.name, me:true, b:S.teacher});
     for(var t in S.players){ var p=S.players[t]; if(p.online) names.push({n:p.name}); }
     lobbyNames=names.map(function(x){ return x.n; });
-    broadcast({ t:'players', names:lobbyNames, guests:onlineCount() });
+    broadcast(tchExtra({ t:'players', names:lobbyNames, guests:onlineCount() }));
     guestCount=onlineCount();
     $('startBtn').disabled = names.length===0;
-  } else names=lobbyNames.map(function(n){ return {n:n, me:n===S.name}; });
+  } else names=lobbyNames.map(function(n,i){ return {n:n, me:n===S.name, b:i===0 && S.hostOk && !!S.settings.hostPlay}; });
   $('pNum').textContent=guestCount;
-  $('chips').innerHTML=names.map(function(x){ return '<span class="tcard'+(x.me?' me':'')+'">'+esc(x.n)+'</span>'; }).join('') || '<span class="msg info">'+tr('아직 아무도 없어요')+'</span>';
+  $('chips').innerHTML=names.map(function(x){ return '<span class="tcard'+(x.me?' me':'')+'">'+esc(x.n)+(x.b?'<span class="tbadge">'+esc(window.EduTeacher?EduTeacher.BADGE:'✅ 선생님')+'</span>':'')+'</span>'; }).join('') || '<span class="msg info">'+tr('아직 아무도 없어요')+'</span>';
 }
 $('startBtn').onclick=function(){
   if(S.role!=='host') return;
@@ -944,6 +973,12 @@ $('startBtn').onclick=function(){
   broadcast({ t:'start', cd:cd, dur:S.settings.time*1000, settings:S.settings, seed:S.seed });
   beginRound(cd, S.settings.time*1000);
 };
+$('clsIn').addEventListener('input', function(){
+  if(S.role!=='host' || !S.teacher) return;
+  S.cls=clsClean(this.value);
+  broadcast(tchExtra({ t:'lobby', settings:S.settings }));
+  broadcast(tchExtra({ t:'players', names:lobbyNames, guests:onlineCount() }));
+});
 $('leaveBtn').onclick=goHome;
 $('renameBtn').onclick=function(){
   var n=$('renameIn').value.trim(); if(!n || S.phase!=='lobby') return;
@@ -960,6 +995,7 @@ function startGuest(name, code){
   busy(true); $('homeMsg').className='msg info'; $('homeMsg').textContent=tr('공장에 연결하는 중...');
   destroyPeer();
   S.role='guest'; S.name=name; S.code=code;
+  S.teacher=false; S.uid=null; S.cls=''; S.hostUid=null; S.hostOk=false; S.lastEnd=null;
   var p=new Peer(peerOpts()); S.peer=p;
   var tm=setTimeout(function(){ if(S.peer===p && S.phase==='idle'){ $('homeMsg').className='msg'; $('homeMsg').textContent=tr('연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.'); busy(false); destroyPeer(); } }, 15000);
   p.on('open', function(){ connectHost(p, tm); });
@@ -990,17 +1026,18 @@ function handleGuestMsg(d){
   switch(d.t){
     case 'full': $('homeMsg').className='msg'; $('homeMsg').textContent=tr('공장이 가득 찼어요 (최대 40명).'); busy(false); destroyPeer(); show('sHome'); break;
     case 'welcome':
+      if(d.uid){ S.cls=clsClean(d.cls); guestVerify(d.uid); }
       S.name=d.name; S.settings=d.settings; busy(false); $('homeMsg').textContent='';
       if(d.phase==='play' || d.phase==='count'){
         if(S.phase!=='play' && S.phase!=='count'){ S.seed=d.seed; S.score=d.score; S.ok=d.ok; S.miss=d.miss; beginRound(0, Math.max(0,d.remain), d.total, true); }
       } else if(d.phase==='lobby' && S.phase!=='lobby') enterLobby();
       break;
-    case 'lobby': S.settings=d.settings; if(S.phase!=='lobby') enterLobby(); else renderGuestSet(); break;
+    case 'lobby': if(d.uid){ S.cls=clsClean(d.cls); guestVerify(d.uid); } S.settings=d.settings; if(S.phase!=='lobby') enterLobby(); else renderGuestSet(); break;
     case 'named': S.name=d.name; lsSet('munjang.name', d.name); $('renameIn').value=d.name; renderChips(); toast(tr('이름을 바꿨어요')); break;
-    case 'players': lobbyNames=d.names||[]; guestCount=d.guests|0; if(S.phase==='lobby') renderChips(); break;
+    case 'players': if(d.uid){ S.cls=clsClean(d.cls); guestVerify(d.uid); teacherUi(); } lobbyNames=d.names||[]; guestCount=d.guests|0; if(S.phase==='lobby') renderChips(); break;
     case 'start': S.settings=d.settings; S.seed=d.seed; beginRound(d.cd, d.dur); break;
     case 'board': S.board=d; renderMyBoard(); break;
-    case 'end': showResult(d.ranking); break;
+    case 'end': if(d.uid){ S.cls=clsClean(d.cls); guestVerify(d.uid); } S.lastEnd=d.ranking; showResult(d.ranking); break;
   }
 }
 
@@ -1204,7 +1241,7 @@ function hostEntries(){
 }
 function ranking(){
   var rk=0, prev=null;
-  return hostEntries().map(function(e,i){ if(!prev || e.s!==prev.s || e.l!==prev.l) rk=i+1; prev=e; return { r:rk, n:e.n, s:e.s, ok:e.ok, m:e.m, t:e.t, o:e.o }; });
+  return hostEntries().map(function(e,i){ if(!prev || e.s!==prev.s || e.l!==prev.l) rk=i+1; prev=e; var x={ r:rk, n:e.n, s:e.s, ok:e.ok, m:e.m, t:e.t, o:e.o }; if(S.teacher && S.uid && e.t===token) x.u=S.uid; return x; });
 }
 function rowHtml(e, max, me){
   return '<div class="rrow'+(me?' me':'')+(e.r===1?' r1':'')+(e.o===false?' off':'')+'"><div class="fill" style="width:'+(max?Math.round(e.s/max*100):0)+'%"></div><div class="r">'+e.r+'</div><div class="n">'+esc(e.n)+'</div><div class="s">'+e.s+'</div></div>';
@@ -1226,7 +1263,7 @@ function renderMyBoard(){
 function finishRound(){
   clearTimers(); S.phase='result';
   if(S.role==='solo'){ showResult(null); return; }
-  var r=ranking(); broadcast({ t:'end', ranking:r }); showResult(r);
+  var r=ranking(); broadcast(tchExtra({ t:'end', ranking:r })); showResult(r);
 }
 
 // ---------- result ----------
@@ -1240,7 +1277,10 @@ function countUp(el, to, suf){
 function showResult(r){
   clearTimers(); S.phase='result'; cur=null;
   var played = iPlay();
-  $('rWho').textContent = S.name + ' · ' + new Date().toLocaleDateString(lang==='ko'?'ko-KR':lang);
+  var clsShown = (S.role==='host' ? (S.teacher?S.cls:'') : (S.hostOk?S.cls:''));
+  $('rWho').textContent = (clsShown?clsShown+' · ':'') + S.name + ' · ' + new Date().toLocaleDateString(lang==='ko'?'ko-KR':lang);
+  S.lastRank = (S.role==='host' && S.teacher) ? r : null;
+  $('csvBtn').classList.toggle('hide', !(S.role==='host' && S.teacher && r));
   var all=S.ok+S.miss;
   var acc = all?Math.round(S.ok/all*100):-1;
   countUp($('rScore'), S.score, ''); countUp($('rDone'), all, ''); countUp($('rAcc'), acc, '%'); countUp($('rCombo'), S.best, '');
@@ -1253,7 +1293,8 @@ function showResult(r){
   if(r){
     $('rRank').innerHTML=r.map(function(e){
       var me = e.t===token || (S.role==='guest' && e.n===S.name), a=e.ok+e.m;
-      return '<tr'+(me?' class="me"':'')+'><td class="n">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="n">'+e.s+'</td><td>'+a+'</td><td>'+(a?Math.round(e.ok/a*100)+'%':'-')+'</td></tr>';
+      var bd = (S.role==='host' ? (S.teacher && e.t===token) : (S.hostOk && e.u && e.u===S.hostUid)) ? '<span class="tbadge">'+esc(window.EduTeacher?EduTeacher.BADGE:'✅ 선생님')+'</span>' : '';
+      return '<tr'+(me?' class="me"':'')+'><td class="n">'+e.r+'</td><td>'+esc(e.n)+bd+'</td><td class="n">'+e.s+'</td><td>'+a+'</td><td>'+(a?Math.round(e.ok/a*100)+'%':'-')+'</td></tr>';
     }).join('');
   }
   var seen={}, list=S.log.filter(function(x){ if(seen[x.p.disp]) return false; seen[x.p.disp]=1; return true; });
@@ -1266,6 +1307,13 @@ function showResult(r){
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
   show('sResult');
 }
+$('csvBtn').onclick=function(){
+  var r=S.lastRank; if(!(S.role==='host' && S.teacher && r && window.EduTeacher)) return;
+  var d=new Date(), p=function(n){ return (n<10?'0':'')+n; }, when=d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
+  var rows=[['반 이름','날짜','순위','이름','점수','처리한 문장','정확도(%)']];
+  r.forEach(function(e){ var a=e.ok+e.m; rows.push([S.cls, when, e.r, e.n, e.s, a, a?Math.round(e.ok/a*100):'']); });
+  EduTeacher.csv('문장수리공-'+(S.cls||'결과')+'-'+EduTeacher.stamp()+'.csv', rows);
+};
 $('againBtn').onclick=function(){ if(S.role==='solo') startSolo(S.name); else if(S.role==='host') enterLobby(); };
 $('homeBtn').onclick=goHome;
 window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.phase!=='idle' && onlineCount()>0){ e.preventDefault(); e.returnValue=''; } });
