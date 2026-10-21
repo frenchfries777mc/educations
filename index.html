@@ -138,7 +138,9 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .hero-bg img,.hero-bg video{position:absolute; top:0; right:0; width:72%; height:100%; object-fit:cover; opacity:.8; -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 48%); mask-image:linear-gradient(90deg,transparent 0,#000 48%); animation:hbKen 32s ease-in-out infinite alternate;}
   .hero-bg i::after{content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 82% 55%, color-mix(in srgb,var(--c) 38%,transparent), transparent 70%), radial-gradient(ellipse 50% 60% at 8% 30%, color-mix(in srgb,var(--c) 14%,transparent), transparent 70%);}
   .hero-bg::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 90%,transparent) 0,color-mix(in srgb,var(--bg) 55%,transparent) 14%,transparent 34%);}
-  .hero-bg.one i{animation:none; opacity:1;}
+  .hero-bg.six i{animation-name:hbFade6; animation-duration:42s;}
+  .hero-bg.six i:nth-child(1){animation-delay:-1s;} .hero-bg.six i:nth-child(2){animation-delay:6s;} .hero-bg.six i:nth-child(3){animation-delay:13s;} .hero-bg.six i:nth-child(4){animation-delay:20s;} .hero-bg.six i:nth-child(5){animation-delay:27s;} .hero-bg.six i:nth-child(6){animation-delay:34s;}
+  @keyframes hbFade6{0%{opacity:0;} 3.5%{opacity:1;} 15.5%{opacity:1;} 19%{opacity:0;} 100%{opacity:0;}}
   @keyframes hbFade{0%{opacity:0;} 5%{opacity:1;} 25%{opacity:1;} 31%{opacity:0;} 100%{opacity:0;}}
   @keyframes hbKen{from{transform:scale(1.03) translate3d(0,0,0);} to{transform:scale(1.14) translate3d(-2%,-2%,0);}}
   @keyframes hbRise{from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:none;}}
@@ -304,7 +306,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   </header>
 
   <section class="hero">
-    <div class="hero-bg one" aria-hidden="true"><i style="--c:#6aa8ff"><img src="hero/edu.webp" alt=""></i></div>
+    <div class="hero-bg six" aria-hidden="true"><i style="--c:#6aa8ff"><img src="planetsearch.webp" alt=""></i><i style="--c:#5ac878"><img src="balance.webp" alt=""></i><i style="--c:#e8c25a"><img src="proverb.webp" alt=""></i><i style="--c:#ff7a5a"><img src="speedcode.webp" alt=""></i><i style="--c:#c9a36b"><img src="timeline.webp" alt=""></i><i style="--c:#e0a030"><img src="munjang.webp" alt=""></i></div>
     <img class="hero-lg" src="logo.svg" alt="" width="230" height="230">
     <div class="hero-t">
     <span class="eyebrow">Learning Games</span>
@@ -513,7 +515,7 @@ document.addEventListener('keydown',function(e){ var t=e.target, typing=t&&(t.ta
   var bg=document.querySelector('.hero-bg'); if(!bg) return;
   var rm=matchMedia('(prefers-reduced-motion:reduce)').matches, narrow=matchMedia('(max-width:640px)').matches;
   if(rm) return;
-  var clips=['edu'], vids=[], mp4=document.createElement('video').canPlayType('video/mp4; codecs="avc1.42E01E"');
+  var clips=['planetsearch','balance','proverb','speedcode','timeline','munjang'], vids=[], mp4=document.createElement('video').canPlayType('video/mp4; codecs="avc1.42E01E"');
   bg.querySelectorAll('i').forEach(function(el,k){
     var v=document.createElement('video'); v.muted=true; v.defaultMuted=true; v.loop=true; v.playsInline=true; v.autoplay=true; v.preload='auto';
     ['muted','loop','playsinline','webkit-playsinline','autoplay','disablepictureinpicture','aria-hidden'].forEach(function(n){ v.setAttribute(n,n==='aria-hidden'?'true':''); });
