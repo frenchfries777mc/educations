@@ -116,6 +116,7 @@
   .link{font-size:13px; color:var(--mute); word-break:break-all;}
   .link button{margin-left:8px; border:1px solid var(--line); background:#1b1916; border-radius:5px; padding:2px 8px; font-size:12px;}
   .seg{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;}
+  .codePlate .seg{justify-content:center;}
   .seg button{border:1px solid var(--line); background:#1d1b18; border-radius:6px; padding:8px 14px; font-size:15px;}
   .seg button.on{background:var(--yel); color:#1b1916; border-color:var(--yel); font-weight:700;}
   .cards{display:flex; flex-wrap:wrap; gap:8px; min-height:44px;}
@@ -176,7 +177,7 @@
   .lane .press{position:absolute; right:0; bottom:44px; width:38px; height:150px; background:linear-gradient(90deg,#2f2a25,#4a433b 60%,#3a342d); border-left:3px solid #0e0d0b; z-index:3; box-shadow:inset 6px 0 10px rgba(0,0,0,.4);}
   .lane .press::before{content:''; position:absolute; left:6px; right:6px; top:12px; height:46px; border-radius:4px; background:repeating-linear-gradient(180deg,#14110e 0 4px,#2a2621 4px 8px); opacity:.9;}
   .lane .press::after{content:''; position:absolute; left:15px; bottom:14px; width:10px; height:10px; border-radius:50%; background:var(--yel); box-shadow:0 0 10px var(--yel); opacity:.8;}
-  .slipBox{position:absolute; left:50%; bottom:50px; width:min(680px,calc(100% - 96px)); transform:translateX(-50%); z-index:2;}
+  .slipBox{position:absolute; left:50%; bottom:50px; width:min(680px,calc(100% - 140px)); transform:translateX(-50%); z-index:2;}
   .slipBox::after{content:''; position:absolute; left:4%; right:4%; bottom:-14px; height:16px; background:radial-gradient(ellipse at 50% 50%, rgba(0,0,0,.55), transparent 70%); z-index:-1;}
   .slip{position:relative; background-color:var(--paper); color:var(--pink); border-radius:3px; padding:26px 18px 16px; transition:box-shadow .25s;
     box-shadow:0 8px 0 rgba(0,0,0,.45), 0 0 0 1px #c9b48c inset, 0 1px 0 rgba(255,255,255,.5) inset;
@@ -201,6 +202,10 @@
   @keyframes wob{25%{transform:translateX(-4px);} 50%{transform:translateX(4px);} 75%{transform:translateX(-2px);} }
   .w.fix{background:rgba(76,178,118,.28); color:#1c5c35; border-bottom-color:transparent; animation:fixin .42s cubic-bezier(.2,1.6,.4,1);}
   @keyframes fixin{0%{transform:scale(.7); background:rgba(76,178,118,.8);} 100%{transform:none;} }
+  .gain{position:absolute; left:50%; top:24px; z-index:4; font-family:'Do Hyeon',sans-serif; font-size:36px; line-height:1; color:#8be8ac; text-shadow:0 3px 0 #123a22, 0 0 18px rgba(76,178,118,.7); opacity:0; pointer-events:none; white-space:nowrap;}
+  .gain.hot{color:var(--yel); text-shadow:0 3px 0 #5a4300, 0 0 20px rgba(245,197,24,.75); font-size:42px;}
+  .gain.go{animation:gainUp 1s cubic-bezier(.2,.8,.3,1) forwards;}
+  @keyframes gainUp{0%{opacity:0; transform:translate(-50%,16px) scale(.6);} 18%{opacity:1; transform:translate(-50%,0) scale(1.18);} 32%{transform:translate(-50%,-2px) scale(1);} 72%{opacity:1; transform:translate(-50%,-10px) scale(1);} 100%{opacity:0; transform:translate(-50%,-26px) scale(1);}}
   .stamp{position:absolute; right:14px; top:-26px; transform:rotate(-9deg) scale(1.6); opacity:0; font-family:'Do Hyeon',sans-serif; font-size:30px; line-height:1.2; padding:4px 16px; border:4px solid currentColor; border-radius:8px; letter-spacing:.06em; pointer-events:none; background:transparent; mix-blend-mode:multiply; filter:url(#ink); z-index:2;}
   .stamp::after{content:''; position:absolute; inset:3px; border:1.5px solid currentColor; border-radius:4px; opacity:.7;}
   .stamp.go{animation:stamp .34s cubic-bezier(.3,.6,.4,1) forwards;}
@@ -208,6 +213,8 @@
   @keyframes stamp{0%{opacity:0; transform:rotate(-14deg) scale(2.6);} 55%{opacity:.95; transform:rotate(-9deg) scale(.92);} 78%{transform:rotate(-9deg) scale(1.04);} 100%{opacity:.93; transform:rotate(-9deg) scale(1);}}
   .timeStrip{height:10px; background:#0e0d0b; position:relative;}
   .timeStrip i{position:absolute; left:0; top:0; bottom:0; width:100%; background:repeating-linear-gradient(-45deg,var(--yel) 0 8px,#b38e00 8px 16px);}
+  .timeStrip i.late{background:repeating-linear-gradient(-45deg,var(--rust) 0 8px,#8a2f14 8px 16px); animation:late .55s ease-in-out infinite;}
+  @keyframes late{50%{opacity:.55;}}
   .tools{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:14px; background:#1f1c19; border-top:2px solid #0e0d0b; min-height:90px; align-items:stretch;}
   .tools .hint{grid-column:1/-1; color:var(--mute); font-size:14px; align-self:center; text-align:center; border:2px dashed #3a342e; border-radius:8px; padding:14px 10px;}
   .opt{position:relative; border:0; border-radius:8px; padding:12px 34px; background:linear-gradient(180deg,#f0e0bd,var(--paper2)); color:var(--pink); font-family:'Gowun Batang',serif; font-weight:700; font-size:clamp(17px,2.6vw,22px); box-shadow:0 4px 0 #8b7550, inset 0 1px 0 rgba(255,255,255,.55); transition:transform .06s, filter .1s;}
@@ -225,7 +232,7 @@
   .memo::before{content:''; position:absolute; left:50%; top:-9px; width:74px; height:18px; margin-left:-37px; background:rgba(245,197,24,.55); transform:rotate(-2deg); box-shadow:0 1px 2px rgba(0,0,0,.25); clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%);}
   .memo .h{font-family:'Do Hyeon',sans-serif; font-size:20px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
   .memo .h.ok{color:#2c8a52;} .memo .h.bad{color:#c13e1c;} .memo .h.pass{color:#2f6db3;}
-  .memo .h .cat{font-family:'Noto Sans KR',sans-serif; font-size:12px; font-weight:700; color:#5a4b36; background:rgba(42,34,25,.1); border-radius:999px; padding:1px 10px;}
+  .memo .h .cat{display:inline-block; grid-template-columns:none; font-family:'Noto Sans KR',sans-serif; font-size:12px; line-height:20px; white-space:nowrap; font-weight:700; color:#5a4b36; background:rgba(42,34,25,.1); border-radius:999px; padding:1px 10px;}
   .memo .fixed{font-family:'Gowun Batang',serif; font-weight:700; font-size:19px; margin:4px 0 2px;}
   .memo .fixed u{text-decoration:none; background:rgba(76,178,118,.3); padding:0 3px; border-radius:3px;}
   .memo .diff{display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; margin:6px 0 4px; font-family:'Gowun Batang',serif; font-weight:700; font-size:16px;}
@@ -275,7 +282,7 @@
   .stats b{font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:28px; line-height:1.1;}
   .cats{display:grid; gap:6px; margin-bottom:16px;}
   .cat{display:grid; grid-template-columns:90px 1fr 64px; gap:10px; align-items:center; font-size:14px;}
-  .cat .t{height:14px; background:rgba(42,34,25,.15); border-radius:3px; overflow:hidden;}
+  .cat .t{height:14px; background:repeating-linear-gradient(90deg, transparent 0 calc(10% - 1px), rgba(42,34,25,.22) calc(10% - 1px) 10%), rgba(42,34,25,.13); border-radius:3px; overflow:hidden; box-shadow:inset 0 1px 2px rgba(42,34,25,.25);}
   .cat .t i{display:block; height:100%; width:0; background:#2c8a52; border-radius:3px; animation:grow .7s var(--d,0ms) cubic-bezier(.2,.8,.2,1) forwards;}
   .cat .t i.mid{background:#d9a400;} .cat .t i.lo{background:#c13e1c;}
   @keyframes grow{to{width:var(--w);}}
@@ -286,13 +293,15 @@
   .mist .s{font-family:'Gowun Batang',serif; font-weight:700;}
   .mist .s del{color:#c13e1c;} .mist .s ins{text-decoration:none; color:#2c8a52;}
   .mist .r{font-size:13px; color:#5a4b36; line-height:1.5; word-break:keep-all;}
+  .mist .mc{display:inline-block; margin-right:8px; padding:0 8px; border-radius:999px; background:rgba(42,34,25,.1); color:#5a4b36; font:700 11px/18px 'Noto Sans KR',sans-serif; vertical-align:middle;}
   .mist .r.tp{color:#7a6a52; margin-top:2px;}
   .mist .r.tp::before{content:'기억하기'; display:inline-block; margin-right:6px; padding:0 6px; border-radius:3px; background:rgba(245,197,24,.7); color:#1b1916; font-size:11px; font-weight:700;}
   .rtab{width:100%; border-collapse:collapse; font-size:15px; margin-bottom:6px;}
   .rtab th{text-align:left; font-size:12px; color:#7a6a52; border-bottom:2px solid #2a2219; padding:4px 6px;}
   .rtab td{padding:6px; border-bottom:1px solid rgba(42,34,25,.18);}
   .rtab tr.me td{background:rgba(245,197,24,.35);}
-  .rtab tr:first-child td.n:first-child{color:#a77b00;}
+  .rtab tr.r1 td.n:first-child{color:#a77b00;} .rtab tr.r2 td.n:first-child{color:#6c7480;} .rtab tr.r3 td.n:first-child{color:#9a5a2b;}
+  .rtab tr.r1 td.n:first-child,.rtab tr.r2 td.n:first-child,.rtab tr.r3 td.n:first-child{font-size:22px;}
   .rtab td.n{font-family:'Do Hyeon',sans-serif; font-size:18px;}
   .resBtns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px;}
   .resBtns .big{width:auto;}
@@ -311,9 +320,10 @@
   .toast.on{opacity:1; transform:translateX(-50%);}
   .shake{animation:shake .35s;}
   @keyframes shake{20%{transform:translateX(-7px);} 40%{transform:translateX(6px);} 60%{transform:translateX(-4px);} 80%{transform:translateX(3px);}}
+  @media(min-width:601px) and (max-width:1000px){ .lane{height:236px;} }
   @media(max-width:600px){
     .opt{padding:9px 8px; min-height:48px;}
-    .lane{height:250px;} .slipBox{width:calc(100% - 70px);} .lane .bin,.lane .press{width:26px;}
+    .lane{height:250px;} .slipBox{width:calc(100% - 80px);} .lane .bin,.lane .press{width:26px;}
     .tools{grid-template-columns:1fr; padding:10px;} .hud .gauge b{font-size:24px;}
     .stamp{font-size:22px; right:6px; padding:3px 12px;}
     .w{padding:7px 8px; min-height:40px;} .words{gap:4px 4px;}
@@ -416,6 +426,7 @@
         <div class="lane" id="lane">
           <div class="bin"></div><div class="press"></div>
           <div class="slipBox" id="slipBox"><div class="slip" id="slip"><div class="holes"></div><span class="no" id="slipNo"></span><div class="words" id="words"></div><div class="stamp" id="stamp"></div></div></div>
+          <div class="gain" id="gain" aria-hidden="true"></div>
           <div class="rollers" id="rollers"></div><div class="legs"></div><div class="rail"></div>
         </div>
         <div class="timeStrip"><i id="slipTime"></i></div>
@@ -654,6 +665,9 @@ var ITEMS = [
 ['밥 {먹을때|먹을 때|먹을 떄,머글 때} 떠들지 마.','W',"'때'는 시간을 뜻하는 명사라 앞말과 띄어 써요.","'밥 먹을 때, 학교 갈 때'. '때'는 늘 띄어요."],
 ['이 공책은 {만원이야|만 원이야|만 원 이야,마눤이야}.','W',"돈을 세는 '원'은 단위라 숫자와 띄어 써요. 그런데 '이야'는 조사라 붙여요.","'천 원, 만 원'은 띄어요. 단위 뒤의 '이야'는 붙여요."],
 ['{그동안 에|그동안에|그 동안 에,그동아네} 많이 컸구나.','W',"'그동안'은 한 단어라 붙여 쓰고, '에'는 조사라 붙여 써요.","'그동안, 오랫동안'은 붙이고, '그 사이'는 띄어요."],
+['교실에 학생이 {스무명이|스무 명이|스무 맹이,스뭄명이} 있다.','W',"사람을 세는 '명'은 단위를 나타내는 의존 명사라 숫자와 띄어 써요.","한 명, 두 명, 스무 명. '개, 마리, 권'도 숫자와 띄어요."],
+['집에 {가는대로|가는 대로|가는데로,간는 대로} 전화할게.','W',"'-는 대로'의 '대로'는 의존 명사라 앞말과 띄어 써요. 명사 뒤의 '대로'는 조사라 붙여요.","'가는 대로, 본 대로'는 띄고, '법대로, 약속대로'는 붙여요."],
+['비 {때 문에|때문에|떄문에,때문애} 소풍이 취소됐다.','W',"'때문'은 한 단어라 '때'와 '문'을 갈라 쓰지 않아요. 앞말과는 띄어 써요.","'비 때문에, 너 때문에'. '때문'은 늘 붙여 적어요."],
 
 ['나는 결코 그 일을 {잊을 것이다|잊지 않을 것이다|잊겠다,잊을 거다}.','H',"'결코'는 '-지 않다' 같은 부정하는 말과 짝을 이뤄요.","'결코·절대로·전혀'는 부정과 같이 와요."],
 ['내 꿈은 과학자가 {되고 싶다|되는 것이다|되고 싶어,되겠다}.','H',"'내 꿈은'으로 시작했으니 '~것이다'처럼 명사로 끝나야 어울려요.","'~은 ~것이다, ~은 ~이다'로 짝을 맞춰요."],
@@ -668,6 +682,10 @@ var ITEMS = [
 ['모름지기 학생은 열심히 {공부한다|공부해야 한다|공부했다,공부하겠다}.','H',"'모름지기'는 '-해야 한다'처럼 당연한 도리를 말할 때 어울려요.","'모름지기 ~해야 한다'로 짝을 맞춰요."],
 ['나는 그다지 배가 {고프다|고프지 않다|고팠다,고프겠다}.','H',"'그다지'는 부정하는 말과 어울려요. '그다지 ~지 않다'처럼 써요.","'그다지, 별로, 전혀'는 뒤에 부정이 와요."],
 ['설령 내일 비가 {와서|오더라도|오니까,오므로} 소풍은 간다.','H',"'설령'은 '-더라도, -ㄹ지라도'와 어울려요. 사실이 그렇다 해도 결과는 같다는 뜻이에요.","'설령 ~더라도'로 짝을 맞춰요."],
+['도무지 이 문제를 {풀 수 있다|풀 수 없다|풀 것이다,풀었다}.','H',"'도무지'는 '-ㄹ 수 없다, -지 않다'처럼 부정하는 말과 어울려요.","'도무지, 좀처럼, 전혀'는 뒤에 부정이 와요."],
+['좀처럼 비가 {온다|오지 않는다|왔다,올 것이다}.','H',"'좀처럼'은 '-지 않다'처럼 부정하는 말과 어울려요. 쉽게는 그렇지 않다는 뜻이에요.","'좀처럼 ~지 않는다'로 짝을 맞춰요."],
+['마치 구름 위를 걷는 {것이다|것 같다|것이었다,것이니}.','H',"'마치'는 '-ㄴ 것 같다, -ㄴ 듯하다'처럼 비슷하다는 말과 어울려요.","'마치 ~같다, 마치 ~듯하다'로 짝을 맞춰요."],
+['제발 나를 좀 {도와줬다|도와줘|도와줄 것이다,도왔다}.','H',"'제발'은 '-해 줘, -해 주세요'처럼 간절히 바라는 말과 어울려요.","'제발 ~해 줘'. 부탁의 말과 짝을 이뤄요."],
 
 ['할머니께서 방에 {있다|계신다|있는다,있으셔다}.','P',"웃어른이 어디에 있을 때는 '계시다'를 써요. '있다'의 높임말이에요.","'있다 → 계시다', '먹다 → 드시다', '자다 → 주무시다'."],
 ['선생님, 제가 먼저 {말할게|말씀드릴게요|말씀하실게요,말하실게요}.','P',"내가 윗사람에게 말할 때는 '말씀드리다'로 나를 낮춰요. 내 행동에 '-시-'를 붙이면 안 돼요.","'말씀하시다'는 윗사람의 말, '말씀드리다'는 내 말이에요."],
@@ -680,6 +698,10 @@ var ITEMS = [
 ['주말에 {할머니 집에|할머니 댁에|할머니 덱에,할머니 집께} 놀러 갔다.','P',"웃어른의 집은 '댁'이라고 해요. '집'의 높임말이에요.","'집 → 댁', '밥 → 진지', '말 → 말씀'."],
 ['{저희 나라는|우리나라는|저의 나라는,저희나라는} 작지만 아름답습니다.','P',"나라는 낮추지 않으니 '우리나라'라고 해요. '저희'는 윗사람 앞에서 나를 낮추는 말이에요.","'저희 나라'는 어색하고 '우리나라'가 맞아요."],
 ['아버지, 할아버지께서 {오라고 했어요|오라고 하셨어요|오라고 하셨다,오라셔요}.','P',"말씀하신 분이 할아버지라서 '하셨어요'로 높여요. 아버지께는 '-어요'로 존대해요.","높이는 분이 둘이면 둘 다 맞춰요. '할아버지께서 ~하셨어요'."],
+['할머니께서 우리에게 용돈을 {줬다|주셨다|드렸다,드리셨다}.','P',"용돈을 주는 사람이 할머니라서 '주셨다'로 높여요. '드리다'는 내가 윗사람에게 줄 때만 써요.","'할머니께서 주셨다', '할머니께 드렸다'. 누가 하는지 먼저 봐요."],
+['선생님께서 어제 교실에 {왔다|오셨다|오시다,오셨다가}.','P',"행동하는 사람이 선생님이라서 '-시-'를 넣어 '오셨다'로 높여요. 어제 일이라 과거로 써요.","높일 사람이 주어이면 '-(으)시-'를 붙여요. 오다 → 오시다."],
+['선생님, 이 책 {내가|제가|저가,나가} 읽어도 돼요?','P',"윗사람 앞에서는 나를 낮춰 '저'라고 해요. '저'에 '가'가 붙으면 '제가'가 돼요.","나 → 저, 내가 → 제가, 나는 → 저는. 이렇게 바꿔요."],
+['교장 선생님께서 학생들에게 {말했다|말씀하셨다|말씀드렸다,말하셨다}.','P',"말하는 사람이 교장 선생님이라서 '말씀하시다'로 높여요. '말씀드리다'는 내가 윗사람께 말할 때 써요.","윗사람이 말하면 '말씀하시다', 내가 윗사람께 말하면 '말씀드리다'예요."],
 
 ['오랫동안 기다렸지만 버스가 오지 않았다.','N',"'오랫동안'은 한 단어라 붙여 써요. '-지 않다'의 '않'도 맞는 표기예요.","'오랜만'과 '오랫동안'은 'ㅅ' 유무가 달라요."],
 ['우리는 오랜만에 공원에서 만났다.','N',"'오래간만'을 줄인 '오랜만'이에요. 사이에 'ㅅ'이 없어요.","오랜만에 만났다. 오랫동안 기다렸다."],
@@ -710,7 +732,10 @@ var ITEMS = [
 ['중학생이 돼서 정말 기쁘다.','N',"'되어서'를 줄이면 '돼서'예요.","'되어'로 바꿔도 말이 되면 '돼'예요."],
 ['지각한 까닭은 늦잠을 잤기 때문이다.','N',"'까닭은'과 '-기 때문이다'가 짝을 맞춰요.","'~한 까닭은 ~기 때문이다'."],
 ['내 꿈은 과학자가 되는 것이다.','N',"'내 꿈은'과 '~되는 것이다'가 짝을 맞춰요.","'꿈은 ~것이다'로 끝나야 해요."],
-['모르는 것은 선생님께 여쭤보자.','N',"윗사람에게 물을 때는 '여쭤보다'가 맞아요.","'묻다 → 여쭙다'로 높여요."]
+['모르는 것은 선생님께 여쭤보자.','N',"윗사람에게 물을 때는 '여쭤보다'가 맞아요.","'묻다 → 여쭙다'로 높여요."],
+['교실에 학생이 스무 명 있다.','N',"사람을 세는 '명'은 숫자와 띄어 써서 '스무 명'이 맞아요.","한 명, 스무 명처럼 숫자와 단위는 띄어요."],
+['집에 가는 대로 전화할게.','N',"'-는 대로'의 '대로'는 의존 명사라 띄어 써요.","'가는 대로'는 띄어 써요."],
+['비 때문에 소풍이 취소됐다.','N',"'때문'은 한 단어라 갈라 쓰지 않고, 앞말과는 띄어 써요.","'비 때문에'처럼 '때문에'는 붙여 적어요."]
 ];
 var MAX_PLAYERS = 40, PREFIX = 'ff-munjang-', CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', LIVES = 3;
 var $ = function(id){ return document.getElementById(id); };
@@ -1079,7 +1104,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
     $('gThirdL').textContent = tr(timed()?'남은 시간':'목숨');
     $('gBoard').innerHTML=''; $('gMeRank').textContent='';
     hud(); show('sGame');
-    $('words').innerHTML=''; $('memo').classList.add('hide'); $('stamp').className='stamp'; $('slip').className='slip'; $('slipBox').style.opacity='0'; setTools(null);
+    $('words').innerHTML=''; $('memo').classList.add('hide'); $('stamp').className='stamp'; $('slip').className='slip'; $('gain').className='gain'; $('slipBox').style.opacity='0'; setTools(null);
     if(cdMs>0) timers.push(setTimeout(nextSlip, cdMs)); else nextSlip();
   } else { $('wCode').textContent=S.code; show('sWatch'); }
   if(cdMs>0){
@@ -1134,15 +1159,18 @@ function nextSlip(){
   $('gNo').textContent='#'+String(S.n+1).padStart(3,'0');
   $('slipNo').textContent=tr('작업 지시서')+' '+String(S.n+1).padStart(3,'0');
   $('words').innerHTML=p.words.map(function(w,i){ return '<button class="w" data-i="'+i+'">'+esc(w.t)+'</button>'; }).join('');
-  $('stamp').className='stamp'; $('slip').className='slip';
+  $('stamp').className='stamp'; $('slip').className='slip'; $('gain').className='gain';
   setTools(null); $('passBtn').disabled=false; lamps('run');
   // slide in from the right, drift across the belt, fall into the bin at the left
   var sb=$('slipBox');
   sb.style.transition='none'; sb.style.opacity='1'; sb.style.transform='translateX(60vw)'; void sb.offsetWidth;
-  sb.style.transition='transform .45s cubic-bezier(.2,.8,.3,1)'; sb.style.transform='translateX(-42%)';
-  timers.push(setTimeout(function(){ if(!cur || cur.p!==p || cur.done) return; sb.style.transition='transform '+dur+'ms linear'; sb.style.transform='translateX(-58%)'; }, 460));
+  // the slip drifts only as far as the gap between the press and the bin allows, so no word ever hides behind them
+  var drift=Math.max(0, ($('lane').clientWidth-2*$('lane').querySelector('.press').offsetWidth-sb.offsetWidth)/2-4);
+  sb.style.transition='transform .45s cubic-bezier(.2,.8,.3,1)'; sb.style.transform='translateX(calc(-50% + '+Math.round(drift)+'px))';
+  timers.push(setTimeout(function(){ if(!cur || cur.p!==p || cur.done) return; sb.style.transition='transform '+dur+'ms linear'; sb.style.transform='translateX(calc(-50% - '+Math.round(drift)+'px))'; }, 460));
   $('rollers').classList.add('run');
-  var ts=$('slipTime'); ts.style.transition='none'; ts.style.width='100%'; void ts.offsetWidth; ts.style.transition='width '+(dur+450)+'ms linear'; ts.style.width='0%';
+  var ts=$('slipTime'); ts.classList.remove('late'); ts.style.transition='none'; ts.style.width='100%'; void ts.offsetWidth; ts.style.transition='width '+(dur+450)+'ms linear'; ts.style.setProperty('transition-duration',(dur+450)+'ms','important'); ts.style.width='0%';
+  timers.push(setTimeout(function(){ if(cur && cur.p===p && !cur.done) ts.classList.add('late'); }, Math.round((dur+450)*.7)));
   clearTimeout(slipT); slipT=setTimeout(function(){ if(cur && cur.p===p && !cur.done) resolve(false, 'time'); }, dur+450);
 }
 function setTools(opts){
@@ -1170,6 +1198,8 @@ $('tools').addEventListener('click', function(e){
 $('passBtn').onclick=function(){ if(!cur || cur.done || S.phase!=='play') return; resolve(!cur.p.err, cur.p.err?'pass':'clean'); };
 document.addEventListener('keydown', function(e){
   if(!$('sGame').classList.contains('on') || !cur) return;
+  // a button reached with the keyboard keeps its own Enter/Space behaviour
+  if((e.key==='Enter' || e.key===' ') && e.target && e.target.matches && e.target.matches('button:focus-visible')) return;
   if(cur.done){ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); nextSlip(); } return; }
   if(/^[1-3]$/.test(e.key)){ var o=document.querySelectorAll('#tools .opt')[+e.key-1]; if(o) o.click(); }
   else if(e.key==='Enter' || e.key===' '){ e.preventDefault(); $('passBtn').click(); }
@@ -1182,7 +1212,7 @@ function resolve(good, how){
   var sb=$('slipBox'), m=new DOMMatrixReadOnly(getComputedStyle(sb).transform);
   sb.style.transition='none'; sb.style.transform='translateX('+m.m41+'px)';
   $('rollers').classList.remove('run');
-  var ts=$('slipTime'); ts.style.transition='none'; ts.style.width=getComputedStyle(ts).width;
+  var ts=$('slipTime'); ts.classList.remove('late'); ts.style.transition='none'; ts.style.width=getComputedStyle(ts).width;
   $('passBtn').disabled=true;
   var c=S.cat[p.cat]||(S.cat[p.cat]={ok:0,all:0}); c.all++;
   var gain=0;
@@ -1190,6 +1220,7 @@ function resolve(good, how){
     gain=100+Math.round(50*frac)+Math.min(S.combo,10)*10;
     S.score+=gain; S.ok++; S.combo++; S.best=Math.max(S.best,S.combo); c.ok++; S.lastOk=Date.now();
     var pp=$('gPop'); pp.textContent='+'+gain; pp.classList.remove('go'); void pp.offsetWidth; pp.classList.add('go');
+    var gn=$('gain'); gn.textContent='+'+gain; gn.className='gain'+(S.combo>=4?' hot':''); void gn.offsetWidth; gn.classList.add('go');
     if(how==='fix') document.querySelectorAll('#words .w.sel').forEach(function(x,k){ x.classList.remove('sel'); x.classList.add('fix'); if(k===0) x.textContent=fixedWord(p); else x.remove(); });
     lamps('ok');
   } else {
@@ -1238,7 +1269,9 @@ function memo(p, good, how){
     +(p.tip ? '<div class="tip" data-kr><b>'+esc(tr('기억하기'))+'</b>'+esc(p.tip)+'</div>' : '')
     +'<button class="next">'+tr('다음 ▶')+'</button>';
   void el.offsetWidth;
-  setTimeout(function(){ try{ el.scrollIntoView({ block:'nearest', behavior:'auto' }); }catch(e){} }, 60);
+  // let the stamp land first, then bring the memo into view
+  var calm=false; try{ calm=matchMedia('(prefers-reduced-motion:reduce)').matches; }catch(e){}
+  setTimeout(function(){ if(el.classList.contains('hide')) return; try{ el.scrollIntoView({ block:'nearest', behavior:calm?'auto':'smooth' }); }catch(e){} }, calm?60:620);
   el.querySelector('.next').onclick=function(){ nextSlip(); };
 }
 
@@ -1305,14 +1338,14 @@ function showResult(r){
     $('rRank').innerHTML=r.map(function(e){
       var me = e.t===token || (S.role==='guest' && e.n===S.name), a=e.ok+e.m;
       var bd = (S.role==='host' ? (S.teacher && e.t===token) : (S.hostOk && e.u && e.u===S.hostUid)) ? '<span class="tbadge">'+esc(window.EduTeacher?EduTeacher.BADGE:'✅ 선생님')+'</span>' : '';
-      return '<tr'+(me?' class="me"':'')+'><td class="n">'+e.r+'</td><td>'+esc(e.n)+bd+'</td><td class="n">'+e.s+'</td><td>'+a+'</td><td>'+(a?Math.round(e.ok/a*100)+'%':'-')+'</td></tr>';
+      return '<tr class="'+(me?'me ':'')+(e.r<=3?'r'+e.r:'')+'"><td class="n">'+e.r+'</td><td>'+esc(e.n)+bd+'</td><td class="n">'+e.s+'</td><td>'+a+'</td><td>'+(a?Math.round(e.ok/a*100)+'%':'-')+'</td></tr>';
     }).join('');
   }
   var seen={}, list=S.log.filter(function(x){ if(seen[x.p.disp]) return false; seen[x.p.disp]=1; return true; });
   $('rMistH').classList.toggle('hide', !played);
   $('rMist').innerHTML = !played ? '' : list.length ? list.map(function(x){
     var p=x.p, s = p.err ? esc(p.disp.slice(0,p.a))+'<del>'+esc(p.wrong)+'</del> <ins>'+esc(p.right)+'</ins>'+esc(p.disp.slice(p.b)) : esc(p.disp)+' <ins>✓</ins>';
-    return '<div><div class="s" data-kr>'+s+'</div><div class="r" data-kr>'+esc(p.rule || '이 문장은 고칠 곳이 없었어요.')+'</div>'+(p.tip?'<div class="r tp" data-kr>'+esc(p.tip)+'</div>':'')+'</div>';
+    return '<div><div class="s" data-kr><span class="mc">'+esc(tr(CATS[p.cat]))+'</span>'+s+'</div><div class="r" data-kr>'+esc(p.rule || '이 문장은 고칠 곳이 없었어요.')+'</div>'+(p.tip?'<div class="r tp" data-kr>'+esc(p.tip)+'</div>':'')+'</div>';
   }).join('') : '<div style="border-color:#2c8a52">'+esc(tr('틀린 문장이 없어요. 완벽한 작업이에요!'))+'</div>';
   $('againBtn').classList.toggle('hide', S.role==='guest');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';

@@ -204,6 +204,11 @@
   @media(max-width:520px){ .paper{padding:20px 18px 18px;} .paper .tag{margin-right:84px; font-size:12px; letter-spacing:.06em;} .paper .stamp{font-size:20px; right:12px; top:16px;} .case::after{background-size:44px; background-position:right 12px top 12px;} #sResult .desk{padding:26px 16px 20px;} .rstamp{font-size:15px; right:12px; top:12px;} .opt{font-size:16px;} .code{letter-spacing:.08em;} }
   @media (prefers-reduced-motion:reduce){ .opt,.paper .exp,.wr,#sResult .big .sc{animation:none !important;} .paper .stamp.ok,.paper .stamp.no{opacity:.9; transform:rotate(-10deg) !important;} .rstamp{opacity:.88;} }
   .tb{font-style:normal; font-size:11px; font-weight:700; color:#1d5f3b; background:rgba(47,138,87,.18); border:1px solid rgba(47,138,87,.55); border-radius:99px; padding:0 7px; margin-left:6px; white-space:nowrap; flex:none; line-height:1.6;} .rrow .tb{margin-left:0;} #sResult .tb{color:#1d5f3b;} .chips span .tb{border-radius:99px; padding:0 7px; font-size:11px; background:rgba(47,138,87,.18);}
+  /* 3차: 폰 도장 겹침, 오답 노트 줄바꿈 */
+  .wr .mine,.wr .ans{display:inline-block; max-width:100%; vertical-align:top;}
+  .paper .exp .k{margin-right:10px;}
+  .paper .exp .bn:first-child{margin-top:0;}
+  @media(max-width:520px){ .case{padding:30px 18px 66px;} #sResult .desk{padding-top:58px;} .rstamp{right:14px; top:16px;} }
   #clsShow{margin:6px 0 2px; font-weight:700; color:var(--brass); overflow-wrap:anywhere;}
 </style>
 <script src="../teacher.js" defer></script>
@@ -999,7 +1004,7 @@ function pick(i){
   $('stamp').textContent=tr(ok?'해결':'미제'); $('stamp').className='stamp '+(ok?'ok':'no');
   if(!ok&&endless()){ S.lives--; lost=true; }
   var note=ok?esc(tr('정답 +{0}점',100)+(bonus?' · '+tr('빠른 수사 보너스 +{0}점',bonus):'')):esc(tr('정답은 초록색 보기예요.'))+(lost?'<br>'+esc(tr(S.lives>0?'목숨이 하나 줄었어요 (남은 목숨 {0}개)':'목숨을 모두 잃었어요',S.lives)):'');
-  $('gExp').innerHTML='<b>'+esc(c.full)+'</b><span class="k">'+esc(tr('뜻'))+'</span>'+esc(c.meaning)+'<span class="bn'+(ok?'':' bad')+'">'+note+'</span>'; $('gExp').className='exp on';
+  $('gExp').innerHTML='<span class="k">'+esc(tr('뜻'))+'</span>'+esc(c.meaning)+'<span class="bn'+(ok?'':' bad')+'">'+note+'</span>'; $('gExp').className='exp on';
   if(ok){ var g=$('gain'); g.textContent='+'+(100+bonus); g.classList.remove('on'); void g.offsetWidth; g.classList.add('on'); }
   else{ var pp=$('paper'); pp.classList.remove('shake'); void pp.offsetWidth; pp.classList.add('shake'); buzz(); }
   S.cur++; dirtyScore=true; hud(); boardDirty=true;
@@ -1040,6 +1045,9 @@ function pushBoard(){
 }
 function renderMyBoard(){ var b=S.board; if(!b) return; $('gBoard').innerHTML=b.top.map(function(e){ return rowHtml(e,b.me&&e.r===b.me.r&&e.n===S.name); }).join(''); if(b.me) $('gMeRank').innerHTML=tr('내 순위 <b>{0}</b>위 / {1}명',b.me.r,b.n); }
 function finishRound(){ clearTimers(); $('cd').classList.remove('on'); S.phase='result'; if(S.role==='solo'){ showResult(null); return; } var r=ranking(); broadcast(Object.assign({t:'end',ranking:r},tInfo())); showResult(r); }
+function countUp(el,v){ var rm=false; try{ rm=matchMedia('(prefers-reduced-motion:reduce)').matches; }catch(e){}
+  if(rm||v<=0){ el.textContent=v; return; } var t0=performance.now(), D=Math.min(1100,500+v*0.8); el.textContent=0;
+  (function f(n){ var k=Math.min(1,(n-t0)/D); el.textContent=Math.round(v*(1-Math.pow(1-k,3))); if(k<1) requestAnimationFrame(f); else el.textContent=v; })(t0); }
 function showResult(rk){
   clearTimers(); S.phase='result'; $('cd').classList.remove('on');
   var total=endless()?S.cur:S.cases.length, sid=S.settings.stage;
@@ -1047,7 +1055,7 @@ function showResult(rk){
   if(solved>0) sub+=' · '+tr('정답률 {0}%',Math.round(S.right/solved*100));
   if(S.bonus>0) sub+='\n'+tr('빠른 수사 보너스 {0}점',S.bonus);
   if(!endless()&&iPlay()&&solved<total) sub+='\n'+tr('시간이 끝나 {0}건은 풀지 못했어요',total-solved);
-  $('rScore').textContent=S.score; $('rSub').textContent=sub; var oldNb=document.querySelector('#sResult .nb'); if(oldNb) oldNb.remove();
+  countUp($('rScore'),S.score); $('rSub').textContent=sub; var oldNb=document.querySelector('#sResult .nb'); if(oldNb) oldNb.remove();
   if(S.role==='solo'){ var prevBest=bestGet()[sid]||0; bestSet(sid,S.score); var b=bestGet()[sid]||0; $('rTitle').textContent=tr('{0} · 최고 {1}점',tr(STAGEDEF[sid].n),b); $('rRank').innerHTML='';
     if(S.score>0&&S.score>prevBest){ var nb=document.createElement('div'); nb.className='nb'; nb.textContent=tr('새 최고 기록!'); $('rSub').insertAdjacentElement('afterend',nb); } }
   else{ T.rk=rk||[]; T.at=new Date(); T.sub=sub; paintRank(); }
