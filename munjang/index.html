@@ -74,11 +74,16 @@
   .badge .clip{width:56px; height:12px; border-radius:0 0 8px 8px; background:#8f877c; margin:0 auto; box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);}
   .badge .top{background:var(--yel); padding:8px 16px; display:flex; justify-content:space-between; align-items:center; font-family:'Do Hyeon',sans-serif; font-size:16px;}
   .badge .body{padding:16px; display:grid; grid-template-columns:70px minmax(0,1fr); gap:14px; align-items:center;}
-  .badge .ph{width:70px; height:84px; border-radius:6px; background:#d8c49c; display:grid; place-items:center; font-size:40px; border:2px dashed #b39c70;}
+  .badge .ph{width:70px; height:84px; border-radius:4px; background:#d8c49c; overflow:hidden; border:2px solid #b39c70; box-shadow:0 2px 0 rgba(0,0,0,.18);}
+  .badge .ph svg{display:block; width:100%; height:100%;}
+  .badge::after{content:''; position:absolute; inset:0; background:linear-gradient(115deg, transparent 38%, rgba(255,255,255,.28) 46%, transparent 54%); pointer-events:none;}
   .badge label{display:block; font-size:12px; color:#7a6a52; font-weight:700; letter-spacing:.08em;}
   .nrow{display:flex; gap:6px; margin-top:4px;}
   .nrow input{flex:1; min-width:0; border:0; border-bottom:2px solid #7a6a52; background:transparent; padding:6px 2px; font-size:19px; font-family:'Gowun Batang',serif; font-weight:700; color:var(--pink); outline:none;}
-  .nrow button{border:0; background:#2a2219; color:var(--paper); border-radius:6px; width:38px; font-size:18px;}
+  .nrow button{border:0; background:#2a2219; color:var(--paper); border-radius:6px; width:40px; min-height:40px; display:grid; place-items:center; box-shadow:0 3px 0 #0e0d0b; transition:transform .06s;}
+  .nrow button:active{transform:translateY(2px); box-shadow:0 1px 0 #0e0d0b;}
+  .badge .info{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin:0 16px 14px; padding-top:12px; border-top:1px dashed #b39c70;}
+  .badge .info div{min-width:0;} .badge dt{font-size:11px; color:#7a6a52; font-weight:700; letter-spacing:.08em;} .badge dd{margin:1px 0 0; font-family:'Gowun Batang',serif; font-weight:700; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .badge .bar{height:26px; background:repeating-linear-gradient(90deg,#2a2219 0 2px,transparent 2px 4px,#2a2219 4px 7px,transparent 7px 9px,#2a2219 9px 10px,transparent 10px 13px); margin:0 16px 14px; opacity:.75;}
   .ctl{display:grid; gap:12px; grid-template-columns:minmax(0,1fr);}
   .big{display:flex; align-items:center; gap:14px; width:100%; text-align:left; border:0; border-radius:10px; padding:16px 18px; background:linear-gradient(180deg,#3a352f,#2b2723); box-shadow:inset 0 1px 0 rgba(255,255,255,.08), 0 5px 0 #11100e, 0 10px 18px rgba(0,0,0,.35); transition:transform .08s, box-shadow .08s;}
@@ -122,14 +127,19 @@
 
   /* ---------- game ---------- */
   .hud{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin-bottom:14px;}
-  .gauge{background:#141210; border:1px solid var(--line); border-radius:8px; padding:8px 12px; position:relative; overflow:hidden;}
+  .gauge{background:linear-gradient(180deg,#0f0e0c,#181613); border:1px solid var(--line); border-radius:8px; padding:8px 12px; position:relative; overflow:hidden; box-shadow:inset 0 2px 6px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.04); transition:border-color .2s, box-shadow .2s;}
+  .gauge.bump b{animation:bump .32s ease-out; display:inline-block; transform-origin:left center;}
+  @keyframes bump{40%{transform:scale(1.22);} }
+  .gauge.hot{border-color:var(--yel2); box-shadow:inset 0 2px 6px rgba(0,0,0,.6), 0 0 14px rgba(245,197,24,.28);}
   .gauge small{display:block; font-size:12px; color:var(--mute); letter-spacing:.06em;}
   .gauge b{font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:30px; line-height:1.1; color:var(--yel);}
   .gauge.low b{color:var(--rust); animation:blink .5s infinite alternate;}
   @keyframes blink{to{opacity:.4;}}
   .lives{display:flex; gap:6px; margin-top:4px;}
   .lives i{width:24px; height:24px; border-radius:50%; background:radial-gradient(circle at 40% 35%,#ffe066,var(--yel) 60%,var(--yel2)); box-shadow:0 0 0 2px #1b1916, 0 0 0 3px #4b443c; display:grid; place-items:center; font-style:normal; font-size:13px; color:#1b1916;}
-  .lives i.off{background:#3a342e; color:#5c544a;}
+  .lives i.off{background:#3a342e; color:#5c544a; box-shadow:0 0 0 2px #1b1916, 0 0 0 3px #3a342e;}
+  .lives i.lost{animation:lostGear .7s ease-out;}
+  @keyframes lostGear{0%{background:var(--rust); color:#fff; transform:scale(1.5) rotate(0);} 100%{transform:scale(1) rotate(200deg);} }
   .gbar{position:absolute; left:0; bottom:0; height:4px; background:var(--yel); transition:width .2s linear;}
   .pop{position:absolute; right:12px; top:8px; font-family:'Do Hyeon',sans-serif; color:var(--ok); font-size:20px; opacity:0;}
   .pop.go{animation:pop .8s ease;}
@@ -138,54 +148,90 @@
   .gameRow.solo{grid-template-columns:1fr;}
   @media(max-width:860px){ .gameRow{grid-template-columns:1fr;} .side{order:2;} }
   .floor{position:relative; background:#141210; border:1px solid var(--line); border-radius:12px; overflow:hidden; padding:0 0 0;}
-  .machine{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:linear-gradient(180deg,#2e2a25,#221f1b); border-bottom:2px solid #0e0d0b;}
+  .machine{display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:linear-gradient(180deg,#38332d,#221f1b); border-bottom:2px solid #0e0d0b; box-shadow:inset 0 1px 0 rgba(255,255,255,.09);}
   .machine .tag{font-family:'Do Hyeon',sans-serif; color:var(--yel); font-size:16px; letter-spacing:.06em;}
   .machine .lamp{width:12px; height:12px; border-radius:50%; background:#5c544a; display:inline-block; margin-left:6px; vertical-align:middle;}
   .machine .lamp.g{background:var(--ok); box-shadow:0 0 10px var(--ok);}
   .machine .lamp.r{background:var(--rust); box-shadow:0 0 10px var(--rust);}
   .machine .lamp.y{background:var(--yel); box-shadow:0 0 10px var(--yel);}
-  .lane{position:relative; height:200px; overflow:hidden;}
-  .lane .rollers{position:absolute; left:0; right:0; bottom:22px; height:22px; background:repeating-linear-gradient(90deg,#3d3731 0 26px,#211e1a 26px 30px); border-top:3px solid #0e0d0b; border-bottom:3px solid #0e0d0b;}
+  .lane{position:relative; height:200px; overflow:hidden;
+    background:
+      radial-gradient(ellipse 52% 70% at 50% 0%, rgba(245,197,24,.16), transparent 70%),
+      repeating-linear-gradient(90deg, transparent 0 139px, rgba(255,255,255,.035) 139px 140px, rgba(0,0,0,.35) 140px 141px),
+      linear-gradient(180deg,#1c1915 0, #151311 46%, #100f0d 100%);}
+  .lane::before{content:''; position:absolute; left:0; right:0; top:0; height:9px; background:repeating-linear-gradient(-45deg,#d9a400 0 10px,#161411 10px 20px); opacity:.5; box-shadow:0 3px 6px rgba(0,0,0,.5);}
+  .lane .rollers{position:absolute; left:0; right:0; bottom:22px; height:24px; z-index:1;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 25px, #0b0a09 25px 26px, #1a1713 26px 29px, #0b0a09 29px 30px),
+      linear-gradient(180deg,#6a6258 0, #4a443c 22%, #34302a 55%, #1d1a16 100%);
+    border-top:3px solid #0e0d0b; border-bottom:3px solid #0e0d0b; box-shadow:0 -1px 0 rgba(255,255,255,.07);}
   .lane .rollers.run{animation:roll2 .5s linear infinite;}
-  @keyframes roll2{to{background-position:-30px 0;}}
-  .lane .legs{position:absolute; left:0; right:0; bottom:0; height:22px; background:repeating-linear-gradient(90deg,transparent 0 90px,#2b2723 90px 100px);}
-  .lane .bin{position:absolute; left:0; bottom:44px; width:38px; height:120px; background:repeating-linear-gradient(-45deg,var(--rust) 0 8px,#2a1a14 8px 16px); opacity:.55; border-radius:0 6px 0 0;}
-  .lane .press{position:absolute; right:0; bottom:44px; width:38px; height:150px; background:linear-gradient(90deg,#2f2a25,#3d3731); border-left:3px solid #0e0d0b;}
-  .slipBox{position:absolute; left:50%; bottom:50px; width:min(680px,calc(100% - 96px)); transform:translateX(-50%);}
-  .slip{position:relative; background:var(--paper); color:var(--pink); border-radius:3px; padding:26px 18px 16px; box-shadow:0 8px 0 rgba(0,0,0,.45), 0 0 0 1px #c9b48c inset;
-    background-image:repeating-linear-gradient(0deg, transparent 0 31px, rgba(120,90,40,.12) 31px 32px); will-change:transform;}
-  .slip .no{position:absolute; right:10px; top:4px; font-size:11px; color:#9b8763; letter-spacing:.1em;}
-  .slip .holes{position:absolute; left:6px; top:12px; bottom:12px; width:6px; background:radial-gradient(circle,#1b1916 2.5px,transparent 3px) 0 0/6px 18px repeat-y; opacity:.45;}
+  @keyframes roll2{to{background-position:-30px 0, 0 0;}}
+  .lane .legs{position:absolute; left:0; right:0; bottom:0; height:22px; background:repeating-linear-gradient(90deg,transparent 0 88px,#34302a 88px 92px,#26231f 92px 100px,transparent 100px 104px);}
+  .lane .rail{position:absolute; left:0; right:0; bottom:18px; height:6px; background:linear-gradient(180deg,#5b544a,#2a2621); border-top:1px solid #7a7165; box-shadow:0 3px 0 rgba(0,0,0,.5);}
+  .lane .bin{position:absolute; left:0; bottom:44px; width:38px; height:120px; background:repeating-linear-gradient(-45deg,var(--rust) 0 8px,#2a1a14 8px 16px); opacity:.6; border-radius:0 6px 0 0; box-shadow:inset -8px 0 10px rgba(0,0,0,.55), 3px 0 0 #0e0d0b; z-index:3;}
+  .lane .press{position:absolute; right:0; bottom:44px; width:38px; height:150px; background:linear-gradient(90deg,#2f2a25,#4a433b 60%,#3a342d); border-left:3px solid #0e0d0b; z-index:3; box-shadow:inset 6px 0 10px rgba(0,0,0,.4);}
+  .lane .press::before{content:''; position:absolute; left:6px; right:6px; top:12px; height:46px; border-radius:4px; background:repeating-linear-gradient(180deg,#14110e 0 4px,#2a2621 4px 8px); opacity:.9;}
+  .lane .press::after{content:''; position:absolute; left:15px; bottom:14px; width:10px; height:10px; border-radius:50%; background:var(--yel); box-shadow:0 0 10px var(--yel); opacity:.8;}
+  .slipBox{position:absolute; left:50%; bottom:50px; width:min(680px,calc(100% - 96px)); transform:translateX(-50%); z-index:2;}
+  .slipBox::after{content:''; position:absolute; left:4%; right:4%; bottom:-14px; height:16px; background:radial-gradient(ellipse at 50% 50%, rgba(0,0,0,.55), transparent 70%); z-index:-1;}
+  .slip{position:relative; background-color:var(--paper); color:var(--pink); border-radius:3px; padding:26px 18px 16px; transition:box-shadow .25s;
+    box-shadow:0 8px 0 rgba(0,0,0,.45), 0 0 0 1px #c9b48c inset, 0 1px 0 rgba(255,255,255,.5) inset;
+    background-image:repeating-linear-gradient(0deg, transparent 0 31px, rgba(120,90,40,.12) 31px 32px), url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='2' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .45 0 0 0 0 .33 0 0 0 0 .15 0 0 0 .09 0'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E");
+    will-change:transform;}
+  .slip::before{content:''; position:absolute; left:0; right:0; top:0; height:9px; border-radius:3px 3px 0 0; background:radial-gradient(circle at 6px 4.5px, rgba(42,34,25,.32) 1.7px, transparent 2.3px) 0 0/12px 9px repeat-x, linear-gradient(180deg, rgba(120,90,40,.12), transparent);}
+  .slip.is-ok{box-shadow:0 8px 0 rgba(0,0,0,.45), 0 0 0 1px #c9b48c inset, 0 0 26px rgba(76,178,118,.55);}
+  .slip.is-bad{box-shadow:0 8px 0 rgba(0,0,0,.45), 0 0 0 1px #c9b48c inset, 0 0 26px rgba(212,85,47,.6);}
+  .slip.thud{animation:thud .26s .16s ease-out;}
+  @keyframes thud{35%{transform:translateY(4px);} 70%{transform:translateY(-1px);} }
+  .slip .no{position:absolute; right:12px; bottom:4px; font-size:11px; color:#9b8763; letter-spacing:.1em;}
+  .slip .holes{position:absolute; left:6px; top:18px; bottom:12px; width:6px; background:radial-gradient(circle,#1b1916 2.5px,transparent 3px) 0 0/6px 18px repeat-y; opacity:.45;}
   .words{display:flex; flex-wrap:wrap; gap:6px 6px; padding-left:8px; font-family:'Gowun Batang',serif; font-weight:700; font-size:clamp(20px,3.4vw,28px); line-height:1.25;}
-  .w{border:0; background:transparent; padding:4px 6px; border-radius:4px; border-bottom:2px dotted rgba(42,34,25,.25); color:inherit; font-family:inherit; font-weight:inherit; font-size:inherit;}
+  .w{border:0; background:transparent; padding:4px 6px; border-radius:4px; border-bottom:2px dotted rgba(42,34,25,.25); color:inherit; font-family:inherit; font-weight:inherit; font-size:inherit; transition:background .12s, transform .08s;}
   .w:hover{background:rgba(245,197,24,.25);}
-  .w.sel{background:var(--yel); border-bottom-color:transparent; box-shadow:0 0 0 2px #1b1916;}
-  .w.bad{background:rgba(212,85,47,.25); text-decoration:line-through; text-decoration-color:var(--rust);}
-  .w.fix{background:rgba(76,178,118,.25); color:#1c5c35;}
-  .stamp{position:absolute; right:14px; top:-26px; transform:rotate(-9deg) scale(1.6); opacity:0; font-family:'Do Hyeon',sans-serif; font-size:30px; padding:4px 14px; border:4px solid currentColor; border-radius:8px; letter-spacing:.06em; pointer-events:none; background:rgba(241,228,200,.92); box-shadow:0 3px 8px rgba(0,0,0,.35);}
-  .stamp.go{animation:stamp .28s ease-out forwards;}
+  .w:active{transform:translateY(2px) scale(.97);}
+  .w.sel{background:linear-gradient(180deg, transparent 14%, #ffe066 14% 92%, transparent 92%); border-bottom-color:transparent; box-shadow:none; animation:hl .22s ease-out;}
+  @keyframes hl{from{transform:scale(1.12) rotate(-1.5deg);} }
+  .w.bad{background:transparent; color:#a53317; text-decoration:none; border-bottom-color:transparent; border-radius:48% 52% 46% 54% / 62% 46% 54% 40%; box-shadow:0 0 0 2.5px var(--rust); animation:pen .35s ease-out;}
+  @keyframes pen{from{box-shadow:0 0 0 0 var(--rust); transform:scale(1.25) rotate(-3deg);} }
+  .w.miss{background:rgba(42,34,25,.12); animation:wob .3s;}
+  @keyframes wob{25%{transform:translateX(-4px);} 50%{transform:translateX(4px);} 75%{transform:translateX(-2px);} }
+  .w.fix{background:rgba(76,178,118,.28); color:#1c5c35; border-bottom-color:transparent; animation:fixin .42s cubic-bezier(.2,1.6,.4,1);}
+  @keyframes fixin{0%{transform:scale(.7); background:rgba(76,178,118,.8);} 100%{transform:none;} }
+  .stamp{position:absolute; right:14px; top:-26px; transform:rotate(-9deg) scale(1.6); opacity:0; font-family:'Do Hyeon',sans-serif; font-size:30px; line-height:1.2; padding:4px 16px; border:4px solid currentColor; border-radius:8px; letter-spacing:.06em; pointer-events:none; background:transparent; mix-blend-mode:multiply; filter:url(#ink); z-index:2;}
+  .stamp::after{content:''; position:absolute; inset:3px; border:1.5px solid currentColor; border-radius:4px; opacity:.7;}
+  .stamp.go{animation:stamp .34s cubic-bezier(.3,.6,.4,1) forwards;}
   .stamp.ok{color:#2c8a52;} .stamp.pass{color:#2f6db3;} .stamp.bad{color:#c13e1c;}
-  @keyframes stamp{to{opacity:1; transform:rotate(-9deg) scale(1);}}
+  @keyframes stamp{0%{opacity:0; transform:rotate(-14deg) scale(2.6);} 55%{opacity:.95; transform:rotate(-9deg) scale(.92);} 78%{transform:rotate(-9deg) scale(1.04);} 100%{opacity:.93; transform:rotate(-9deg) scale(1);}}
   .timeStrip{height:10px; background:#0e0d0b; position:relative;}
   .timeStrip i{position:absolute; left:0; top:0; bottom:0; width:100%; background:repeating-linear-gradient(-45deg,var(--yel) 0 8px,#b38e00 8px 16px);}
   .tools{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:14px; background:#1f1c19; border-top:2px solid #0e0d0b; min-height:90px; align-items:stretch;}
-  .tools .hint{grid-column:1/-1; color:var(--mute); font-size:14px; align-self:center; text-align:center;}
-  .opt{border:0; border-radius:8px; padding:12px 8px; background:var(--paper2); color:var(--pink); font-family:'Gowun Batang',serif; font-weight:700; font-size:clamp(17px,2.6vw,22px); box-shadow:0 4px 0 #8b7550; transition:transform .06s;}
+  .tools .hint{grid-column:1/-1; color:var(--mute); font-size:14px; align-self:center; text-align:center; border:2px dashed #3a342e; border-radius:8px; padding:14px 10px;}
+  .opt{position:relative; border:0; border-radius:8px; padding:12px 34px; background:linear-gradient(180deg,#f0e0bd,var(--paper2)); color:var(--pink); font-family:'Gowun Batang',serif; font-weight:700; font-size:clamp(17px,2.6vw,22px); box-shadow:0 4px 0 #8b7550, inset 0 1px 0 rgba(255,255,255,.55); transition:transform .06s, filter .1s;}
   .opt:active{transform:translateY(3px); box-shadow:0 1px 0 #8b7550;}
-  .opt.right{background:#b9e6c9; box-shadow:0 4px 0 #5f9a77;} .opt.wrong{background:#f2b9a6; box-shadow:0 4px 0 #b6745f;}
-  .opt .kb{display:block; font-family:'Noto Sans KR',sans-serif; font-size:11px; color:#8b7550; font-weight:500;}
+  .opt.right{background:#b9e6c9; box-shadow:0 4px 0 #5f9a77; animation:optok .35s cubic-bezier(.2,1.5,.4,1);} .opt.wrong{background:#f2b9a6; box-shadow:0 4px 0 #b6745f; animation:wob .3s;}
+  @keyframes optok{0%{transform:scale(.94);} 100%{transform:none;}}
+  .opt .kb{position:absolute; left:9px; top:50%; transform:translateY(-50%); width:22px; height:22px; border-radius:50%; display:grid; place-items:center; background:#2a2219; color:var(--paper); font-family:'Noto Sans KR',sans-serif; font-size:12px; font-weight:700;}
   .passRow{display:flex; gap:10px; padding:0 14px 14px; background:#1f1c19;}
   .passBtn{flex:1; border:0; border-radius:10px; padding:14px; font-family:'Do Hyeon',sans-serif; font-size:24px; color:#fff; background:linear-gradient(180deg,#5aa6ec,var(--blue)); box-shadow:0 5px 0 #23568f; letter-spacing:.04em;}
   .passBtn:active{transform:translateY(4px); box-shadow:0 1px 0 #23568f;}
   .passBtn:disabled{opacity:.45;}
-  .memo{scroll-margin-bottom:64px; margin-top:14px; background:var(--paper); color:var(--pink); border-radius:4px; padding:12px 16px 46px 46px; position:relative; min-height:64px; box-shadow:0 5px 0 rgba(0,0,0,.35);}
-  .memo::before{content:'✎'; position:absolute; left:14px; top:10px; font-size:22px; color:#9b8763;}
-  .memo .h{font-family:'Do Hyeon',sans-serif; font-size:19px;}
+  .memo{scroll-margin-bottom:64px; margin-top:16px; background:linear-gradient(180deg,#f6ead0,var(--paper)); color:var(--pink); border-radius:3px; border-left:6px solid #9b8763; padding:16px 18px 54px 18px; position:relative; min-height:64px; box-shadow:0 6px 0 rgba(0,0,0,.35), 0 14px 22px rgba(0,0,0,.25); animation:memoIn .28s cubic-bezier(.2,.9,.3,1);}
+  .memo.ok{border-left-color:#2c8a52;} .memo.bad{border-left-color:#c13e1c;} .memo.pass{border-left-color:#2f6db3;}
+  @keyframes memoIn{from{opacity:0; transform:translateY(10px) rotate(-.6deg);} to{opacity:1; transform:none;}}
+  .memo::before{content:''; position:absolute; left:50%; top:-9px; width:74px; height:18px; margin-left:-37px; background:rgba(245,197,24,.55); transform:rotate(-2deg); box-shadow:0 1px 2px rgba(0,0,0,.25); clip-path:polygon(0 0,100% 0,97% 50%,100% 100%,0 100%,3% 50%);}
+  .memo .h{font-family:'Do Hyeon',sans-serif; font-size:20px; display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
   .memo .h.ok{color:#2c8a52;} .memo .h.bad{color:#c13e1c;} .memo .h.pass{color:#2f6db3;}
-  .memo .fixed{font-family:'Gowun Batang',serif; font-weight:700; font-size:18px; margin:2px 0;}
-  .memo .fixed u{text-decoration:none; background:rgba(76,178,118,.3); padding:0 2px; border-radius:3px;}
-  .memo .rule{font-size:14px; color:#5a4b36;}
-  .memo .next{position:absolute; right:10px; bottom:10px; border:0; background:#2a2219; color:var(--paper); border-radius:6px; padding:6px 12px; font-size:13px;}
+  .memo .h .cat{font-family:'Noto Sans KR',sans-serif; font-size:12px; font-weight:700; color:#5a4b36; background:rgba(42,34,25,.1); border-radius:999px; padding:1px 10px;}
+  .memo .fixed{font-family:'Gowun Batang',serif; font-weight:700; font-size:19px; margin:4px 0 2px;}
+  .memo .fixed u{text-decoration:none; background:rgba(76,178,118,.3); padding:0 3px; border-radius:3px;}
+  .memo .diff{display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; margin:6px 0 4px; font-family:'Gowun Batang',serif; font-weight:700; font-size:16px;}
+  .memo .diff del{color:#c13e1c; text-decoration-thickness:2px;} .memo .diff ins{text-decoration:none; color:#1c6b3d; background:rgba(76,178,118,.22); padding:0 6px; border-radius:3px;} .memo .diff .arr{color:#9b8763; font-family:'Noto Sans KR',sans-serif;}
+  .memo .rule{font-size:14.5px; color:#4a3c28; line-height:1.55; margin-top:6px; word-break:keep-all;}
+  .memo .tip{margin-top:8px; padding-top:8px; border-top:1px dashed rgba(90,75,54,.4); font-size:13.5px; color:#5a4b36; line-height:1.5; word-break:keep-all;}
+  .memo .tip b{display:inline-block; margin-right:8px; padding:0 8px; border-radius:3px; background:var(--yel); color:#1b1916; font-size:12px;}
+  .memo .next{position:absolute; right:12px; bottom:10px; min-height:38px; border:0; background:#2a2219; color:var(--paper); border-radius:6px; padding:6px 16px; font-size:14px; box-shadow:0 3px 0 #0e0d0b; transition:transform .06s;}
+  .memo .next:active{transform:translateY(2px); box-shadow:0 1px 0 #0e0d0b;}
   .side .plate{padding:14px;}
   .rank{display:grid; gap:4px;}
   .rrow{display:grid; grid-template-columns:26px 1fr auto; gap:8px; align-items:center; padding:5px 8px; border-radius:5px; background:#1b1916; font-size:14px; position:relative; overflow:hidden;}
@@ -207,9 +253,16 @@
 
   /* ---------- result: work log on a clipboard ---------- */
   .clip{max-width:760px; margin:0 auto; position:relative; padding-top:22px;}
-  .clip .clamp{position:absolute; left:50%; top:0; transform:translateX(-50%); width:150px; height:44px; border-radius:8px 8px 4px 4px; background:linear-gradient(180deg,#a59d92,#6f675d); box-shadow:0 4px 0 #3d3731; z-index:2;}
-  .clip .board2{background:#7a5a36; border-radius:14px; padding:18px; box-shadow:0 18px 40px rgba(0,0,0,.5);}
-  .log{background:var(--paper); color:var(--pink); border-radius:4px; padding:30px 22px 22px; background-image:repeating-linear-gradient(0deg, transparent 0 29px, rgba(120,90,40,.14) 29px 30px);}
+  .clip .clamp{position:absolute; left:50%; top:0; transform:translateX(-50%); width:150px; height:44px; border-radius:8px 8px 4px 4px; background:linear-gradient(180deg,#bdb5a9,#8a8277 45%,#5f5850); box-shadow:0 4px 0 #3d3731, inset 0 1px 0 rgba(255,255,255,.4); z-index:2;}
+  .clip .clamp::before,.clip .clamp::after{content:''; position:absolute; top:15px; width:12px; height:12px; border-radius:50%; background:radial-gradient(circle at 35% 35%,#e8e1d6,#6a6358); box-shadow:inset 0 0 0 2px rgba(0,0,0,.25);}
+  .clip .clamp::before{left:20px;} .clip .clamp::after{right:20px;}
+  .clip .board2{background:repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 2px, transparent 2px 9px, rgba(255,255,255,.03) 9px 10px), linear-gradient(180deg,#86623b,#6c4d2c); border-radius:14px; padding:18px; box-shadow:0 18px 40px rgba(0,0,0,.5), inset 0 2px 0 rgba(255,255,255,.12);}
+  .log{position:relative; background-color:var(--paper); color:var(--pink); border-radius:4px; padding:34px 22px 24px; box-shadow:0 2px 0 rgba(0,0,0,.25); background-image:repeating-linear-gradient(0deg, transparent 0 29px, rgba(120,90,40,.14) 29px 30px);}
+  .verdict{position:absolute; right:22px; top:30px; font-family:'Do Hyeon',sans-serif; font-size:26px; line-height:1.2; padding:4px 16px; border:4px solid currentColor; border-radius:8px; letter-spacing:.06em; transform:rotate(7deg); opacity:0; mix-blend-mode:multiply; filter:url(#ink); pointer-events:none;}
+  .verdict::after{content:''; position:absolute; inset:3px; border:1.5px solid currentColor; border-radius:4px; opacity:.7;}
+  .verdict.ace{color:#2c8a52;} .verdict.ok{color:#2f6db3;} .verdict.redo{color:#c13e1c;}
+  .verdict.go{animation:vstamp .4s .55s cubic-bezier(.3,.6,.4,1) both;}
+  @keyframes vstamp{0%{opacity:0; transform:rotate(12deg) scale(2.4);} 60%{opacity:.95; transform:rotate(7deg) scale(.93);} 100%{opacity:.93; transform:rotate(7deg) scale(1);}}
   .log h2{margin:0 0 4px; font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:34px;}
   .log .who{color:#7a6a52; font-size:14px; margin-bottom:14px;}
   .stats{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:16px;}
@@ -220,18 +273,23 @@
   .cats{display:grid; gap:6px; margin-bottom:16px;}
   .cat{display:grid; grid-template-columns:90px 1fr 64px; gap:10px; align-items:center; font-size:14px;}
   .cat .t{height:14px; background:rgba(42,34,25,.15); border-radius:3px; overflow:hidden;}
-  .cat .t i{display:block; height:100%; background:#2c8a52;}
+  .cat .t i{display:block; height:100%; width:0; background:#2c8a52; border-radius:3px; animation:grow .7s var(--d,0ms) cubic-bezier(.2,.8,.2,1) forwards;}
+  .cat .t i.mid{background:#d9a400;} .cat .t i.lo{background:#c13e1c;}
+  @keyframes grow{to{width:var(--w);}}
   .cat .v{text-align:right; font-weight:700;}
   .log h3{font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:20px; margin:16px 0 6px;}
   .mist{display:grid; gap:8px;}
   .mist > div{border-left:4px solid #c13e1c; padding:4px 10px; background:rgba(255,255,255,.35);}
   .mist .s{font-family:'Gowun Batang',serif; font-weight:700;}
   .mist .s del{color:#c13e1c;} .mist .s ins{text-decoration:none; color:#2c8a52;}
-  .mist .r{font-size:13px; color:#5a4b36;}
+  .mist .r{font-size:13px; color:#5a4b36; line-height:1.5; word-break:keep-all;}
+  .mist .r.tp{color:#7a6a52; margin-top:2px;}
+  .mist .r.tp::before{content:'기억하기'; display:inline-block; margin-right:6px; padding:0 6px; border-radius:3px; background:rgba(245,197,24,.7); color:#1b1916; font-size:11px; font-weight:700;}
   .rtab{width:100%; border-collapse:collapse; font-size:15px; margin-bottom:6px;}
   .rtab th{text-align:left; font-size:12px; color:#7a6a52; border-bottom:2px solid #2a2219; padding:4px 6px;}
   .rtab td{padding:6px; border-bottom:1px solid rgba(42,34,25,.18);}
   .rtab tr.me td{background:rgba(245,197,24,.35);}
+  .rtab tr:first-child td.n:first-child{color:#a77b00;}
   .rtab td.n{font-family:'Do Hyeon',sans-serif; font-size:18px;}
   .resBtns{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:18px;}
   .resBtns .big{width:auto;}
@@ -242,7 +300,9 @@
   .cd .in{text-align:center;}
   .cd .siren{width:84px; height:84px; margin:0 auto 12px; border-radius:50% 50% 8px 8px; background:radial-gradient(circle at 50% 70%, #ffbe9e, var(--rust) 60%); box-shadow:0 0 50px var(--rust); animation:siren .5s infinite alternate;}
   @keyframes siren{to{box-shadow:0 0 10px var(--rust); opacity:.75;}}
-  .cd b{display:block; font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:120px; line-height:1; color:var(--yel);}
+  .cd b{display:block; font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:120px; line-height:1; color:var(--yel); text-shadow:0 5px 0 #6b5200, 0 0 30px rgba(245,197,24,.35);}
+  .cd b.tick{animation:cdtick .55s cubic-bezier(.2,1.4,.4,1);}
+  @keyframes cdtick{from{transform:scale(1.7); opacity:.1;} to{transform:none; opacity:1;} }
   .cd span{font-family:'Do Hyeon',sans-serif; color:var(--mute); font-size:20px; letter-spacing:.2em;}
   .toast{position:fixed; left:50%; bottom:72px; transform:translateX(-50%) translateY(20px); background:var(--yel); color:#1b1916; font-weight:700; padding:10px 18px; border-radius:8px; opacity:0; transition:.25s; z-index:50; pointer-events:none; max-width:90vw; text-align:center;}
   .toast.on{opacity:1; transform:translateX(-50%);}
@@ -252,7 +312,11 @@
     .opt{padding:9px 8px; min-height:48px;}
     .lane{height:250px;} .slipBox{width:calc(100% - 70px);} .lane .bin,.lane .press{width:26px;}
     .tools{grid-template-columns:1fr; padding:10px;} .hud .gauge b{font-size:24px;}
-    .stamp{font-size:22px; right:6px;}
+    .stamp{font-size:22px; right:6px; padding:3px 12px;}
+    .w{padding:7px 8px; min-height:40px;} .words{gap:4px 4px;}
+    .verdict{font-size:19px; right:12px; top:16px; padding:3px 10px;}
+    .log{padding:34px 16px 20px;} .log h2{font-size:30px;}
+    .opt{min-height:50px;}
   }
   @media(prefers-reduced-motion:reduce){
     *,*::before,*::after{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important;}
@@ -261,6 +325,7 @@
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter></svg>
 <div class="hz"></div>
 <div class="wrap">
 <header>
@@ -283,9 +348,10 @@
         <div class="clip"></div>
         <div class="top"><span>출입증</span><span>No. 777</span></div>
         <div class="body">
-          <div class="ph">👷</div>
-          <div><label>이름</label><div class="nrow"><input id="nameIn" maxlength="16" placeholder="이름을 입력하세요" autocomplete="off"><button id="diceBtn" title="무작위 이름" aria-label="무작위 이름">🎲</button></div></div>
+          <div class="ph"><svg viewBox="0 0 70 84" aria-hidden="true"><rect width="70" height="84" fill="#a9bcc8"/><rect width="70" height="84" fill="url(#phg)"/><defs><linearGradient id="phg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset="1" stop-color="#000" stop-opacity=".12"/></linearGradient></defs><path d="M4 84c2-17 14-24 31-24s29 7 31 24z" fill="#394857"/><path d="M21 66l5 18M49 66l-5 18" stroke="#f5c518" stroke-width="6" stroke-linecap="round"/><path d="M26 61l9 9 9-9" fill="none" stroke="#2a3642" stroke-width="3" stroke-linejoin="round"/><rect x="29" y="50" width="12" height="13" rx="4" fill="#d9a67b"/><ellipse cx="35" cy="40" rx="13.5" ry="15" fill="#efc7a0"/><circle cx="29.5" cy="42" r="1.7" fill="#2a2219"/><circle cx="40.5" cy="42" r="1.7" fill="#2a2219"/><path d="M30 48.5q5 4.2 10 0" fill="none" stroke="#9a5b3c" stroke-width="1.8" stroke-linecap="round"/><path d="M19 35c0-13 7-20 16-20s16 7 16 20z" fill="#f5c518"/><path d="M19 35c0-13 7-20 16-20 2 0 4 .5 6 1.4-8 .6-14 7-14 18.6z" fill="#fff" opacity=".22"/><rect x="32" y="13" width="6" height="21" rx="2" fill="#d9a400" opacity=".7"/><rect x="14" y="33.5" width="42" height="5.5" rx="2.7" fill="#d9a400"/></svg></div>
+          <div><label>이름</label><div class="nrow"><input id="nameIn" maxlength="16" placeholder="이름을 입력하세요" autocomplete="off"><button id="diceBtn" title="무작위 이름" aria-label="무작위 이름"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4.5" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="8.5" cy="8.5" r="1.7" fill="currentColor"/><circle cx="15.5" cy="8.5" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="8.5" cy="15.5" r="1.7" fill="currentColor"/><circle cx="15.5" cy="15.5" r="1.7" fill="currentColor"/></svg></button></div></div>
         </div>
+        <dl class="info"><div><dt>소속</dt><dd>검수 1라인</dd></div><div><dt>직책</dt><dd>문장 수리공</dd></div><div><dt>등급</dt><dd>견습</dd></div></dl>
         <div class="bar"></div>
       </div>
       <p class="kr-note hide" id="krNote">문장은 한국어로 나와요.</p>
@@ -344,13 +410,13 @@
         <div class="lane" id="lane">
           <div class="bin"></div><div class="press"></div>
           <div class="slipBox" id="slipBox"><div class="slip" id="slip"><div class="holes"></div><span class="no" id="slipNo"></span><div class="words" id="words"></div><div class="stamp" id="stamp"></div></div></div>
-          <div class="rollers" id="rollers"></div><div class="legs"></div>
+          <div class="rollers" id="rollers"></div><div class="legs"></div><div class="rail"></div>
         </div>
         <div class="timeStrip"><i id="slipTime"></i></div>
         <div class="tools" id="tools"><div class="hint">틀린 어절을 누르면 수리 부품이 나와요</div></div>
         <div class="passRow"><button class="passBtn" id="passBtn">✓ 정상 통과</button></div>
       </div>
-      <div class="memo hide" id="memo"></div>
+      <div class="memo hide" id="memo" role="status" aria-live="polite"></div>
     </div>
     <aside class="side" id="gSide">
       <div class="plate"><i class="b3"></i><i class="b4"></i>
@@ -380,6 +446,7 @@
 <!-- RESULT -->
 <section class="screen" id="sResult">
   <div class="clip"><div class="clamp"></div><div class="board2"><div class="log">
+    <div class="verdict" id="verdict"></div>
     <h2>작업 일지</h2>
     <div class="who" id="rWho"></div>
     <div class="stats">
@@ -502,141 +569,141 @@ var I18N={
 // [sentence with {wrong|right|distractor,distractor}, category, rule]   no braces = sentence with nothing to fix
 // S 맞춤법 · W 띄어쓰기 · H 문장 호응 · P 높임법
 var ITEMS = [
-['어제 친구를 {만낫다|만났다|만났따,맜났다}.','S',"'만나다'의 과거형은 '만났다'예요."],
-['오늘은 숙제를 {않|안|안이,않이} 했다.','S',"'아니'의 준말은 '안', '아니하'의 준말은 '않'이에요. 꾸미는 말 자리에는 '안'."],
-['밥을 아직 먹지 {안았다|않았다|안했다,않햇다}.','S',"'-지 않다'처럼 뒤에서 부정할 때는 '않'을 써요."],
-['그 일은 내가 {할께|할게|할깨,할꼐}.','S',"'-ㄹ게'는 [께]로 소리 나도 '게'로 적어요."],
-['감기 빨리 {낳으세요|나으세요|낫으세요,낳세요}.','S',"병이 좋아지는 건 '낫다'(나으세요), 아기를 낳는 건 '낳다'예요."],
-['길을 잃었는데 {어떻해|어떡해|어떻게해,어떠케}?','S',"'어떻게 해'를 줄이면 '어떡해'예요."],
-['{웬지|왠지|웬찌,왼지} 기분이 좋다.','S',"'왜인지'를 줄인 말이라 '왠지'예요."],
-['이게 {왠|웬|왼,웹} 떡이야?','S',"'어찌 된, 어떠한'의 뜻일 때는 '웬'이에요."],
-['중학생이 {되서|돼서|되어써,돼어서} 기쁘다.','S',"'되어서'를 줄이면 '돼서'예요. '되어'로 바꿔 말이 되면 '돼'."],
-['그러면 안 {되요|돼요|되여,돼여}.','S',"'되어요'를 줄이면 '돼요'예요."],
-['나는 선생님이 {돼고|되고|돼구,되구} 싶다.','S',"'되어고'는 말이 안 되니 '되고'예요. '되어'로 바꿀 수 없으면 '되'."],
-['아이스크림이 {금새|금세|금쌔,끔세} 녹았다.','S',"'금시에'를 줄인 말이라 '금세'예요."],
-['여행은 {몇일|며칠|몇칠,며출} 동안 가?','S',"'며칠'은 언제나 '며칠'로 적어요."],
-['저녁 먹고 {설겆이|설거지|설걷이,설거찌}를 했다.','S',"표준어는 '설거지'예요."],
-['{오랫만에|오랜만에|오랜마네,오래만에} 할머니를 뵈었다.','S',"'오래간만'을 줄인 말이라 '오랜만'이에요."],
-['정말 {희안한|희한한|히한한,희한환} 일이다.','S',"드물고 신기하다는 뜻의 말은 '희한하다'예요."],
-['모둠에서 내 {역활은|역할은|역혈은,력할은} 발표다.','S',"맡은 일은 '역할(役割)'이에요."],
-['너무 {어의없는|어이없는|어이업는,어희없는} 실수를 했다.','S',"기가 막힌다는 뜻은 '어이없다'예요."],
-['이번 시험은 {문안하게|무난하게|무난하개,문난하게} 통과했다.','S',"별 어려움이 없다는 뜻은 '무난(無難)하다'예요."],
-['선생님께서 {일일히|일일이|일리리,일일리} 확인하셨다.','S',"같은 말이 겹친 '일일'에는 '-이'가 붙어요."],
-['손을 {깨끗히|깨끗이|깨끄시,깨끗하이} 씻어라.','S',"'ㅅ' 받침 뒤에서는 '-이'를 써요(깨끗이, 반듯이)."],
-['{솔직이|솔직히|솔지키,쏠직히} 말해 봐.','S',"'-하다'가 붙는 말은 대개 '-히'로 끝나요."],
-['형이 수학을 {가르켜|가르쳐|가르처,갈아쳐} 주었다.','S',"지식을 알려 주는 건 '가르치다', 손가락으로 집는 건 '가리키다'예요."],
-['시계가 세 시를 {가르치고|가리키고|가르키고,가리치고} 있다.','S',"방향이나 대상을 집어 보이는 건 '가리키다'예요."],
-['퀴즈 정답을 모두 {맞췄다|맞혔다|마쳤다,맞쳤다}.','S',"정답을 고르는 건 '맞히다', 서로 비교하는 건 '맞추다'예요."],
-['{학생으로써|학생으로서|학생으로쎠,학생로서} 할 일을 하자.','S',"신분·자격은 '로서', 도구·수단은 '로써'예요."],
-['{어디던지|어디든지|어디뜬지,어디던디} 갈 수 있어.','S',"고르는 뜻은 '든지', 지난 일을 떠올릴 때는 '던지'예요."],
-['민수가 그러는데 내일 비가 {온데|온대|온때,온데이}.','S',"남에게 들은 말을 전할 때는 '-대'예요."],
-['카드로 {결재했다|결제했다|결쩨했다,결체했다}.','S',"돈을 치르는 건 '결제', 윗사람이 승인하는 건 '결재'예요."],
-['{배개를|베개를|베게를,배게를} 베고 잤다.','S',"표준어는 '베개'예요."],
-['오늘 저녁은 {된장찌게|된장찌개|된장지개,된장찌깨}다.','S',"표준어는 '찌개'예요."],
-['점심에 {육계장을|육개장을|육깨장을,육게장을} 먹었다.','S',"표준어는 '육개장'이에요."],
-['{떡볶기가|떡볶이가|떡뽁이가,떡복이가} 너무 맵다.','S',"'볶다'에 '-이'가 붙은 말이라 '떡볶이'예요."],
-['그 행동에 모두 {눈쌀을|눈살을|눈살를,눈쌀를} 찌푸렸다.','S',"[쌀]로 소리 나도 '눈살'로 적어요."],
-['선생님, 내일 {뵈요|봬요|뵈여,봽요}.','S',"'뵈어요'를 줄이면 '봬요'예요."],
-['숙제 다 {했슴|했음|했씀,햇음}.','S',"명사형은 '-음'으로 적어요."],
-['내 {바램은|바람은|바렘은,바래음은} 우승이다.','S',"'바라다'의 명사형은 '바람'이에요."],
-['사탕 {갯수를|개수를|개쑤를,객수를} 세어 봐.','S',"한자어끼리 만난 말에는 사이시옷을 쓰지 않아요(개수, 대가)."],
-['이 문제 {어떡게|어떻게|어떠케,어떻케} 풀어?','S',"방법을 묻는 말은 '어떻게'예요."],
-['{구지|굳이|궂이,구디} 그럴 필요 없어.','S',"'굳다'에서 온 말이라 '굳이'로 적어요."],
-['재미있는 {예기|얘기|얘끼,에기} 해 줘.','S',"'이야기'를 줄이면 '얘기'예요."],
-['방이 생각보다 {넓직하다|널찍하다|널직하다,넓찍하다}.','S',"받침 'ㄼ'에서 [ㄹ]만 소리 나면 소리대로 '널찍하다'로 적어요."],
-['동생이 장난감을 {부셔|부숴|부서,붓어} 버렸다.','S',"'부수다'에 '-어'가 붙으면 '부숴'예요."],
-['나갈 때 문을 꼭 {잠궈|잠가|잠과,잠거}.','S',"기본형이 '잠그다'라서 '잠가'예요."],
-['엄마와 김치를 {담궜다|담갔다|담궈다,담겄다}.','S',"기본형이 '담그다'라서 '담갔다'예요."],
-['어제 기말시험을 {치뤘다|치렀다|치뤗다,치럿다}.','S',"기본형이 '치르다'라서 '치렀다'예요."],
-['소풍 전날의 {설레임은|설렘은|설레음은,셀렘은} 최고다.','S',"'설레다'의 명사형은 '설렘'이에요."],
-['{곰곰히|곰곰이|곰곰희,곰고미} 생각해 봤다.','S',"같은 말이 겹친 '곰곰'에는 '-이'가 붙어요."],
-['비가 와서 운동회가 {연기됬다|연기됐다|연기됫다,연기돼었다}.','S',"'되었다'를 줄이면 '됐다'예요."],
-['우리 팀이 {이길려고|이기려고|이길러고,이기릴려고} 열심히 연습했다.','S',"'-려고'만 써요. 'ㄹ'을 더 넣지 않아요."],
-['네가 {할려면|하려면|할라면,하릴려면} 지금 해.','S',"'-려면'만 써요. '할려면'은 틀린 말이에요."],
-['엄마가 {대려다|데려다|데려따,대려따} 주셨다.','S',"함께 가는 건 '데리다'라서 '데려다'예요."],
-['머리를 {짤랐다|잘랐다|잘럿다,짤럿다}.','S',"기본형은 '자르다'예요."],
-['{숫가락으로|숟가락으로|숫갈락으로,숟갈락으로} 국을 떴다.','S',"'술'+'가락'이 줄어 'ㄷ' 받침이 된 말이라 '숟가락'이에요."],
-['{젖가락질이|젓가락질이|젇가락질이,저까락질이} 서툴다.','S',"사이시옷이 들어간 말이라 '젓가락'이에요."],
-['동생은 위험을 {무릎쓰고|무릅쓰고|무릎스고,무릅스고} 앞으로 나갔다.','S',"힘들고 어려운 일을 참고 견딘다는 뜻은 '무릅쓰다'예요."],
-['키가 {작어서|작아서|작어써,잡아서} 앞자리에 앉았다.','S',"'작다'에는 '-아서'가 붙어요."],
+['어제 친구를 {만낫다|만났다|만났따,맜났다}.','S',"과거를 나타내는 '-았-/-었-'은 받침 'ㅆ'으로 적어요. '만나다'의 과거형은 '만났다'예요.","갔다·먹었다·만났다처럼 과거는 모두 'ㅆ' 받침이에요."],
+['오늘은 숙제를 {않|안|안이,않이} 했다.','S',"'안'은 '아니'의 준말이라 동사 바로 앞에서 부정해요. '않'은 '아니하'의 준말이라 '-지 않다' 꼴로만 써요.","'안'을 '아니'로 바꿔 보세요. '아니 했다'가 되니 '안'이에요."],
+['밥을 아직 먹지 {안았다|않았다|안했다,않햇다}.','S',"'-지' 뒤에서 부정할 때는 '않다'를 써요. 이때 '않-'은 '아니하-'가 줄어든 말이에요.","'먹지 아니하였다'가 되니 '먹지 않았다'예요."],
+['그 일은 내가 {할께|할게|할깨,할꼐}.','S',"약속하는 어미 '-ㄹ게'는 [께]로 소리 나도 '게'로 적어요. 물을 때의 '-ㄹ까?'만 'ㄲ'을 써요.","'내가 할게'는 'ㄱ', '내가 할까?'는 'ㄲ'이에요."],
+['감기 빨리 {낳으세요|나으세요|낫으세요,낳세요}.','S',"병이 좋아지는 건 '낫다'라서 '나으세요'예요. 아기나 새끼를 몸에서 내보내는 건 '낳다'예요.","'낫다'는 'ㅅ'이 빠지는 말이에요. 나아요, 나으니, 나은."],
+['길을 잃었는데 {어떻해|어떡해|어떻게해,어떠케}?','S',"'어떻게 해'를 줄이면 '어떡해'예요. 문장 끝이나 쉬는 자리에 쓰는 말이에요.","'어떻게'는 뒤에 동사가 이어지고, '어떡해'는 그 자체로 끝나요."],
+['{웬지|왠지|웬찌,왼지} 기분이 좋다.','S',"'왜인지'가 줄어든 말이라 '왠지'예요. '웬'은 쓰임이 따로 있어요.","'왠지'만 '왜'로 쓰고, 나머지 '웬'은 '웬일·웬만큼·웬걸'이에요."],
+['이게 {왠|웬|왼,웨} 떡이야?','S',"'어찌 된, 어떠한'의 뜻으로 명사 앞에 오는 말은 '웬'이에요.","웬일, 웬 떡, 웬 걱정, 웬만하면은 모두 '웬'이에요."],
+['중학생이 {되서|돼서|되어써,돼어서} 기쁘다.','S',"'되어서'를 줄이면 '돼서'예요. '되어'로 바꿔도 말이 되면 '돼'를 써요.","'하' 자리에 넣어 보면 돼요. '하서'가 어색하면 '되서'도 틀려요."],
+['그러면 안 {되요|돼요|되여,돼여}.','S',"'되어요'를 줄이면 '돼요'예요. '되'에는 '요'가 바로 붙지 못해요.","'되요'는 '되어요'가 될 수 없으니 '돼요'를 써요."],
+['나는 선생님이 {돼고|되고|돼구,되구} 싶다.','S',"'되어고'는 말이 안 되니 '되고'예요. '되어'로 바꿀 수 없으면 '되'를 써요.","뒤에 '-고, -지, -면'이 오면 '되', '-어, -었'이 오면 '돼'예요."],
+['아이스크림이 {금새|금세|금쌔,끔세} 녹았다.','S',"'금시에'를 줄인 말이라 '금세'예요. '새'가 아니라 '세'로 적어요.","'금시(今時)에'를 빨리 말하면 '금세'가 돼요."],
+['여행은 {몇일|며칠|몇칠,며출} 동안 가?','S',"'며칠'은 언제나 '며칠'로 적어요. '몇 일'로 갈라 쓰면 안 돼요.","'몇 월 며칠'에서 '몇'과 '며칠'을 따로 외워 두세요."],
+['저녁 먹고 {설겆이|설거지|설걷이,설거찌}를 했다.','S',"표준어는 '설거지'예요. 옛 형태 '설겆다'에서 온 '설겆이'는 쓰지 않아요.","'설거지'는 소리 나는 대로 적는 말이에요."],
+['{오랫만에|오랜만에|오랜마네,오래만에} 할머니를 뵈었다.','S',"'오래간만'을 줄인 말이라 '오랜만'이에요. 'ㅅ'은 들어가지 않아요.","'오랜만'은 한참 만이고, 'ㅅ'이 있는 '오랫동안'과 구분해요."],
+['정말 {희안한|희한한|히한한,희한환} 일이다.','S',"드물고 신기하다는 뜻의 말은 '희한하다(稀罕--)'예요.","'희'는 '드물 희', '한'은 '드물 한'이에요."],
+['모둠에서 내 {역활은|역할은|역혈은,력할은} 발표다.','S',"맡은 일은 '역할(役割)'이에요. '할'은 '나눌 할'이에요.","'분할, 할당'의 '할'과 같은 글자예요."],
+['너무 {어의없는|어이없는|어이업는,어희없는} 실수를 했다.','S',"기가 막힌다는 뜻은 '어이없다'예요. 한자어가 아니라 순우리말이에요.","'어이'가 없다고 생각하면 '어의'와 헷갈리지 않아요."],
+['이번 시험은 {문안하게|무난하게|무난하개,문난하게} 통과했다.','S',"별 어려움이 없다는 뜻은 '무난(無難)하다'예요. '없을 무'에 '어려울 난'이에요.","어려움(難)이 없다(無)는 뜻이에요."],
+['선생님께서 {일일히|일일이|일리리,일일리} 확인하셨다.','S',"같은 말이 겹친 말('일일, 샅샅, 곰곰')에는 '-이'가 붙어요.","'ㅅ' 받침 말과 겹침말 뒤에는 '-이'가 와요."],
+['손을 {깨끗히|깨끗이|깨끄시,깨끗하이} 씻어라.','S',"'ㅅ' 받침 뒤에서는 '-이'를 써요. '깨끗이, 반듯이, 따뜻이'가 있어요.","받침이 'ㅅ'이면 '-이', 'ㅅ'이 아니면 대개 '-히'예요."],
+['{솔직이|솔직히|솔지키,쏠직히} 말해 봐.','S',"'-하다'가 붙는 말은 대개 '-히'로 끝나요. '솔직하다'에서 온 말이라 '솔직히'예요.","'솔직하다 → 솔직히'처럼 '하'가 '히'로 바뀌어요."],
+['형이 수학을 {가르켜|가르쳐|가르처,갈아쳐} 주었다.','S',"지식이나 기술을 알려 주는 건 '가르치다'예요. 손가락으로 집는 건 '가리키다'예요.","가르치다는 선생님, 가리키다는 손가락과 짝을 지어요."],
+['시계가 세 시를 {가르치고|가리키고|가르키고,가리치고} 있다.','S',"방향이나 대상을 집어 보이는 건 '가리키다'예요. 시곗바늘이나 손가락이 주어일 때 써요.","'가르키다'라는 말은 없어요. 가르치다와 가리키다 둘뿐이에요."],
+['퀴즈 정답을 모두 {맞췄다|맞혔다|마쳤다,맞쳤다}.','S',"정답을 고르거나 과녁을 맞게 하는 건 '맞히다'예요. 서로 견주거나 끼워 넣는 건 '맞추다'예요.","정답을 '맞히다', 퍼즐·시간은 '맞추다'예요."],
+['{학생으로써|학생으로서|학생으로쎠,학생로서} 할 일을 하자.','S',"신분이나 자격을 나타낼 때는 '로서', 도구나 수단을 나타낼 때는 '로써'예요.","'학생으로서'(자격), '칼로써'(도구)로 외워요."],
+['{어디던지|어디든지|어디뜬지,어디던디} 갈 수 있어.','S',"여럿 중 아무것이나 고르는 뜻은 '든지', 지난 일을 떠올리는 뜻은 '던지'예요.","'-든지'는 선택, '-던지'는 회상이에요."],
+['민수가 그러는데 내일 비가 {온데|온대|온때,온데이}.','S',"남에게 들은 말을 전할 때는 '-대'(-다고 해)예요. '-데'는 내가 직접 본 것을 말할 때 써요.","'온대'는 '온다고 해', '온데'는 '오더라'예요."],
+['카드로 {결재했다|결제했다|결쩨했다,결체했다}.','S',"돈을 주고받아 거래를 끝내는 건 '결제', 윗사람이 안건을 허락하는 건 '결재'예요.","카드·계좌로 값을 치르면 '결제', 서류에 도장을 받으면 '결재'예요."],
+['{배개를|베개를|베게를,배게를} 베고 잤다.','S',"표준어는 '베개'예요. '베다'에서 온 말이라 '베'로 시작해요.","머리를 '베고' 자는 물건이라 '베개'예요."],
+['오늘 저녁은 {된장찌게|된장찌개|된장지개,된장찌깨}다.','S',"표준어는 '찌개'예요. '게'는 바다 동물이에요.","'찌개'의 끝은 '개'. 쉬운 음식 이름은 소리 나는 대로 적어요."],
+['점심에 {육계장을|육개장을|육깨장을,육게장을} 먹었다.','S',"표준어는 '육개장'이에요. 개장국에 쇠고기를 넣어 끓인 데서 온 이름이라 '개장'을 살려 적어요.","'육계장'은 표준어가 아니에요. 끝 글자는 '개'예요."],
+['{떡볶기가|떡볶이가|떡뽁이가,떡복이가} 너무 맵다.','S',"'볶다'에 '-이'가 붙은 말이라 '떡볶이'예요. 뜻이 '볶은 것'이라 '볶'을 살려 적어요.","'볶음(볶다)'에서 'ㅂ'과 'ㄲ'을 챙기면 돼요."],
+['그 행동에 모두 {눈쌀을|눈살을|눈살를,눈쌀를} 찌푸렸다.','S',"[쌀]로 소리 나도 '눈살'로 적어요. 두 눈썹 사이의 주름을 뜻해요.","'눈 + 살'이라 '살'을 적어요. 곡식 '쌀'이 아니에요."],
+['선생님, 내일 {뵈요|봬요|뵈여,봽요}.','S',"'뵈어요'를 줄이면 '봬요'예요. '뵈요'는 '뵈-'에 '요'가 바로 붙은 틀린 형태예요.","'돼요'와 같은 원리예요. '뵈어요 → 봬요'."],
+['숙제 다 {했슴|했음|했씀,햇음}.','S',"받침이 있는 말 뒤에서 명사처럼 만드는 말은 '-음'이에요. '-슴'이라는 어미는 없어요.","'했음, 있음, 없음'은 모두 '-음'으로 끝나요."],
+['내 {바램은|바람은|바렘은,바래음은} 우승이다.','S',"'바라다'의 명사형은 '바람'이에요. '바래다'는 색이 변하는 뜻이라 따로예요.","'바라다'의 'ㅏ'가 남아 '바람'이 돼요. '바램'은 틀려요."],
+['사탕 {갯수를|개수를|개쑤를,객수를} 세어 봐.','S',"한자어끼리 만난 말에는 사이시옷을 쓰지 않아요. 예외는 곳간·셋방·숫자·찻간·툇간·횟수 여섯뿐이에요.","'개수'(個數)는 한자어끼리라 'ㅅ'이 없어요."],
+['이 문제 {어떡게|어떻게|어떠케,어떻케} 풀어?','S',"방법을 묻는 말은 '어떻게'예요. '어떡해'는 '어떻게 해'를 줄인 말로 문장 끝에만 써요.","'어떻게 풀어?'처럼 뒤에 서술어가 오면 '어떻게', 홀로 끝나면 '어떡해'예요."],
+['{구지|굳이|궂이,구디} 그럴 필요 없어.','S',"'굳다'에서 온 말이라 '굳이'로 적어요. [구지]로 소리 나는 구개음화 때문에 헷갈려요.","'굳이'는 '굳다'의 'ㄷ'이 살아 있는 말이에요."],
+['재미있는 {예기|얘기|얘끼,에기} 해 줘.','S',"'이야기'를 줄이면 '얘기'예요. '이야기'의 '이야'가 'ㅒ'로 합쳐져요.","'이야기 → 얘기', '그 아이 → 걔'처럼 줄어요."],
+['방이 생각보다 {넓직하다|널찍하다|널직하다,넓찍하다}.','S',"겹받침 'ㄼ' 가운데 [ㄹ]만 소리 나면 소리 나는 대로 '널찍하다'로 적어요. '넓적하다'는 소리 나는 'ㅂ'을 살려요.","'널찍하다'(공간), '넓적하다'(납작한 모양)은 달라요."],
+['동생이 장난감을 {부셔|부숴|부서,붓어} 버렸다.','S',"'부수다'에 '-어'가 붙으면 '부숴'예요. '부서'는 '부서지다'의 줄임이라 뜻이 달라요.","'부수다 → 부숴', '부서지다 → 부서져'로 구분해요."],
+['나갈 때 문을 꼭 {잠궈|잠가|잠과,잠거}.','S',"기본형이 '잠그다'라서 '잠가'예요. '으'가 빠지는 말(잠그다, 담그다, 치르다)이에요.","'잠그다 → 잠가, 잠갔다'. 'ㅜ'는 들어가지 않아요."],
+['엄마와 김치를 {담궜다|담갔다|담궈다,담겄다}.','S',"기본형이 '담그다'라서 '담갔다'예요. 으 탈락이라 '담궈'가 될 수 없어요.","'담그다 → 담가, 담갔다, 담근'이에요."],
+['어제 기말시험을 {치뤘다|치렀다|치뤗다,치럿다}.','S',"기본형이 '치르다'라서 '치렀다'예요. 시험이나 행사를 하는 뜻이에요.","'치르다 → 치러, 치렀다'. '치뤄'는 틀려요."],
+['소풍 전날의 {설레임은|설렘은|설레음은,셀렘은} 최고다.','S',"'설레다'의 명사형은 '설렘'이에요. '설레임'은 많이들 쓰지만 표준이 아니에요.","'설레다 + ㅁ = 설렘'. '레'에 'ㅁ'만 붙여요."],
+['{곰곰히|곰곰이|곰곰희,곰고미} 생각해 봤다.','S',"같은 말이 겹친 '곰곰'에는 '-이'가 붙어요. '일일이, 샅샅이, 겹겹이'도 같아요.","겹침말 뒤에는 '-이'예요."],
+['비가 와서 운동회가 {연기됬다|연기됐다|연기됫다,연기돼었다}.','S',"'되었다'를 줄이면 '됐다'예요. '됬다'라는 글자는 없어요.","'되었다 → 됐다', '되어 → 돼'를 같이 외워요."],
+['우리 팀이 {이길려고|이기려고|이길러고,이기릴려고} 열심히 연습했다.','S',"'-려고'는 어간 바로 뒤에 붙어요. 'ㄹ'을 하나 더 넣지 않아요.","'이기다'에 '-려고'가 바로 와서 '이기려고'예요."],
+['네가 {할려면|하려면|할라면,하릴려면} 지금 해.','S',"'-려면'은 어간 바로 뒤에 붙어요. '할려면'은 틀린 말이에요.","'하다 + 려면 = 하려면'. '먹으려면'도 같은 원리예요."],
+['엄마가 {대려다|데려다|데려따,대려따} 주셨다.','S',"함께 가는 건 '데리다'라서 '데려다'예요. '대려'는 어디에도 없어요.","'데리고 → 데려다'. 'ㅔ'와 'ㅐ'를 헷갈리지 마요."],
+['머리를 {짤랐다|잘랐다|잘럿다,짤럿다}.','S',"기본형은 '자르다'예요. 소리는 [짤랐다]처럼 들려도 'ㅈ'으로 적어요.","'자르다 → 잘라, 잘랐다'. 'ㅡ'가 줄고 'ㄹ'이 붙어요."],
+['{숫가락으로|숟가락으로|숫갈락으로,숟갈락으로} 국을 떴다.','S',"'술'과 '가락'이 만나 'ㄹ'이 'ㄷ'으로 바뀐 말이라 '숟가락'이에요.","'숟가락'은 'ㄷ' 받침, '젓가락'은 'ㅅ' 받침이에요."],
+['{젖가락질이|젓가락질이|젇가락질이,저까락질이} 서툴다.','S',"'저'와 '가락' 사이에 사이시옷이 들어간 말이라 '젓가락'이에요. 소리는 [저까락/젇까락]이에요.","'젓가락'은 'ㅅ' 받침, '숟가락'은 'ㄷ' 받침이에요."],
+['동생은 위험을 {무릎쓰고|무릅쓰고|무릎스고,무릅스고} 앞으로 나갔다.','S',"어려움이나 위험을 이겨 내고 견딘다는 뜻은 '무릅쓰다'예요. '무릎'(몸)과는 상관없어요.","위험을 '무릅쓰다'에는 '무릎'(관절)이 없어요."],
+['키가 {작어서|작아서|작어써,잡아서} 앞자리에 앉았다.','S',"'작다'처럼 'ㅏ'가 있는 말은 '-아서'가 붙어요. '작어서'는 틀려요.","'작아서, 많아서'는 'ㅏ'→'-아', '먹어서'는 'ㅓ'→'-어'예요."],
 
-['숙제를 {안했다|안 했다|않 했다,안했따}.','W',"'안'은 꾸미는 말(부사)이라 띄어 써요."],
-['나도 {할수|할 수|할쑤,할 쑤} 있다.','W',"'수'는 의존 명사라 띄어 써요."],
-['{먹을만큼|먹을 만큼|먹을 만끔,머글 만큼} 먹어.','W',"'-을' 뒤의 '만큼'은 의존 명사라 띄어 써요."],
-['나도 {너 만큼|너만큼|너 만끔,넌만큼} 키가 크다.','W',"명사 바로 뒤의 '만큼'은 조사라 붙여 써요."],
-['웃을 {수 밖에|수밖에|쑤밖에,수 바께} 없었다.','W',"'밖에'가 '오직'의 뜻이면 조사라 붙여 써요."],
-['도서관에서 같이 {공부 하자|공부하자|공부 하쟈,공뷰하자}.','W',"'공부하다'는 한 단어라 붙여 써요."],
-['그 책을 {세번|세 번|세번을,셋번} 읽었다.','W',"횟수를 세는 '번'은 띄어 써요."],
-['수영을 {할줄|할 줄|할쭐,할 쭐} 안다.','W',"방법을 뜻하는 '줄'은 의존 명사라 띄어 써요."],
-['비가 {올것|올 것|올 껏,올껏} 같다.','W',"'것'은 의존 명사라 띄어 써요."],
-['{이 것은|이것은|이 거슨,이건은} 내 책이다.','W',"'이것'은 한 단어라 붙여 써요."],
-['{우리 나라는|우리나라는|울 나라는,우리 나라눈} 사계절이 뚜렷하다.','W',"'우리나라'는 한 단어라 붙여 써요."],
-['점심에 {밥 을|밥을|바블,밥 를} 많이 먹었다.','W',"조사는 앞말에 붙여 써요."],
-['내일 {학교 에서|학교에서|학꾜에서,학교애서} 만나자.','W',"조사 '에서'는 앞말에 붙여 써요."],
-['{너 뿐만|너뿐만|너 뿐 만,넌뿐만} 아니라 나도 몰랐다.','W',"명사 바로 뒤의 '뿐'은 조사라 붙여 써요."],
-['이사 {온지|온 지|온찌,왔지} 1년이 지났다.','W',"시간이 흐른 동안을 뜻하는 '지'는 띄어 써요."],
-['그 친구는 노래를 {잘 한다|잘한다|잘 한따,짤한다}.','W',"솜씨가 좋다는 '잘하다'는 한 단어라 붙여 써요."],
-['주말에 바다로 {놀러가자|놀러 가자|놀러 까자,놀로 가자}.','W',"'놀러'와 '가다'는 따로인 두 단어라 띄어 써요."],
-['밥 {먹을때|먹을 때|먹을 떄,머글 때} 떠들지 마.','W',"'때'는 명사라 띄어 써요."],
-['이 공책은 {만원이야|만 원이야|만 원 이야,마눤이야}.','W',"돈을 세는 '원'은 단위라 띄어 써요."],
-['{그동안 에|그동안에|그 동안 에,그동아네} 많이 컸구나.','W',"'그동안'은 한 단어, '에'는 조사라 모두 붙여 써요."],
+['숙제를 {안했다|안 했다|않 했다,안했따}.','W',"'안'은 꾸미는 말(부사)이라 동사와 띄어 써요. '안 했다'처럼 따로 적어요.","'안 가다, 안 먹다, 안 했다'는 모두 띄어요."],
+['나도 {할수|할 수|할쑤,할 쑤} 있다.','W',"'수'는 어떤 방법·가능성을 뜻하는 의존 명사라 앞말과 띄어 써요.","'할 수 있다, 갈 수 없다'. '수' 앞은 늘 띄어요."],
+['{먹을만큼|먹을 만큼|먹을 만끔,머글 만큼} 먹어.','W',"'-을' 뒤에 오는 '만큼'은 의존 명사라 띄어 써요.","'-ㄹ/을 + 만큼'은 띄어요. 앞이 '명사'면 붙여요."],
+['나도 {너 만큼|너만큼|너 만끔,넌만큼} 키가 크다.','W',"명사나 대명사 바로 뒤의 '만큼'은 조사라 붙여 써요.","'너만큼, 나만큼, 철수만큼'은 붙여요."],
+['웃을 {수 밖에|수밖에|쑤밖에,수 바께} 없었다.','W',"'그것 말고는, 오직'의 뜻으로 쓰는 '밖에'는 조사라 붙여 써요.","'수밖에 없다, 하나밖에 없다'. 뒤에 '없다'가 따라와요."],
+['도서관에서 같이 {공부 하자|공부하자|공부 하쟈,공뷰하자}.','W',"'공부하다'는 '명사+하다'로 이루어진 한 단어라 붙여 써요.","'숙제하다, 운동하다, 청소하다'도 붙여요."],
+['그 책을 {세번|세 번|세번을,셋번} 읽었다.','W',"횟수를 세는 '번'은 단위를 나타내는 의존 명사라 띄어 써요.","'한 번, 두 번, 세 번'. 숫자와 단위는 띄어요."],
+['수영을 {할줄|할 줄|할쭐,할 쭐} 안다.','W',"방법이나 능력을 뜻하는 '줄'은 의존 명사라 띄어 써요.","'할 줄 알다, 먹을 줄 모르다'는 띄어요."],
+['비가 {올것|올 것|올 껏,올껏} 같다.','W',"'것'은 의존 명사라 앞말과 띄어 써요. 'ㄹ 것'을 줄여 '거'로 말해도 띄어요.","'올 것 같다, 할 것이다, 볼 것'은 띄어요."],
+['{이 것은|이것은|이 거슨,이건은} 내 책이다.','W',"'이것'은 '이'와 '것'이 합쳐진 한 단어라 붙여 써요.","'이것·그것·저것'은 한 단어예요."],
+['{우리 나라는|우리나라는|울 나라는,우리 나라눈} 사계절이 뚜렷하다.','W',"'우리나라'는 한 단어라 붙여 써요. 우리 대한민국을 뜻해요.","'우리나라'는 붙이고, '우리 집'은 띄어요."],
+['점심에 {밥 을|밥을|바블,밥 를} 많이 먹었다.','W',"조사('을/를, 이/가, 은/는')는 앞말에 붙여 써요.","조사는 앞말의 일부라고 생각하세요."],
+['내일 {학교 에서|학교에서|학꾜에서,학교애서} 만나자.','W',"장소를 나타내는 조사 '에서'는 앞말에 붙여 써요.","'학교에서, 집에서'. 조사는 늘 붙어요."],
+['{너 뿐만|너뿐만|너 뿐 만,넌뿐만} 아니라 나도 몰랐다.','W',"명사나 대명사 바로 뒤의 '뿐'은 조사라 붙여 써요. '-ㄹ 뿐'의 '뿐'은 의존 명사라 띄어요.","'너뿐'은 붙이고, '할 뿐이다'는 띄어요."],
+['이사 {온지|온 지|온찌,왔지} 1년이 지났다.','W',"시간이 흐른 동안을 뜻하는 '지'는 의존 명사라 띄어 써요. '-ㄴ지'(막연한 의문)는 붙여요.","'온 지 1년'(시간)과 '왔는지 몰라'(의문)를 구분해요."],
+['그 친구는 노래를 {잘 한다|잘한다|잘 한따,짤한다}.','W',"솜씨가 좋다는 뜻의 '잘하다'는 한 단어라 붙여 써요.","'노래를 잘한다'는 솜씨를 말하고, '잘 된다'처럼 '잘'만 쓰면 띄어요."],
+['주말에 바다로 {놀러가자|놀러 가자|놀러 까자,놀로 가자}.','W',"'놀러'와 '가다'는 따로인 두 단어라 띄어 써요. 'ㄹ' 뒤의 '러'는 목적을 뜻해요.","'놀러 가다, 먹으러 오다'는 띄어요."],
+['밥 {먹을때|먹을 때|먹을 떄,머글 때} 떠들지 마.','W',"'때'는 시간을 뜻하는 명사라 앞말과 띄어 써요.","'밥 먹을 때, 학교 갈 때'. '때'는 늘 띄어요."],
+['이 공책은 {만원이야|만 원이야|만 원 이야,마눤이야}.','W',"돈을 세는 '원'은 단위라 숫자와 띄어 써요. 그런데 '이야'는 조사라 붙여요.","'천 원, 만 원'은 띄어요. 단위 뒤의 '이야'는 붙여요."],
+['{그동안 에|그동안에|그 동안 에,그동아네} 많이 컸구나.','W',"'그동안'은 한 단어라 붙여 쓰고, '에'는 조사라 붙여 써요.","'그동안, 오랫동안'은 붙이고, '그 사이'는 띄어요."],
 
-['나는 결코 그 일을 {잊을 것이다|잊지 않을 것이다|잊겠다,잊을 거다}.','H',"'결코'는 '-지 않다' 같은 부정하는 말과 어울려요."],
-['내 꿈은 과학자가 {되고 싶다|되는 것이다|되고 싶어,되겠다}.','H',"'내 꿈은'으로 시작했으니 '~것이다'로 끝나야 어울려요."],
-['어제 나는 영화를 {볼 것이다|보았다|보겠다,볼 거다}.','H',"'어제'는 지난 일을 나타내는 말과 어울려요."],
-['내일은 비가 {왔다|올 것이다|왔었다,와 버렸다}.','H',"'내일'은 앞으로 일어날 일을 나타내는 말과 어울려요."],
-['비록 {힘들어서|힘들더라도|힘들었으므로,힘들기에} 포기하지 않겠다.','H',"'비록'은 '-더라도, -지만'과 어울려요."],
-['만약 내일 비가 {왔지만|온다면|오지만,와서} 소풍은 취소야.','H',"'만약'은 '-면, -다면'과 어울려요."],
-['지각한 까닭은 늦잠을 {잤다|잤기 때문이다|잘 것이다,자겠다}.','H',"'까닭은'으로 시작했으니 '~때문이다'로 끝나야 어울려요."],
-['절대로 거짓말을 {할 것이다|하지 않겠다|하겠다,하자}.','H',"'절대로'는 부정하는 말과 어울려요."],
-['이 문제는 여간 {어렵다|어렵지 않다|어려웠다,어렵겠다}.','H',"'여간'은 '-지 않다'와 어울려요."],
-['아마 내일은 날씨가 {맑았다|맑을 것이다|맑았었다,맑아졌다}.','H',"'아마'는 짐작하는 말과 어울려요."],
-['모름지기 학생은 열심히 {공부한다|공부해야 한다|공부했다,공부하겠다}.','H',"'모름지기'는 '-해야 한다'와 어울려요."],
-['나는 그다지 배가 {고프다|고프지 않다|고팠다,고프겠다}.','H',"'그다지'는 부정하는 말과 어울려요."],
-['설령 내일 비가 {와서|오더라도|오니까,오므로} 소풍은 간다.','H',"'설령'은 '-더라도, -ㄹ지라도'와 어울려요."],
+['나는 결코 그 일을 {잊을 것이다|잊지 않을 것이다|잊겠다,잊을 거다}.','H',"'결코'는 '-지 않다' 같은 부정하는 말과 짝을 이뤄요.","'결코·절대로·전혀'는 부정과 같이 와요."],
+['내 꿈은 과학자가 {되고 싶다|되는 것이다|되고 싶어,되겠다}.','H',"'내 꿈은'으로 시작했으니 '~것이다'처럼 명사로 끝나야 어울려요.","'~은 ~것이다, ~은 ~이다'로 짝을 맞춰요."],
+['어제 나는 영화를 {볼 것이다|보았다|보겠다,볼 거다}.','H',"'어제'는 지난 일을 나타내는 말과 어울려요. 과거 어미 '-았-/-었-'을 써요.","'어제 ~했다', '내일 ~할 것이다'로 짝을 맞춰요."],
+['내일은 비가 {왔다|올 것이다|왔었다,와 버렸다}.','H',"'내일'은 앞으로 일어날 일을 나타내는 말과 어울려요.","'내일'에는 미래, '어제'에는 과거예요."],
+['비록 {힘들어서|힘들더라도|힘들었으므로,힘들기에} 포기하지 않겠다.','H',"'비록'은 '-더라도, -지만'과 어울려요. 어려움을 인정하면서 반대되는 말을 해요.","'비록 ~지만/더라도' 형식을 기억하세요."],
+['만약 내일 비가 {왔지만|온다면|오지만,와서} 소풍은 취소야.','H',"'만약'은 '-면, -다면'처럼 가정하는 말과 어울려요.","'만약 ~다면'은 조건, '비록 ~지만'은 양보예요."],
+['지각한 까닭은 늦잠을 {잤다|잤기 때문이다|잘 것이다,자겠다}.','H',"'까닭은'으로 시작했으니 '~때문이다'로 끝나야 어울려요.","'~한 까닭은 ~기 때문이다'로 짝을 맞춰요."],
+['절대로 거짓말을 {할 것이다|하지 않겠다|하겠다,하자}.','H',"'절대로'는 부정하는 말과 어울려요. '절대로 하지 않겠다'처럼 써요.","'절대로, 결코, 전혀'는 뒤에 부정이 와요."],
+['이 문제는 여간 {어렵다|어렵지 않다|어려웠다,어렵겠다}.','H',"'여간'은 '-지 않다' 같은 부정과 어울려요. 이때는 '매우 ~하다'는 뜻이에요.","'여간 어렵지 않다'는 '꽤 어렵다'는 뜻이에요."],
+['아마 내일은 날씨가 {맑았다|맑을 것이다|맑았었다,맑아졌다}.','H',"'아마'는 '-ㄹ 것이다, -겠다'처럼 짐작하는 말과 어울려요.","'아마 ~일 것이다'로 짝을 맞춰요."],
+['모름지기 학생은 열심히 {공부한다|공부해야 한다|공부했다,공부하겠다}.','H',"'모름지기'는 '-해야 한다'처럼 당연한 도리를 말할 때 어울려요.","'모름지기 ~해야 한다'로 짝을 맞춰요."],
+['나는 그다지 배가 {고프다|고프지 않다|고팠다,고프겠다}.','H',"'그다지'는 부정하는 말과 어울려요. '그다지 ~지 않다'처럼 써요.","'그다지, 별로, 전혀'는 뒤에 부정이 와요."],
+['설령 내일 비가 {와서|오더라도|오니까,오므로} 소풍은 간다.','H',"'설령'은 '-더라도, -ㄹ지라도'와 어울려요. 사실이 그렇다 해도 결과는 같다는 뜻이에요.","'설령 ~더라도'로 짝을 맞춰요."],
 
-['할머니께서 방에 {있다|계신다|있는다,있으셔다}.','P',"웃어른이 어디에 있을 때는 '계시다'를 써요."],
-['선생님, 제가 먼저 {말할게|말씀드릴게요|말씀하실게요,말하실게요}.','P',"내가 윗사람에게 말할 때는 '말씀드리다'로 나를 낮춰요."],
-['아버지께서 저녁을 {먹는다|드신다|먹신다,먹으셔다}.','P',"웃어른이 먹을 때는 '드시다, 잡수시다'를 써요."],
-['주문하신 커피 {나오셨습니다|나왔습니다|나오셨어요,나오십니다}.','P',"커피 같은 사물에는 높임을 쓰지 않아요."],
-['할아버지, {나이가|연세가|년세가,나이께서} 어떻게 되세요?','P',"웃어른의 나이는 '연세'라고 해요."],
-['모르는 것을 선생님께 {물어봤다|여쭤봤다|여쭤보셨다,물어보셨다}.','P',"내가 윗사람에게 물을 때는 '여쭈다'를 써요."],
-['할머니께 생신 선물을 {줬다|드렸다|주셨다,드리셨다}.','P',"윗사람에게 줄 때는 '드리다'를 써요."],
-['선생님, 이것 좀 {봐|보세요|보시래요,보래요}.','P',"윗사람에게는 '-세요'처럼 높여 말해요."],
-['주말에 {할머니 집에|할머니 댁에|할머니 덱에,할머니 집께} 놀러 갔다.','P',"웃어른의 집은 '댁'이라고 해요."],
-['{저희 나라는|우리나라는|저의 나라는,저희나라는} 작지만 아름답습니다.','P',"나라는 낮추지 않으니 '우리나라'라고 해요."],
-['아버지, 할아버지께서 {오라고 했어요|오라고 하셨어요|오라고 하셨다,오라셔요}.','P',"말씀하신 분이 할아버지라서 '하셨어요'로 높여요."],
+['할머니께서 방에 {있다|계신다|있는다,있으셔다}.','P',"웃어른이 어디에 있을 때는 '계시다'를 써요. '있다'의 높임말이에요.","'있다 → 계시다', '먹다 → 드시다', '자다 → 주무시다'."],
+['선생님, 제가 먼저 {말할게|말씀드릴게요|말씀하실게요,말하실게요}.','P',"내가 윗사람에게 말할 때는 '말씀드리다'로 나를 낮춰요. 내 행동에 '-시-'를 붙이면 안 돼요.","'말씀하시다'는 윗사람의 말, '말씀드리다'는 내 말이에요."],
+['아버지께서 저녁을 {먹는다|드신다|먹신다,먹으셔다}.','P',"웃어른이 먹을 때는 '드시다, 잡수시다'를 써요. '먹신다'는 없는 말이에요.","'먹다 → 드시다·잡수시다'를 한 쌍으로 외워요."],
+['주문하신 커피 {나오셨습니다|나왔습니다|나오셨어요,나오십니다}.','P',"커피 같은 사물에는 높임을 쓰지 않아요. 높여야 하는 건 사람뿐이에요.","'커피가 나오셨다'는 틀리고, '손님이 오셨다'는 맞아요."],
+['할아버지, {나이가|연세가|년세가,나이께서} 어떻게 되세요?','P',"웃어른의 나이는 '연세'라고 해요. '나이'의 높임말이에요.","'나이 → 연세', '이름 → 성함', '생일 → 생신'."],
+['모르는 것을 선생님께 {물어봤다|여쭤봤다|여쭤보셨다,물어보셨다}.','P',"내가 윗사람에게 물을 때는 '여쭈다'를 써요. 선생님을 높이는 말이에요.","'묻다 → 여쭙다', '주다 → 드리다', '보다 → 뵙다'."],
+['할머니께 생신 선물을 {줬다|드렸다|주셨다,드리셨다}.','P',"윗사람에게 줄 때는 '드리다'를 써요. '주셨다'는 윗사람이 나에게 줄 때예요.","'할머니께 드렸다', '할머니께서 주셨다'로 구분해요."],
+['선생님, 이것 좀 {봐|보세요|보시래요,보래요}.','P',"윗사람에게는 '-세요'처럼 높여 말해요. '봐'는 친구에게 쓰는 반말이에요.","'-아/어' 반말 대신 '-세요, -ㅂ니다'를 써요."],
+['주말에 {할머니 집에|할머니 댁에|할머니 덱에,할머니 집께} 놀러 갔다.','P',"웃어른의 집은 '댁'이라고 해요. '집'의 높임말이에요.","'집 → 댁', '밥 → 진지', '말 → 말씀'."],
+['{저희 나라는|우리나라는|저의 나라는,저희나라는} 작지만 아름답습니다.','P',"나라는 낮추지 않으니 '우리나라'라고 해요. '저희'는 윗사람 앞에서 나를 낮추는 말이에요.","'저희 나라'는 어색하고 '우리나라'가 맞아요."],
+['아버지, 할아버지께서 {오라고 했어요|오라고 하셨어요|오라고 하셨다,오라셔요}.','P',"말씀하신 분이 할아버지라서 '하셨어요'로 높여요. 아버지께는 '-어요'로 존대해요.","높이는 분이 둘이면 둘 다 맞춰요. '할아버지께서 ~하셨어요'."],
 
-['오랫동안 기다렸지만 버스가 오지 않았다.'],
-['우리는 오랜만에 공원에서 만났다.'],
-['그 일은 내가 할게.'],
-['감기가 빨리 나았으면 좋겠다.'],
-['나는 결코 포기하지 않을 것이다.'],
-['할머니께서 방에 계신다.'],
-['어제 친구와 떡볶이를 먹었다.'],
-['비가 올 것 같으니 우산을 챙겨라.'],
-['사탕 개수를 세어 보자.'],
-['아이스크림이 금세 녹아 버렸다.'],
-['왠지 오늘은 운이 좋을 것 같다.'],
-['나갈 때 문을 꼭 잠가 주세요.'],
-['밥 먹기 전에 손을 깨끗이 씻어야 한다.'],
-['시계가 세 시를 가리키고 있다.'],
-['형이 나에게 수학을 가르쳐 주었다.'],
-['퀴즈 정답을 모두 맞혔다.'],
-['학생으로서 할 일을 다하자.'],
-['이 공책은 천 원이다.'],
-['나도 너만큼 빨리 달릴 수 있다.'],
-['웃을 수밖에 없었다.'],
-['이사 온 지 벌써 1년이 지났다.'],
-['주말에 할머니 댁에 놀러 갔다.'],
-['주문하신 커피 나왔습니다.'],
-['선생님, 내일 뵙겠습니다.'],
-['며칠 동안 비가 내렸다.'],
-['저녁을 먹고 설거지를 했다.'],
-['중학생이 돼서 정말 기쁘다.'],
-['지각한 까닭은 늦잠을 잤기 때문이다.'],
-['내 꿈은 과학자가 되는 것이다.'],
-['모르는 것은 선생님께 여쭤보자.']
+['오랫동안 기다렸지만 버스가 오지 않았다.','N',"'오랫동안'은 한 단어라 붙여 써요. '-지 않다'의 '않'도 맞는 표기예요.","'오랜만'과 '오랫동안'은 'ㅅ' 유무가 달라요."],
+['우리는 오랜만에 공원에서 만났다.','N',"'오래간만'을 줄인 '오랜만'이에요. 사이에 'ㅅ'이 없어요.","오랜만에 만났다. 오랫동안 기다렸다."],
+['그 일은 내가 할게.','N',"약속하는 '-ㄹ게'가 맞아요. 소리는 [할께]여도 'ㄱ'으로 적어요.","'할게'는 약속, '할까?'는 의문이에요."],
+['감기가 빨리 나았으면 좋겠다.','N',"병이 좋아지는 건 '낫다'라서 '나았으면'이 맞아요.","낫다 → 나아, 나았다. 낳다 → 낳아, 낳았다."],
+['나는 결코 포기하지 않을 것이다.','N',"'결코'와 '-지 않을 것이다'가 부정으로 짝을 맞춰요.","'결코'가 나오면 끝이 부정인지 확인해요."],
+['할머니께서 방에 계신다.','N',"웃어른이 있다는 뜻은 '계시다'로 높여 말해요.","있다 → 계시다예요."],
+['어제 친구와 떡볶이를 먹었다.','N',"'볶다'에 '-이'가 붙은 말이라 '떡볶이'가 맞아요.","떡볶이, 볶음밥은 모두 '볶'을 살려요."],
+['비가 올 것 같으니 우산을 챙겨라.','N',"'올 것'은 의존 명사 '것'을 띄어 쓴 올바른 표기예요.","올 것 같다는 띄어 써요."],
+['사탕 개수를 세어 보자.','N',"한자어끼리 만난 '개수'는 사이시옷을 쓰지 않아요.","'갯수'는 틀려요. 예외는 횟수, 숫자 등 여섯 개뿐이에요."],
+['아이스크림이 금세 녹아 버렸다.','N',"'금시에'를 줄인 '금세'가 맞아요.","금세는 '금시에'의 줄임말이에요."],
+['왠지 오늘은 운이 좋을 것 같다.','N',"'왜인지'의 줄임말이라 '왠지'가 맞아요.","'웬지'는 틀려요. '왠지'만 '왜'를 써요."],
+['나갈 때 문을 꼭 잠가 주세요.','N',"기본형이 '잠그다'라서 '잠가'가 맞아요.","'잠궈'는 틀려요. '잠그다 → 잠가'."],
+['밥 먹기 전에 손을 깨끗이 씻어야 한다.','N',"'ㅅ' 받침 뒤에는 '-이'를 써서 '깨끗이'가 맞아요.","깨끗이, 따뜻이, 반듯이는 'ㅅ' 뒤의 '-이'예요."],
+['시계가 세 시를 가리키고 있다.','N',"시곗바늘이 어떤 시간을 집어 보일 때는 '가리키다'예요.","가르치다(교육), 가리키다(방향)로 구분해요."],
+['형이 나에게 수학을 가르쳐 주었다.','N',"지식을 알려 주는 건 '가르치다'예요. '가르쳐'가 맞아요.","선생님과 어울리면 '가르치다'예요."],
+['퀴즈 정답을 모두 맞혔다.','N',"정답을 고르는 건 '맞히다'라서 '맞혔다'가 맞아요.","정답은 '맞히다'. 퍼즐 조각은 '맞추다'예요."],
+['학생으로서 할 일을 다하자.','N',"자격이나 신분을 나타낼 때는 '로서'가 맞아요.","'로서'는 자격, '로써'는 수단이에요."],
+['이 공책은 천 원이다.','N',"돈의 단위 '원'은 숫자와 띄어 써요.","천 원, 만 원처럼 띄어요."],
+['나도 너만큼 빨리 달릴 수 있다.','N',"대명사 바로 뒤의 '만큼'은 조사라 붙여 써요. '달릴 수'의 '수'는 띄어요.","너만큼(조사)은 붙이고, 할 만큼(의존 명사)은 띄어요."],
+['웃을 수밖에 없었다.','N',"'오직 그것뿐'을 뜻하는 '수밖에'는 조사라 붙여 써요.","'수밖에 없다'는 늘 붙여요."],
+['이사 온 지 벌써 1년이 지났다.','N',"시간이 흐른 동안을 뜻하는 '지'는 띄어 써요.","'온 지 1년'은 기간을 셀 수 있어요."],
+['주말에 할머니 댁에 놀러 갔다.','N',"웃어른의 집은 '댁'이고, '놀러 가다'는 띄어 써요.","'댁'은 '집'의 높임말이에요."],
+['주문하신 커피 나왔습니다.','N',"'주문하신'은 손님을 높인 말이고, 사물인 커피에는 높임을 쓰지 않아요.","'커피가 나오셨습니다'는 틀려요."],
+['선생님, 내일 뵙겠습니다.','N',"윗사람을 만날 때는 '뵙다'를 써요. 나를 낮추는 말이에요.","보다 → 뵙다, 묻다 → 여쭙다, 주다 → 드리다."],
+['며칠 동안 비가 내렸다.','N',"'며칠'은 언제나 '며칠'로 적어요. '몇 일'은 없어요.","'몇 월 며칠'로 기억해요."],
+['저녁을 먹고 설거지를 했다.','N',"표준어는 '설거지'예요. '설겆이'는 쓰지 않아요.","설거지는 'ㅈ'으로 적어요."],
+['중학생이 돼서 정말 기쁘다.','N',"'되어서'를 줄이면 '돼서'예요.","'되어'로 바꿔도 말이 되면 '돼'예요."],
+['지각한 까닭은 늦잠을 잤기 때문이다.','N',"'까닭은'과 '-기 때문이다'가 짝을 맞춰요.","'~한 까닭은 ~기 때문이다'."],
+['내 꿈은 과학자가 되는 것이다.','N',"'내 꿈은'과 '~되는 것이다'가 짝을 맞춰요.","'꿈은 ~것이다'로 끝나야 해요."],
+['모르는 것은 선생님께 여쭤보자.','N',"윗사람에게 물을 때는 '여쭤보다'가 맞아요.","'묻다 → 여쭙다'로 높여요."]
 ];
 var MAX_PLAYERS = 40, PREFIX = 'ff-munjang-', CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', LIVES = 3;
 var $ = function(id){ return document.getElementById(id); };
@@ -700,7 +767,7 @@ function shuffle(arr, r){ for(var i=arr.length-1;i>0;i--){ var j=Math.floor(r()*
 
 // ---------- sentences ----------
 function parse(it){
-  var src=it[0], m=src.match(/\{([^}]*)\}/), o={ cat: it[1]||'N', rule: it[2]||'' };
+  var src=it[0], m=src.match(/\{([^}]*)\}/), o={ cat: it[1]||'N', rule: it[2]||'', tip: it[3]||'' };
   if(!m){ o.err=false; o.disp=src; o.fixed=src; o.a=o.b=o.fa=o.fb=-1; }
   else {
     var parts=m[1].split('|'), pre=src.slice(0,m.index), post=src.slice(m.index+m[0].length);
@@ -942,7 +1009,7 @@ function startSolo(name){ destroyPeer(); S.role='solo'; S.name=name; S.seed=(Mat
 
 // ---------- round ----------
 var timers=[], tickT=null, sendT=null, boardT=null, boardDirty=false, dirtyScore=false;
-function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearInterval(tickT); clearInterval(sendT); clearInterval(boardT); clearTimeout(slipT); clearTimeout(memoT); $('cd').classList.remove('on'); }
+function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearInterval(tickT); clearInterval(sendT); clearInterval(boardT); clearTimeout(slipT); clearTimeout(memoT); clearTimeout(exitT); $('cd').classList.remove('on'); }
 function iPlay(){ return S.role!=='host' || !!S.settings.hostPlay; }
 function timed(){ return S.role!=='solo'; }
 
@@ -951,7 +1018,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
   var now=Date.now();
   S.endAt = timed() ? now+cdMs+durMs : 0; S.totalMs = totalMs || durMs;
   if(!resume){ S.score=0; S.ok=0; S.miss=0; }
-  S.combo=0; S.best=0; S.lives=LIVES; S.n=0; S.log=[]; S.cat={}; S.lastOk=0;
+  S.combo=0; S.best=0; S.lives=LIVES; S.n=0; S.log=[]; S.cat={}; S.lastOk=0; hudPrev={ score:S.score, combo:0, lives:LIVES };
   // everyone in a room gets the same sentence order; error sentences outnumber clean ones about 3:1
   S.order = shuffle(POOL.map(function(_,i){ return i; }), rng(S.seed));
   if(resume) S.n = S.ok + S.miss;
@@ -964,12 +1031,12 @@ function beginRound(cdMs, durMs, totalMs, resume){
     $('gThirdL').textContent = tr(timed()?'남은 시간':'목숨');
     $('gBoard').innerHTML=''; $('gMeRank').textContent='';
     hud(); show('sGame');
-    $('words').innerHTML=''; $('memo').classList.add('hide'); $('stamp').className='stamp'; setTools(null);
+    $('words').innerHTML=''; $('memo').classList.add('hide'); $('stamp').className='stamp'; $('slip').className='slip'; $('slipBox').style.opacity='0'; setTools(null);
     if(cdMs>0) timers.push(setTimeout(nextSlip, cdMs)); else nextSlip();
   } else { $('wCode').textContent=S.code; show('sWatch'); }
   if(cdMs>0){
     $('cd').classList.add('on');
-    (function step(k){ $('cdNum').textContent=k; if(k>1) timers.push(setTimeout(function(){ step(k-1); }, 1000)); })(Math.round(cdMs/1000));
+    (function step(k){ var cn=$('cdNum'); cn.textContent=k; cn.classList.remove('tick'); void cn.offsetWidth; cn.classList.add('tick'); if(k>1) timers.push(setTimeout(function(){ step(k-1); }, 1000)); })(Math.round(cdMs/1000));
     timers.push(setTimeout(function(){ $('cd').classList.remove('on'); S.phase='play'; }, cdMs));
   }
   tickT=setInterval(tick, 200); tick();
@@ -987,14 +1054,27 @@ function tick(){
     else { S.phase='wait'; cur=null; clearTimeout(slipT); setTools(null); $('passBtn').disabled=true; send(S.conn, { t:'score', score:S.score, ok:S.ok, miss:S.miss }); toast(tr('작업 종료! 결과를 기다리는 중')); }
   }
 }
+var hudPrev={ score:0, combo:0, lives:LIVES };
+function bump(el){ var g=el.closest('.gauge'); if(!g) return; g.classList.remove('bump'); void g.offsetWidth; g.classList.add('bump'); }
 function hud(){
+  if(S.score!==hudPrev.score) bump($('gScore'));
+  if(S.combo!==hudPrev.combo && S.combo>0) bump($('gCombo'));
+  var lostIdx = S.lives<hudPrev.lives ? S.lives : -1;
   $('gScore').textContent=S.score; $('gCombo').textContent=S.combo;
-  var h=''; for(var i=0;i<LIVES;i++) h+='<i class="'+(i<S.lives?'':'off')+'">⚙</i>'; $('gLives').innerHTML=h;
+  $('gCombo').closest('.gauge').classList.toggle('hot', S.combo>=3);
+  var h=''; for(var i=0;i<LIVES;i++) h+='<i class="'+(i<S.lives?'':'off'+(i===lostIdx?' lost':''))+'">⚙</i>'; $('gLives').innerHTML=h;
+  hudPrev={ score:S.score, combo:S.combo, lives:S.lives };
 }
 function lamps(st){ $('lampA').className='lamp'+(st==='ok'?' g':''); $('lampB').className='lamp'+(st==='run'?' y':''); $('lampC').className='lamp'+(st==='bad'?' r':''); }
 
 // slip on the belt
-var cur=null, slipT=null, memoT=null;
+var cur=null, slipT=null, memoT=null, exitT=null;
+// after the stamp: a fixed slip rolls off to the left, a rejected one drops into the reject bin
+function exitSlip(good, x){
+  var sb=$('slipBox'), W=$('lane').clientWidth;
+  if(good){ sb.style.transition='transform .5s cubic-bezier(.5,0,.9,.5), opacity .5s ease-in'; sb.style.transform='translateX('+Math.round(x-W*1.05)+'px)'; sb.style.opacity='0'; }
+  else { sb.style.transition='transform .6s cubic-bezier(.5,0,.9,.4), opacity .6s ease-in'; sb.style.transform='translateX('+Math.round(x-W*.3)+'px) translateY(150px) rotate(-16deg)'; sb.style.opacity='0'; }
+}
 function slipTime(){ return timed() ? Math.max(8000, 13000 - S.n*120) : Math.max(7000, 14000 - S.n*300); }
 function nextSlip(){
   clearTimeout(memoT); $('memo').classList.add('hide');
@@ -1006,11 +1086,11 @@ function nextSlip(){
   $('gNo').textContent='#'+String(S.n+1).padStart(3,'0');
   $('slipNo').textContent=tr('작업 지시서')+' '+String(S.n+1).padStart(3,'0');
   $('words').innerHTML=p.words.map(function(w,i){ return '<button class="w" data-i="'+i+'">'+esc(w.t)+'</button>'; }).join('');
-  $('stamp').className='stamp';
+  $('stamp').className='stamp'; $('slip').className='slip';
   setTools(null); $('passBtn').disabled=false; lamps('run');
   // slide in from the right, drift across the belt, fall into the bin at the left
   var sb=$('slipBox');
-  sb.style.transition='none'; sb.style.transform='translateX(60vw)'; void sb.offsetWidth;
+  sb.style.transition='none'; sb.style.opacity='1'; sb.style.transform='translateX(60vw)'; void sb.offsetWidth;
   sb.style.transition='transform .45s cubic-bezier(.2,.8,.3,1)'; sb.style.transform='translateX(-42%)';
   timers.push(setTimeout(function(){ if(!cur || cur.p!==p || cur.done) return; sb.style.transition='transform '+dur+'ms linear'; sb.style.transform='translateX(-58%)'; }, 460));
   $('rollers').classList.add('run');
@@ -1025,7 +1105,7 @@ function setTools(opts){
 $('words').addEventListener('click', function(e){
   var b=e.target.closest('.w'); if(!b || !cur || cur.done || S.phase!=='play') return;
   var i=+b.dataset.i, w=cur.p.words[i];
-  if(!w.e){ b.classList.add('bad'); resolve(false, 'chip'); return; }
+  if(!w.e){ b.classList.add('miss'); resolve(false, 'chip'); return; }
   if(cur.sel) return;
   cur.sel=true;
   document.querySelectorAll('#words .w').forEach(function(x){ if(cur.p.words[+x.dataset.i].e) x.classList.add('sel'); });
@@ -1049,7 +1129,7 @@ document.addEventListener('keydown', function(e){
 
 function resolve(good, how){
   if(!cur || cur.done) return;
-  cur.done=true; clearTimeout(slipT);
+  cur.done=true; clearTimeout(slipT); clearTimeout(exitT);
   var p=cur.p, frac=Math.max(0, Math.min(1, 1-(Date.now()-cur.t0)/cur.dur));
   var sb=$('slipBox'), m=new DOMMatrixReadOnly(getComputedStyle(sb).transform);
   sb.style.transition='none'; sb.style.transform='translateX('+m.m41+'px)';
@@ -1077,7 +1157,9 @@ function resolve(good, how){
   st.textContent = tr(good ? (p.err?'수리 완료':'검사 통과') : (how==='time'?'시간 초과':'불량'));
   st.className='stamp '+(good?(p.err?'ok':'pass'):'bad'); void st.offsetWidth; st.classList.add('go');
   memo(p, good, how);
-  var wait = good ? (p.err ? 1700 : 900) : 3200;
+  $('slip').classList.add(good?'is-ok':'is-bad'); $('slip').classList.remove('thud'); void $('slip').offsetWidth; $('slip').classList.add('thud');
+  var wait = good ? (p.err ? 1900 : 1500) : 3600;
+  exitT=setTimeout(function(){ exitSlip(good, m.m41); }, good ? wait-520 : wait-700);
   memoT=setTimeout(nextSlip, wait);
 }
 function fixedWord(p){
@@ -1099,11 +1181,15 @@ function memo(p, good, how){
       : tr('시간 초과');
   }
   var el=$('memo');
-  el.innerHTML='<div class="h '+cls+'">'+esc(h)+(p.err?' · '+esc(tr(CATS[p.cat])):'')+'</div>'
+  var diff = p.err ? '<div class="diff" data-kr><del>'+esc(p.wrong)+'</del><span class="arr" aria-hidden="true">→</span><ins>'+esc(p.right)+'</ins></div>' : '';
+  el.className='memo '+cls;
+  el.innerHTML='<div class="h '+cls+'">'+esc(h)+(p.err?'<span class="cat">'+esc(tr(CATS[p.cat]))+'</span>':'')+'</div>'
     +(p.err||!good ? '<div class="fixed" data-kr>'+hiFixed(p)+'</div>' : '')
+    +diff
     +(p.rule ? '<div class="rule" data-kr>'+esc(p.rule)+'</div>' : '')
+    +(p.tip ? '<div class="tip" data-kr><b>'+esc(tr('기억하기'))+'</b>'+esc(p.tip)+'</div>' : '')
     +'<button class="next">'+tr('다음 ▶')+'</button>';
-  el.classList.remove('hide');
+  void el.offsetWidth;
   setTimeout(function(){ try{ el.scrollIntoView({ block:'nearest', behavior:'auto' }); }catch(e){} }, 60);
   el.querySelector('.next').onclick=function(){ nextSlip(); };
 }
@@ -1144,14 +1230,25 @@ function finishRound(){
 }
 
 // ---------- result ----------
+function countUp(el, to, suf){
+  if(to<0){ el.textContent='-'; return; }
+  var reduce=false; try{ reduce=matchMedia('(prefers-reduced-motion:reduce)').matches; }catch(e){}
+  if(reduce || to===0){ el.textContent=to+suf; return; }
+  var t0=performance.now(), dur=Math.min(900, 300+to*4);
+  (function f(t){ var k=Math.min(1,(t-t0)/dur); k=1-Math.pow(1-k,3); el.textContent=Math.round(to*k)+suf; if(k<1) requestAnimationFrame(f); })(t0);
+}
 function showResult(r){
   clearTimers(); S.phase='result'; cur=null;
   var played = iPlay();
   $('rWho').textContent = S.name + ' · ' + new Date().toLocaleDateString(lang==='ko'?'ko-KR':lang);
   var all=S.ok+S.miss;
-  $('rScore').textContent=S.score; $('rDone').textContent=all; $('rAcc').textContent= all?Math.round(S.ok/all*100)+'%':'-'; $('rCombo').textContent=S.best;
+  var acc = all?Math.round(S.ok/all*100):-1;
+  countUp($('rScore'), S.score, ''); countUp($('rDone'), all, ''); countUp($('rAcc'), acc, '%'); countUp($('rCombo'), S.best, '');
+  var vd=$('verdict'); vd.className='verdict';
+  if(played && all){ vd.textContent = tr(acc>=90?'검수 우수':acc>=70?'검수 합격':'재검수 필요'); vd.classList.add(acc>=90?'ace':acc>=70?'ok':'redo'); void vd.offsetWidth; vd.classList.add('go'); }
+  else vd.textContent='';
   document.querySelector('.stats').classList.toggle('hide', !played);
-  $('rCats').innerHTML = played ? ['S','W','H','P','N'].filter(function(k){ return S.cat[k]; }).map(function(k){ var c=S.cat[k], pc=Math.round(c.ok/c.all*100); return '<div class="cat"><span>'+esc(tr(CATS[k]))+'</span><div class="t"><i style="width:'+pc+'%"></i></div><span class="v">'+c.ok+'/'+c.all+'</span></div>'; }).join('') : '';
+  $('rCats').innerHTML = played ? ['S','W','H','P','N'].filter(function(k){ return S.cat[k]; }).map(function(k){ var c=S.cat[k], pc=Math.round(c.ok/c.all*100); return '<div class="cat"><span>'+esc(tr(CATS[k]))+'</span><div class="t"><i class="'+(pc>=80?'hi':pc>=50?'mid':'lo')+'" style="--w:'+pc+'%;--d:'+(k==='S'?0:k==='W'?1:k==='H'?2:k==='P'?3:4)*90+'ms"></i></div><span class="v">'+c.ok+'/'+c.all+'</span></div>'; }).join('') : '';
   $('rRankBox').classList.toggle('hide', !r);
   if(r){
     $('rRank').innerHTML=r.map(function(e){
@@ -1163,7 +1260,7 @@ function showResult(r){
   $('rMistH').classList.toggle('hide', !played);
   $('rMist').innerHTML = !played ? '' : list.length ? list.map(function(x){
     var p=x.p, s = p.err ? esc(p.disp.slice(0,p.a))+'<del>'+esc(p.wrong)+'</del> <ins>'+esc(p.right)+'</ins>'+esc(p.disp.slice(p.b)) : esc(p.disp)+' <ins>✓</ins>';
-    return '<div><div class="s" data-kr>'+s+'</div><div class="r" data-kr>'+esc(p.rule || '이 문장은 고칠 곳이 없었어요.')+'</div></div>';
+    return '<div><div class="s" data-kr>'+s+'</div><div class="r" data-kr>'+esc(p.rule || '이 문장은 고칠 곳이 없었어요.')+'</div>'+(p.tip?'<div class="r tp" data-kr>'+esc(p.tip)+'</div>':'')+'</div>';
   }).join('') : '<div style="border-color:#2c8a52">'+esc(tr('틀린 문장이 없어요. 완벽한 작업이에요!'))+'</div>';
   $('againBtn').classList.toggle('hide', S.role==='guest');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';

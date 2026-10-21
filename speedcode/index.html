@@ -241,6 +241,119 @@
   .langSel:hover{color:var(--text); border-color:var(--fry);}
   .toast{position:fixed; left:50%; bottom:calc(20px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%) translateY(20px); background:#1b2130; border:1px solid var(--line); border-radius:12px; padding:10px 16px; font-size:15px; opacity:0; transition:all .25s; z-index:30; pointer-events:none; max-width:90vw;}
   .toast.on{opacity:1; transform:translateX(-50%);}
+
+  /* ---- polish: cockpit view in play/lobby, keycap pads, feedback, result ---- */
+  .ticker{overflow:hidden; mask-image:linear-gradient(90deg,transparent,#000 4%,#000 94%,transparent); -webkit-mask-image:linear-gradient(90deg,transparent,#000 4%,#000 94%,transparent);}
+  .tkIn{display:inline-flex; white-space:nowrap; animation:tk 60s linear infinite; will-change:transform;}
+  .tkIn span{flex:none;}
+  @keyframes tk{to{transform:translateX(-50%);}}
+  @media(prefers-reduced-motion:reduce){ .tkIn{animation:none !important;} }
+  body.onPlay .ship .win, body.onLobby .ship .win{top:12px; bottom:96px; height:auto; width:100vw; max-width:none; border-radius:0; border:0; box-shadow:inset 0 0 140px rgba(0,0,0,.85); transition:opacity .4s;}
+  body.onPlay .ship .win::before, body.onLobby .ship .win::before{display:none;}
+  body.onPlay .ship .win{opacity:.4;} body.onLobby .ship .win{opacity:.28;}
+  .stage{background:linear-gradient(180deg,rgba(23,28,40,.88),rgba(13,16,24,.92)); border:1px solid #2b3447; box-shadow:inset 0 1px 0 rgba(255,255,255,.06), 0 22px 60px rgba(0,0,0,.5); transition:box-shadow .3s, border-color .3s;}
+  .stage::before{content:''; position:absolute; inset:7px; pointer-events:none; border-radius:12px; opacity:.55;
+    background:
+      linear-gradient(var(--fry),var(--fry)) 0 0/16px 2px no-repeat, linear-gradient(var(--fry),var(--fry)) 0 0/2px 16px no-repeat,
+      linear-gradient(var(--fry),var(--fry)) 100% 0/16px 2px no-repeat, linear-gradient(var(--fry),var(--fry)) 100% 0/2px 16px no-repeat,
+      linear-gradient(var(--fry),var(--fry)) 0 100%/16px 2px no-repeat, linear-gradient(var(--fry),var(--fry)) 0 100%/2px 16px no-repeat,
+      linear-gradient(var(--fry),var(--fry)) 100% 100%/16px 2px no-repeat, linear-gradient(var(--fry),var(--fry)) 100% 100%/2px 16px no-repeat;}
+  .stage.fOk{animation:fOk .5s ease;} .stage.fBad{animation:fBad .6s ease;}
+  @keyframes fOk{0%{border-color:var(--ok); box-shadow:inset 0 0 60px rgba(63,224,160,.28), 0 0 30px rgba(63,224,160,.25);} 100%{}}
+  @keyframes fBad{0%{border-color:var(--bad); box-shadow:inset 0 0 70px rgba(255,84,104,.3), 0 0 30px rgba(255,84,104,.25);} 100%{}}
+  .lvl{display:inline-flex; align-items:center; gap:8px;}
+  .lvl::before{content:''; width:7px; height:7px; border-radius:50%; background:var(--ok); box-shadow:0 0 8px var(--ok); animation:lamp 2s infinite;}
+  .lvl.up{animation:lvup .7s ease;}
+  @keyframes lvup{0%{transform:scale(1.5); color:var(--fry); text-shadow:0 0 18px rgba(255,180,60,.9);} 100%{transform:none;}}
+  .comboRow{height:32px; margin-top:6px; display:flex; align-items:center; justify-content:center;}
+  .combo{margin:0; display:inline-flex; align-items:center; gap:10px;}
+  .combo.pulse{animation:cpulse .35s ease;}
+  @keyframes cpulse{0%{transform:scale(1.18);} 100%{transform:none;}}
+  .combo .pips{display:inline-flex; gap:4px;}
+  .combo .pips i{width:14px; height:5px; border-radius:3px; background:rgba(255,201,60,.2);}
+  .combo .pips i.on{background:var(--fry); box-shadow:0 0 8px rgba(255,201,60,.8);}
+  .bits{margin-top:6px;}
+  .bit .v{box-shadow:inset 0 1px 0 rgba(255,255,255,.06), inset 0 -3px 0 rgba(0,0,0,.35), 0 2px 0 #05060a;}
+  .bit .v.one{box-shadow:inset 0 1px 0 rgba(255,255,255,.55), inset 0 -4px 0 rgba(160,70,0,.35), 0 8px 22px rgba(255,160,60,.3);}
+  .bit .pv{padding:1px 8px; border-radius:6px; background:rgba(255,255,255,.04); min-height:20px; line-height:18px;}
+  .bit .pv:empty{background:none;}
+  .bit .pv.one{background:rgba(255,201,60,.12);}
+  .bit .v.tap{transition:transform .08s; user-select:none; -webkit-user-select:none;}
+  .bit .v.tap:active{transform:translateY(2px) scale(.96);}
+  @keyframes tg{0%{transform:scale(.82);} 60%{transform:scale(1.1);} 100%{transform:none;}}
+  .bits.ok .v{border-color:var(--ok); box-shadow:0 0 0 2px var(--ok), 0 0 24px rgba(63,224,160,.45);}
+  .ans{background:linear-gradient(180deg,#05070b,#0a0d14); box-shadow:inset 0 3px 12px rgba(0,0,0,.7); position:relative;}
+  .ans.cr::after{content:''; width:3px; height:.95em; margin-left:4px; background:var(--fry); border-radius:2px; animation:blink 1s steps(2) infinite;}
+  .ans.cr.empty::after{margin-left:0;}
+  .ans.ok{box-shadow:inset 0 3px 12px rgba(0,0,0,.7), 0 0 22px rgba(63,224,160,.35);}
+  .pad button, .pad2 button{box-shadow:0 3px 0 #070a10, inset 0 1px 0 rgba(255,255,255,.07); transition:background .08s, transform .06s, box-shadow .06s;}
+  .pad button:active, .pad2 button:active{transform:translateY(3px); box-shadow:0 0 0 #070a10, inset 0 1px 0 rgba(255,255,255,.04);}
+  .pad .k-ok, .pad2 .k-ok{box-shadow:0 3px 0 #a8501a, 0 8px 18px rgba(255,150,50,.2);}
+  .pad .k-ok:active, .pad2 .k-ok:active{box-shadow:0 0 0 #a8501a; filter:brightness(1.1);}
+  .pad button:focus-visible, .pad2 button:focus-visible{outline:2px solid var(--fry); outline-offset:2px;}
+  .plus{top:44%; left:80%; text-shadow:0 2px 14px rgba(0,0,0,.8); z-index:4;}
+  .stat b.bump{animation:bump .35s ease;} @keyframes bump{40%{transform:scale(1.3); color:var(--ok);}}
+  .stat{background:linear-gradient(180deg,rgba(23,28,40,.9),rgba(14,17,25,.92)); box-shadow:inset 0 1px 0 rgba(255,255,255,.05);}
+  .tbar{position:relative; height:7px; background:rgba(16,19,27,.9); border:1px solid var(--line);}
+  .tbar::after{content:''; position:absolute; inset:0; background:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),rgba(0,0,0,.55) calc(10% - 1px) 10%);}
+  .tbar.low i{background:linear-gradient(90deg,var(--bad),#ff8a5d); box-shadow:0 0 10px rgba(255,84,104,.6);}
+  .pen{background:radial-gradient(ellipse at center, rgba(40,8,14,.86), rgba(8,9,13,.92));}
+  .pen .penAns{margin-top:10px; padding:6px 14px; border-radius:10px; border:1px solid rgba(255,201,60,.35); background:rgba(255,201,60,.08); font-family:'JetBrains Mono',monospace; font-weight:700; font-size:clamp(14px,3.6vw,18px); color:var(--fry); white-space:pre;}
+  .penBar{width:min(60%,200px); height:4px; border-radius:3px; background:rgba(255,255,255,.1); margin-top:14px; overflow:hidden;}
+  .penBar i{display:block; height:100%; background:var(--bad); transform-origin:left; animation:penb 2s linear forwards;}
+  @keyframes penb{from{transform:scaleX(1);} to{transform:scaleX(0);}}
+  .countdown{background:radial-gradient(circle at center, rgba(8,9,13,.78), rgba(8,9,13,.94));}
+  .cdRing{position:relative; width:min(62vw,300px); aspect-ratio:1; border-radius:50%; display:grid; place-items:center; border:1px solid rgba(255,201,60,.3); box-shadow:inset 0 0 70px rgba(255,160,60,.12), 0 0 90px rgba(255,160,60,.1);}
+  .cdRing::before{content:''; position:absolute; inset:-1px; border-radius:50%; background:conic-gradient(from 0deg, rgba(255,201,60,0) 0 70%, rgba(255,201,60,.85) 100%); -webkit-mask:radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px)); mask:radial-gradient(farthest-side, transparent calc(100% - 4px), #000 calc(100% - 3px)); animation:sweep 1s linear infinite;}
+  .cdRing::after{content:''; position:absolute; inset:14%; border-radius:50%; border:1px dashed rgba(255,201,60,.25);}
+  @keyframes sweep{to{transform:rotate(360deg);}}
+  .countdown b{font-size:min(30vw,150px); line-height:1;}
+  /* lobby */
+  .codeBox{box-shadow:0 0 0 1px rgba(255,201,60,.08), 0 18px 50px rgba(0,0,0,.45), inset 0 0 40px rgba(255,160,60,.06); position:relative;}
+  .codeBox small::before{content:''; display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--ok); box-shadow:0 0 8px var(--ok); margin-right:8px; vertical-align:1px; animation:lamp 2s infinite;}
+  .codeBox .cd{text-shadow:0 0 28px rgba(255,180,60,.35);}
+  .codeBox .lnk button{min-height:32px; padding:3px 12px;}
+  #hostSet{background:rgba(16,19,27,.9);}
+  .setRow{gap:10px;} .setRow > span{min-width:80px;}
+  #hostSet .seg button{padding:7px 12px;}
+  .btn.main[disabled]{background:var(--panel2); color:#5d667b; opacity:1; border:1px solid var(--line);}
+  .chip{display:inline-flex; align-items:center; gap:8px; padding:8px 14px 8px 12px; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .chip::before{content:''; flex:none; width:7px; height:7px; border-radius:50%; background:var(--ok); box-shadow:0 0 8px var(--ok);}
+  .chip.me{background:rgba(255,201,60,.08);}
+  .chips .msg.info{display:block; width:100%; padding:16px; margin:0; text-align:center; border:1px dashed var(--line); border-radius:12px;}
+  #renameIn{height:44px;} #renameBtn,#leaveBtn{height:44px; padding:0 18px; font-size:15.5px;}
+  /* result */
+  .resTitle{font-size:clamp(30px,6vw,46px) !important; letter-spacing:.06em; display:flex; align-items:center; gap:16px;}
+  .resTitle::after{content:''; flex:1; height:2px; background:linear-gradient(90deg,rgba(255,201,60,.6),transparent);}
+  .podium{gap:10px; margin:22px 0 4px; align-items:flex-end;}
+  .pod{display:flex; flex-direction:column; align-items:center; min-width:0;}
+  .pod .av{width:46px; height:46px; border-radius:50%; display:grid; place-items:center; font-weight:900; font-size:20px; background:var(--panel2); border:2px solid #9aa6b8; color:var(--text); margin-bottom:6px;}
+  .pod.p1 .av{width:58px; height:58px; font-size:24px; border-color:#ffd54a; box-shadow:0 0 22px rgba(255,200,70,.4);}
+  .pod.p3 .av{border-color:#e09a5c;}
+  .pod .crown{color:#ffd54a; margin-bottom:4px; filter:drop-shadow(0 0 8px rgba(255,200,70,.6)); animation:crown .6s .9s ease backwards;}
+  @keyframes crown{from{transform:translateY(-14px) scale(.6); opacity:0;}}
+  .pod .who{max-width:100%;} .pod .pts{margin-bottom:8px; font-family:'JetBrains Mono',monospace; font-size:13.5px;}
+  .pod .blk{width:100%; position:relative; box-shadow:inset 0 3px 0 rgba(255,255,255,.55), inset 0 -10px 24px rgba(0,0,0,.18); background-image:repeating-linear-gradient(90deg,transparent 0 11px,rgba(0,0,0,.06) 11px 12px);}
+  .pod.p1 .blk{background-color:#ffb43d;} .pod.p1 .blk{box-shadow:inset 0 3px 0 rgba(255,255,255,.6), inset 0 -10px 24px rgba(0,0,0,.18), 0 0 40px rgba(255,170,50,.3);}
+  .pod .blk span{margin-top:2px;}
+  .myRes{text-align:center; font-size:18px; margin-top:16px; padding:12px 18px; border-radius:14px; border:1px solid var(--line); background:rgba(16,19,27,.85);}
+  .myRes:empty{display:none;}
+  .myRes .win{color:var(--fry); font-weight:900;}
+  .soloHero{margin-top:44px; display:grid; grid-template-columns:1fr; gap:14px; justify-items:center;}
+  .soloHero .hs{text-align:center; padding:22px 52px 18px; border-radius:18px; border:1px solid rgba(255,196,61,.4); background:linear-gradient(140deg,rgba(255,201,60,.12),rgba(255,138,61,.05)); box-shadow:0 18px 50px rgba(0,0,0,.4);}
+  .soloHero small{display:block; font-size:12.5px; font-weight:700; letter-spacing:.1em; color:var(--dim);}
+  .soloHero .hs b{display:block; font-family:'Oswald',sans-serif; font-size:clamp(72px,18vw,128px); line-height:1.05; color:var(--fry); text-shadow:0 0 36px rgba(255,170,50,.35);}
+  .hstats{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; width:min(100%,520px);}
+  .hstats > div{padding:12px 10px; text-align:center; border-radius:14px; background:rgba(16,19,27,.88); border:1px solid var(--line);}
+  .hstats b{display:block; font-family:'Oswald',sans-serif; font-size:clamp(22px,6vw,30px); line-height:1.2; margin-top:2px; white-space:nowrap;}
+  .resTbl tr{animation:fade .35s ease backwards;}
+  .resTbl td.nm{max-width:0; width:34%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .resTbl tr.me td{background:rgba(255,201,60,.08);}
+  .rkb{display:inline-grid; place-items:center; min-width:28px; height:28px; border-radius:8px; font-size:16px;}
+  .resTbl tr.r1 .rkb{background:linear-gradient(180deg,#ffd54a,#ff9d3d); color:#1c1405;}
+  .resTbl tr.r2 .rkb{background:linear-gradient(180deg,#e6ecf5,#9aa6b8); color:#1c1405;}
+  .resTbl tr.r3 .rkb{background:linear-gradient(180deg,#f0b27a,#b8672e); color:#1c1405;}
+  @media(max-width:600px){ .resTbl{font-size:13.5px;} .resTbl th,.resTbl td{padding:8px 6px;} .resTbl th{font-size:11.5px; letter-spacing:0;} .resTbl td.nm{width:30%;} .soloHero .hs{padding:18px 36px 14px;} .pod .av{width:38px; height:38px; font-size:17px;} .pod.p1 .av{width:48px; height:48px;} }
 </style>
 </head>
 <body class="onHome">
@@ -260,7 +373,7 @@
   <!-- HOME -->
   <section class="screen on" id="sHome">
     <h1 class="title">Speed<span>Code</span></h1>
-    <div class="ticker" id="ticker"></div>
+    <div class="ticker"><div class="tkIn" id="ticker"></div></div>
     <div class="homeGrid">
       <div class="panel full">
         <label class="lb" for="nameIn">이름</label>
@@ -324,10 +437,10 @@
     <div class="play">
       <div class="stage">
         <div class="lvl"><b id="gBits">3</b><span id="gTask">BIT · 십진수로 바꾸세요</span></div>
-        <div class="combo hide" id="gCombo"></div>
+        <div class="comboRow"><div class="combo hide" id="gCombo"></div></div>
         <div class="dec hide" id="gDec"></div>
         <div class="bitsWrap"><div class="bits" id="gBitsBox"></div><div class="dir" id="gDir"><span>큰 자리</span><i></i><span>작은 자리</span></div></div>
-        <div class="ans empty" id="gAns">?</div>
+        <div class="ans empty cr" id="gAns"></div>
         <div class="pad" id="pad">
           <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
           <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
@@ -337,7 +450,7 @@
         <div class="pad2 hide" id="pad2"><button data-k="clr">지우기</button><button data-k="ok" class="k-ok"><span>확인</span><small>Enter</small></button></div>
         <button class="skip" id="skipBtn">건너뛰기</button> <button class="skip hide" id="endNow2">지금 끝내기</button>
         <div class="plus" id="gPlus">+1</div>
-        <div class="pen" id="pen"><b>오답! 쉬는 중</b><span id="penNum">2</span></div>
+        <div class="pen" id="pen"><b>오답! 쉬는 중</b><span id="penNum">2</span><div class="penAns" id="penAns"></div><div class="penBar"><i id="penBarI"></i></div></div>
       </div>
       <div class="side panel" id="gSide">
         <h4>실시간 순위</h4>
@@ -361,10 +474,11 @@
 
   <!-- RESULT -->
   <section class="screen" id="sResult">
-    <h1 class="title" style="font-size:clamp(44px,9vw,84px)">결과</h1>
+    <h1 class="title resTitle">결과</h1>
     <div class="podium" id="podium"></div>
     <div class="myRes" id="myRes"></div>
-    <div class="tblWrap"><table class="resTbl"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>해독</th><th>정확도</th><th>최고 자릿수</th></tr></thead><tbody id="resBody"></tbody></table></div>
+    <div class="soloHero hide" id="soloHero"></div>
+    <div class="tblWrap" id="tblWrap"><table class="resTbl"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>해독</th><th>정확도</th><th>최고 자릿수</th></tr></thead><tbody id="resBody"></tbody></table></div>
     <div class="row" style="margin-top:22px; justify-content:center">
       <button class="btn main hide" id="againBtn">다시 하기</button>
       <button class="btn ghost" id="homeBtn">처음으로</button>
@@ -373,7 +487,7 @@
   </section>
 </div>
 
-<div class="countdown" id="cd"><b id="cdNum">3</b></div>
+<div class="countdown" id="cd"><div class="cdRing"><b id="cdNum">3</b></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -430,7 +544,7 @@ var token = lsGet('speedcode.token');
 if(!token){ token = Math.random().toString(36).slice(2)+Date.now().toString(36); lsSet('speedcode.token', token); }
 
 function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
-function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on', s.id===id); }); document.body.classList.toggle('onHome', id==='sHome'); document.body.classList.toggle('onResult', id==='sResult'); window.scrollTo(0,0); }
+function show(id){ document.querySelectorAll('.screen').forEach(function(s){ s.classList.toggle('on', s.id===id); }); document.body.classList.toggle('onHome', id==='sHome'); document.body.classList.toggle('onResult', id==='sResult'); document.body.classList.toggle('onPlay', id==='sGame' || id==='sWatch'); document.body.classList.toggle('onLobby', id==='sLobby'); window.scrollTo(0,0); }
 var toastT;
 function toast(t){ var el=$('toast'); el.textContent=t; el.classList.add('on'); clearTimeout(toastT); toastT=setTimeout(function(){ el.classList.remove('on'); }, 2400); }
 var netNow=['','오프라인'];
@@ -439,7 +553,7 @@ function fmt(ms){ var s=Math.max(0,Math.ceil(ms/1000)); return Math.floor(s/60)+
 function cleanName(n){ n=String(n||'').replace(/\s+/g,' ').trim().slice(0,16); return n || tr('플레이어'); }
 
 // ticker on home
-(function(){ var parts=[]; for(var i=0;i<14;i++){ var n=1+Math.floor(Math.random()*255); parts.push(n.toString(2).padStart(8,'0')+' = <b>'+n+'</b>'); } $('ticker').innerHTML=parts.join(' &nbsp;·&nbsp; '); })();
+(function(){ var parts=[]; for(var i=0;i<14;i++){ var n=1+Math.floor(Math.random()*255); parts.push(n.toString(2).padStart(8,'0')+' = <b>'+n+'</b>'); } var h=parts.join(' &nbsp;·&nbsp; '); $('ticker').innerHTML='<span>'+h+' &nbsp;·&nbsp; </span><span aria-hidden="true">'+h+' &nbsp;·&nbsp; </span>'; })();
 
 $('nameIn').value = lsGet('speedcode.name') || '';
 $('diceBtn').onclick=function(){ var L=RNAMES[lang], pick=function(a){ return a[Math.floor(Math.random()*a.length)]; }; var n; do { n=pick(L[0])+' '+pick(L[1]); } while(n.length>16); $('nameIn').value = n; };
@@ -752,7 +866,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
   if(cdMs>0){
     $('cd').classList.add('on');
     var n=Math.round(cdMs/1000);
-    (function step(k){ $('cdNum').textContent=k; $('cdNum').style.animation='none'; void $('cdNum').offsetWidth; $('cdNum').style.animation=''; if(k>1) timers.push(setTimeout(function(){ step(k-1); }, 1000)); })(n);
+    (function step(k){ sfx(k>1?520:780, k>1?500:900, .2, 'triangle'); $('cdNum').textContent=k; $('cdNum').style.animation='none'; void $('cdNum').offsetWidth; $('cdNum').style.animation=''; if(k>1) timers.push(setTimeout(function(){ step(k-1); }, 1000)); })(n);
     timers.push(setTimeout(function(){ $('cd').classList.remove('on'); S.phase='play'; }, cdMs));
   }
   tickT = setInterval(tick, 200); tick();
@@ -767,10 +881,11 @@ function tick(){
   $('gBar').style.width=pct+'%'; $('wBar').style.width=pct+'%';
   if($('pen').classList.contains('on')) updatePen();
   var low = left<=10000;
-  $('gTimeBox').classList.toggle('low', low); $('wTimeBox').classList.toggle('low', low);
+  $('gTimeBox').classList.toggle('low', low); $('wTimeBox').classList.toggle('low', low); $('gBar').parentNode.classList.toggle('low', low); $('wBar').parentNode.classList.toggle('low', low);
+  var sec=Math.ceil(left/1000); if(low && S.phase==='play' && sec>0 && sec!==S.lastSec){ S.lastSec=sec; if(sec<=5) sfx(900,860,.07,'sine'); }
   if(left<=0 && S.phase==='play'){
     if(S.role==='host' || S.role==='solo') finishRound();
-    else { S.phase='wait'; lockPad(true); send(S.conn, { t:'score', score:S.score, solved:S.solved, wrong:S.wrong, maxBits:S.maxBits }); $('gAns').textContent=tr('시간 종료'); $('gAns').className='ans'; }
+    else { S.phase='wait'; lockPad(true); send(S.conn, { t:'score', score:S.score, solved:S.solved, wrong:S.wrong, maxBits:S.maxBits }); $('gAns').textContent=tr('시간 종료'); $('gAns').className='ans done'; }
   }
 }
 
@@ -811,10 +926,11 @@ function renderBitsIn(anim){
 function bitsValue(){ return S.bitsIn.reduce(function(a,b){ return a*2+b; }, 0); }
 $('gBitsBox').addEventListener('pointerdown', function(e){
   var t=e.target.closest('.v.tap'); if(!t || !S.qd2b || !canType()) return; e.preventDefault();
-  var i=+t.dataset.i; S.bitsIn[i]^=1; S.cursor=Math.min(i+1, S.bitsIn.length-1); $('gBitsBox').className='bits'; renderBitsIn(false);
+  var i=+t.dataset.i; S.bitsIn[i]^=1; S.cursor=Math.min(i+1, S.bitsIn.length-1); $('gBitsBox').className='bits'; renderBitsIn(false); tapFx(i, S.bitsIn[i]);
 });
+function tapFx(i, one){ var el=$('gBitsBox').querySelectorAll('.v')[i]; if(el){ el.style.animation='tg .2s ease'; } sfx(one?760:520, one?900:420, .05, 'triangle'); }
 $('pad2').addEventListener('pointerdown', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); press(b.dataset.k); });
-function renderAns(cls){ var a=$('gAns'); a.className='ans'+(S.input?'':' empty')+(cls?' '+cls:'')+(S.qd2b?' hide':''); a.textContent=S.input||'?'; }
+function renderAns(cls){ var a=$('gAns'); a.className='ans'+(S.input?'':' empty')+(cls?' '+cls:' cr')+(S.qd2b?' hide':''); a.textContent=S.input||''; }
 var padLocked=false;
 function lockPad(on){ padLocked=on; }
 function canType(){ return S.phase==='play' && !padLocked && iPlay() && $('sGame').classList.contains('on'); }
@@ -824,7 +940,7 @@ function press(k){
     if(k==='ok'){ check(); return; }
     if(k==='clr' || k==='del' && S.cursor===0){ S.bitsIn=S.bitsIn.map(function(){ return 0; }); S.cursor=0; renderBitsIn(false); return; }
     if(k==='del'){ S.cursor=Math.max(0,S.cursor-1); S.bitsIn[S.cursor]=0; renderBitsIn(false); return; }
-    if(k==='0' || k==='1'){ S.bitsIn[S.cursor]=+k; S.cursor=Math.min(S.cursor+1, S.bitsIn.length-1); renderBitsIn(false); }
+    if(k==='0' || k==='1'){ var ci=S.cursor; S.bitsIn[ci]=+k; S.cursor=Math.min(S.cursor+1, S.bitsIn.length-1); renderBitsIn(false); tapFx(ci, +k); }
     return;
   }
   if(k==='del'){ S.input=S.input.slice(0,-1); renderAns(); return; }
@@ -842,24 +958,32 @@ function check(){
     else { var bb=$('gBitsBox'); bb.className='bits'; void bb.offsetWidth; bb.className='bits bad'; penalize(); return; }
   } else if(!S.input) return;
   if(S.qd2b || +S.input===S.cur){
-    S.solved++; S.combo++; var pts=comboPts(S.combo); sfx(660, pts>1?1320:990, .16);
+    S.solved++; S.combo++; var pts=comboPts(S.combo); sfx(660+Math.min(S.combo,9)*30, (pts>1?1320:990)+Math.min(S.combo,9)*30, .16);
+    if(!S.qd2b) $('gBitsBox').className='bits ok';
+    flash('fOk'); S.boostT=performance.now()+450;
+    if(S.combo%3===0) timers.push(setTimeout(function(){ sfx(990,1760,.22,'triangle'); }, 90));
     S.score+=pts; S.lastSolve=Date.now(); S.maxBits=Math.max(S.maxBits, S.bits); dirtyScore=true;
-    $('gScore').textContent=S.score; if(!S.qd2b) renderAns('ok'); renderCombo();
+    $('gScore').textContent=S.score; bump($('gScore')); if(!S.qd2b) renderAns('ok'); renderCombo();
     var pl=$('gPlus'); pl.textContent='+'+pts; pl.classList.toggle('big', pts>1); pl.classList.remove('go'); void pl.offsetWidth; pl.classList.add('go');
     lockPad(true);
     var lvlUp = bitsFor(S.solved, S.settings.maxBits) > S.bits;
-    timers.push(setTimeout(function(){ if(S.phase==='play'){ nextQ(); if(lvlUp) toast(tr('{0}비트로 올라갔어요!', S.bits)); } }, 260));
+    timers.push(setTimeout(function(){ if(S.phase==='play'){ nextQ(); if(lvlUp){ toast(tr('{0}비트로 올라갔어요!', S.bits)); var lv=document.querySelector('.lvl'); lv.classList.remove('up'); void lv.offsetWidth; lv.classList.add('up'); sfx(520,1040,.28,'triangle'); } } }, 260));
     if(S.role==='host') boardDirty=true;
   } else {
     renderAns('bad'); penalize();
   }
 }
+function flash(c){ var st=document.querySelector('.stage'); st.classList.remove('fOk','fBad'); void st.offsetWidth; st.classList.add(c); }
+function bump(el){ el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump'); }
 // wrong answer: combo is lost and the keypad is locked for a moment so guessing doesn't pay
 var penTimer=null;
 function penalize(){
   sfx(220,110,.3,'square');
-  S.wrong++; S.combo=0; dirtyScore=true; renderCombo();
+  S.wrong++; S.combo=0; dirtyScore=true; renderCombo(); flash('fBad');
   lockPad(true); S.penUntil=Date.now()+PEN_MS;
+  // show the right answer while resting: binary = decimal
+  $('penAns').textContent = tr('정답')+'  '+S.cur.toString(2)+' = '+S.cur;
+  var pb=$('penBarI'); pb.style.animation='none'; void pb.offsetWidth; pb.style.animation='';
   $('pen').classList.add('on'); updatePen();
   clearTimeout(penTimer); penTimer=setTimeout(endPenalty, PEN_MS);
 }
@@ -870,7 +994,12 @@ function endPenalty(){
   if(S.phase==='play') lockPad(false);
 }
 function renderCombo(){
-  var c=$('gCombo'); if(S.combo>=2){ c.textContent=tr('🔥 콤보 {0} · 다음 +{1}', S.combo, comboPts(S.combo+1)); c.classList.remove('hide'); } else c.classList.add('hide');
+  var c=$('gCombo'); if(S.combo>=2){
+    var f=S.combo%3, pips='';
+    for(var i=0;i<3;i++) pips+='<i'+(i<f?' on':'')+'></i>';
+    c.innerHTML='<span>'+esc(tr('🔥 콤보 {0} · 다음 +{1}', S.combo, comboPts(S.combo+1)))+'</span><span class="pips">'+pips+'</span>';
+    c.classList.remove('hide'); c.classList.remove('pulse'); void c.offsetWidth; c.classList.add('pulse');
+  } else c.classList.add('hide');
 }
 $('pad').addEventListener('pointerdown', function(e){ var b=e.target.closest('button'); if(!b) return; e.preventDefault(); press(b.dataset.k); });
 $('skipBtn').onclick = function(){ if(!canType()) return; S.wrong++; S.combo=0; renderCombo(); dirtyScore=true; nextQ(); };
@@ -923,23 +1052,35 @@ function finishRound(){
   showResult(r);
 }
 
+var CROWN='<svg class="crown" viewBox="0 0 32 22" width="30" height="21" aria-hidden="true"><path d="M3 19 1.5 5.5l7.2 6L16 2l7.3 9.5 7.2-6L29 19z" fill="currentColor"/><rect x="3" y="19.5" width="26" height="2.5" rx="1" fill="currentColor" opacity=".7"/></svg>';
+function countUp(el, to){ if(!(to>0) || window.matchMedia('(prefers-reduced-motion: reduce)').matches){ el.textContent=to; return; } var t0=performance.now(), D=Math.min(1100, 300+to*40); (function f(t){ var k=Math.min(1,(t-t0)/D); el.textContent=Math.round(to*(1-Math.pow(1-k,3))); if(k<1) requestAnimationFrame(f); })(t0); }
 function showResult(r){
   clearTimers(); S.phase='result';
   var meTok = token;
-  var p = function(i, cls){ var e=r[i]; if(!e) return '<div class="pod '+cls+'" style="visibility:hidden"><div class="blk"></div></div>'; return '<div class="pod '+cls+'"><div class="who">'+esc(e.n)+'</div><div class="pts">'+tr('{0}점', e.s)+'</div><div class="blk">'+e.r+'</div></div>'; };
-  $('podium').innerHTML = S.role==='solo' ? '' : p(1,'p2')+p(0,'p1')+p(2,'p3');
+  var p = function(i, cls){ var e=r[i]; if(!e) return '<div class="pod '+cls+'" style="visibility:hidden"><div class="blk"></div></div>'; return '<div class="pod '+cls+'">'+(i===0?CROWN:'')+'<div class="av">'+esc(Array.from(e.n)[0]||'?')+'</div><div class="who">'+esc(e.n)+'</div><div class="pts">'+tr('{0}점', e.s)+'</div><div class="blk"><span>'+e.r+'</span></div></div>'; };
+  var solo = S.role==='solo';
+  $('podium').innerHTML = solo ? '' : p(1,'p2')+p(0,'p1')+p(2,'p3');
+  $('podium').classList.toggle('hide', solo);
   var mine = r.filter(function(e){ return e.t===meTok || (S.role==='guest' && e.n===S.name); })[0];
-  if(S.role==='solo') $('myRes').innerHTML = tr('{0}점 · 해독 {1}개 · 최고 {2}비트', '<b>'+S.score+'</b>', S.solved, S.maxBits||'-');
-  else if(mine) $('myRes').innerHTML = (mine.r===1?tr('🏆 우승! '):'')+tr('{0}위 · {1}점', '<b>'+mine.r+'</b>', '<b>'+mine.s+'</b>');
+  var hero=$('soloHero');
+  hero.classList.toggle('hide', !solo); $('tblWrap').classList.toggle('hide', solo);
+  if(solo){
+    var tot=S.solved+S.wrong, acc=tot?Math.round(S.solved/tot*100)+'%':'-';
+    hero.innerHTML='<div class="hs"><small>'+esc(tr('점수'))+'</small><b id="heroScore">0</b></div><div class="hstats"><div><small>'+esc(tr('해독'))+'</small><b>'+S.solved+'</b></div><div><small>'+esc(tr('정확도'))+'</small><b>'+acc+'</b></div><div><small>'+esc(tr('최고 자릿수'))+'</small><b>'+(S.maxBits?esc(tr('{0}비트', S.maxBits)):'-')+'</b></div></div>';
+    countUp($('heroScore'), S.score);
+    $('myRes').innerHTML='';
+  }
+  else if(mine) $('myRes').innerHTML = (mine.r===1?'<span class="win">'+esc(tr('🏆 우승! '))+'</span>':'')+tr('{0}위 · {1}점', '<b>'+mine.r+'</b>', '<b>'+mine.s+'</b>');
   else $('myRes').textContent='';
-  $('resBody').innerHTML = r.map(function(e){
+  $('resBody').innerHTML = r.map(function(e,i){
     var acc = (e.c+e.w)? Math.round(e.c/(e.c+e.w)*100)+'%' : '-';
     var me = mine && e===mine;
-    return '<tr'+(me?' class="me"':'')+'><td class="n">'+e.r+'</td><td>'+esc(e.n)+'</td><td class="n">'+e.s+'</td><td class="n">'+e.c+'</td><td>'+acc+'</td><td>'+(e.b?tr('{0}비트', e.b):'-')+'</td></tr>';
+    return '<tr class="'+(me?'me ':'')+(e.r<=3?'r'+e.r:'')+'" style="animation-delay:'+Math.min(i,12)*40+'ms"><td class="n"><span class="rkb">'+e.r+'</span></td><td class="nm">'+esc(e.n)+'</td><td class="n">'+e.s+'</td><td class="n">'+e.c+'</td><td>'+acc+'</td><td>'+(e.b?tr('{0}비트', e.b):'-')+'</td></tr>';
   }).join('');
   $('againBtn').classList.toggle('hide', S.role==='guest');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
   show('sResult');
+  [523,659,784,1047].forEach(function(f,i){ setTimeout(function(){ sfx(f,f*1.01,.22,'triangle'); }, 120+i*110); });
 }
 $('againBtn').onclick = function(){ if(S.role==='solo') startSolo(S.name); else if(S.role==='host') enterLobby(); };
 $('homeBtn').onclick = goHome;
@@ -955,7 +1096,7 @@ window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.pha
   var last=performance.now();
   function frame(t){
     var dt=Math.min(50,t-last); last=t;
-    var fast = S.phase==='play' ? 3 : 1;
+    var fast = S.phase==='play' ? (performance.now()<(S.boostT||0) ? 7 : 3) : 1;
     cx.clearRect(0,0,W,H);
     var g=cx.createRadialGradient(W*.7,H*.4,0,W*.7,H*.4,W*.5); g.addColorStop(0,'rgba(80,60,160,.18)'); g.addColorStop(1,'rgba(0,0,0,0)'); cx.fillStyle=g; cx.fillRect(0,0,W,H);
     for(var i=0;i<st.length;i++){

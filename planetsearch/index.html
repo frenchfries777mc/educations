@@ -277,17 +277,21 @@ canvas.stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
 .chart .val { fill: #e9edff; font-size: 13px; font-family: var(--f-mono); }
 .chart .bar { fill: #9fe3ff; }
 .chart .bar.wrong { fill: #ff7a7a; }
-.chart .pname { fill: #e9edff; font-size: 13px; }
+.chart .pname { fill: #e9edff; font-size: 14px; }
 .chart .pt-w, .dot.pt-w { fill: #52a6ff; background: #52a6ff; }
 .chart .pt-d, .dot.pt-d { fill: #c99a5b; background: #c99a5b; }
 .chart .pt-n, .dot.pt-n { fill: #6f78ad; background: #6f78ad; }
-.chart circle.pt-w, .chart circle.pt-d, .chart circle.pt-n { stroke: #070920; stroke-width: 2; }
+.chart circle.gdot.pt-w, .chart circle.gdot.pt-d, .chart circle.gdot.pt-n { stroke: #070920; stroke-width: 2; }
+.chart circle.halo { stroke-width: 1; fill: none; }
 .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; }
 .chart .uni { fill: none; stroke: #8fb4ff3d; }
 .chart .va { fill: #52a6ff1f; stroke: #52a6ff; stroke-width: 1.5; }
 .chart .vb { fill: #67e3a71a; stroke: #67e3a7; stroke-width: 1.5; }
 .chart .vc { fill: #ffb5471a; stroke: #ffb547; stroke-width: 1.5; }
-.chart .setlab { fill: #e9edff; font-size: 15px; font-weight: 600; }
+.chart .setlab { font-size: 18px; font-weight: 600; }
+.chart.venn .pname { font-size: 17px; }
+.chart.venn .cnt { font-size: 14px; }
+.chart.venn .vtag { font-size: 13px; }
 .sheet-head { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: flex-end; }
 .sheet-head .label b { color: var(--text); font-weight: 500; }
 .name-in { background: none; border: 0; border-bottom: 1px solid var(--hair-2); padding: 4px 2px; width: 160px; font-size: 16px; }
@@ -309,6 +313,107 @@ canvas.stars { position: fixed; inset: 0; width: 100vw; height: 100vh; z-index: 
   .pt td.mono { font-size: 12px; }
   .sheet section { break-inside: avoid; }
 }
+
+/* Instrument screens: photo, sound and video play on a framed console glass */
+.bulbs { --g: 8px; }
+@media (max-width: 520px) { .bulbs { --g: 4px; } }
+.pulse { position: relative; align-self: stretch; height: 26px; margin-bottom: 8px; }
+.pulse::before { content: ""; position: absolute; left: calc(var(--g) / -2); right: calc(var(--g) / -2); height: 2px; border-radius: 1px; background: #9fe3ff55; bottom: 3px; transform-origin: left; }
+.pulse.hi::before { top: 3px; bottom: auto; background: var(--ice); box-shadow: 0 0 8px #9fe3ff99; }
+.pulse.edge::after { content: ""; position: absolute; left: calc(var(--g) / -2 - 1px); top: 3px; bottom: 3px; width: 2px; background: #9fe3ffaa; }
+.pulse.anim::before, .pulse.anim::after { animation: pulsein .38s cubic-bezier(.2, .7, .3, 1) backwards; animation-delay: calc(var(--i) * 70ms); }
+@keyframes pulsein { from { transform: scale(0, 1); opacity: 0; } }
+.bulb .b { transition: background .2s, box-shadow .2s, transform .12s; }
+.bulb .b.lit.pop { animation: litpop .45s cubic-bezier(.2, 1.4, .4, 1) backwards; animation-delay: calc(var(--i) * 70ms + 120ms); }
+@keyframes litpop { from { transform: scale(.55); box-shadow: 0 0 0 #ffb54700; filter: brightness(1.6); } 60% { transform: scale(1.1); } }
+button.b:not(:disabled):hover { border-color: var(--signal); }
+button.b:not(:disabled):active { transform: scale(.92); }
+.hint { font-size: 14px; color: var(--dim); }
+.hint b { color: var(--signal); font-weight: 500; }
+.scope::after { content: ""; position: absolute; inset: 3.5%; border-radius: 50%; pointer-events: none; background: conic-gradient(from 0deg, #9fe3ff00 0deg 262deg, #9fe3ff00 262deg, #9fe3ff26 358deg, #9fe3ff77 360deg); -webkit-mask: radial-gradient(circle, transparent 20%, #000 21%); mask: radial-gradient(circle, transparent 20%, #000 21%); animation: sweep 8s linear infinite; }
+@keyframes sweep { to { transform: rotate(360deg); } }
+
+.screen { position: relative; display: inline-flex; flex-direction: column; max-width: 100%; padding: 10px 10px 8px; border: 1px solid var(--hair-2); border-radius: 4px; background: linear-gradient(#0b1030, #050717); box-shadow: 0 16px 40px -22px #000, inset 0 1px 0 #ffffff0d; }
+.screen::before, .screen::after { content: ""; position: absolute; width: 10px; height: 10px; border: 0 solid var(--signal); opacity: .8; pointer-events: none; }
+.screen::before { top: -1px; left: -1px; border-width: 1px 0 0 1px; }
+.screen::after { bottom: -1px; right: -1px; border-width: 0 1px 1px 0; }
+.screen .tag { display: flex; justify-content: space-between; align-items: center; gap: 14px; font-family: var(--f-mono); font-size: 11px; letter-spacing: .1em; color: var(--faint); padding: 0 2px 8px; white-space: nowrap; }
+.screen .tag b { font-weight: 500; color: var(--ice); }
+.screen .tag .rec { color: var(--bad); }
+.screen .tag .rec::before { content: "●"; margin-right: 6px; animation: blink 1.4s steps(2, jump-none) infinite; }
+@keyframes blink { 50% { opacity: .2; } }
+.glass { position: relative; line-height: 0; overflow: hidden; border-radius: 2px; }
+.glass canvas { display: block; width: 100%; border: 0 !important; border-radius: 0 !important; }
+.glass::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, #0000000f 0 1px, transparent 1px 3px), radial-gradient(circle at 50% 50%, transparent 70%, #00000044); }
+.glass.scanin canvas { animation: scanin var(--dur, .8s) steps(var(--steps, 8), end) backwards; }
+.glass.scanin .beam { position: absolute; left: 0; right: 0; top: 0; height: 2px; background: var(--ice); box-shadow: 0 0 12px 3px #9fe3ffaa; z-index: 2; animation: beam var(--dur, .8s) steps(var(--steps, 8), end) forwards; opacity: 0; }
+@keyframes scanin { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0); } }
+@keyframes beam { from { top: 0; opacity: 1; } 99% { opacity: 1; } to { top: 100%; opacity: 0; } }
+.glass.wavein canvas { animation: wavein .9s linear backwards; }
+@keyframes wavein { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
+.glass .play { position: absolute; top: 0; bottom: 0; left: 0; width: 2px; background: var(--signal); box-shadow: 0 0 10px 2px #ffb547aa; z-index: 2; display: none; }
+.glass .play.go { display: block; animation: playhead 1s linear 2 forwards; }
+@keyframes playhead { from { left: 0; } to { left: calc(100% - 2px); } }
+.screen .axis { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 11px; color: var(--faint); padding: 6px 2px 0; }
+.screen canvas.view { width: min(100%, 260px); }
+.screen canvas.wave { max-width: 520px; width: min(100%, 520px); }
+.legend { display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: var(--dim); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; border: 1px solid #ffffff44; flex: none; }
+.legend small { color: var(--faint); font-size: 13px; max-width: 220px; line-height: 1.5; }
+.ticks { display: flex; gap: 2px; padding-top: 8px; cursor: pointer; }
+.ticks i { flex: 1; height: 10px; border-radius: 1px; background: #ffffff22; transition: background .1s, transform .1s; }
+.ticks i.past { background: #9fe3ff77; }
+.ticks i.now { background: var(--signal); transform: scaleY(1.5); }
+input[type=range] { accent-color: var(--signal); }
+.scanbtn { position: relative; }
+.rowlift { animation: rowin .35s ease-out backwards; }
+@keyframes rowin { from { opacity: 0; transform: translateY(6px); } }
+
+/* Settle tables and diagrams */
+.pt tbody tr:nth-child(even) td { background: #8fb4ff08; }
+.pt tr.pick td:first-child { box-shadow: inset 2px 0 0 transparent; transition: box-shadow .15s; font-weight: 500; }
+.pt tr.pick:hover td:first-child, .pt tr.pick:focus-visible td:first-child { box-shadow: inset 2px 0 0 var(--ice); }
+.pt tr.pick:hover td { background: #9fe3ff12; }
+.pt th { padding-block: 10px; }
+.pt thead th { border-bottom: 1px solid var(--hair-2); }
+.tbl-hint { font-size: 14px; color: var(--dim); }
+.chip.ok-t { border-color: #67e3a755; color: var(--ok); }
+.chip.warn-t { border-color: #ff7a7a55; color: var(--bad); }
+.chip.dim-t { color: var(--faint); border-style: dashed; }
+.thumb, .mini { transition: transform .15s, border-color .15s; }
+.thumb:hover, .mini:hover { border-color: var(--ice); transform: scale(1.08); }
+.chart.nomin svg { min-width: 0; }
+.chart .pname { paint-order: stroke; stroke: #0a0e2b; stroke-width: 4px; stroke-linejoin: round; }
+.chart .gdot { stroke: #070920; stroke-width: 2; }
+.chart .halo { fill: none; opacity: .4; stroke-width: 1; }
+.chart circle.halo.pt-w { stroke: #52a6ff; } .chart circle.halo.pt-d { stroke: #c99a5b; } .chart circle.halo.pt-n { stroke: #6f78ad; }
+.chart .reg { fill: transparent; }
+.chart .cnt { fill: #6f78ad; font-size: 12px; font-family: var(--f-mono); }
+.chart .vtag { font-size: 12px; fill: #6f78ad; font-family: var(--f-mono); letter-spacing: .08em; }
+.chart .own { stroke-width: 2; fill: none; }
+
+/* Report cards */
+.colcards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 14px; }
+.colcard { position: relative; display: flex; flex-direction: column; gap: 12px; padding: 18px 18px 16px; border: 1px solid var(--hair); border-left: 3px solid var(--c, var(--ice)); border-radius: 4px; background: #9fe3ff08; animation: rowin .45s ease-out backwards; animation-delay: calc(var(--i) * 90ms); }
+.colcard.lost { border-left-color: var(--bad); background: #ff7a7a08; }
+.colcard .big { font-family: var(--f-mono); font-size: 28px; line-height: 1.1; }
+.colcard .delta { font-family: var(--f-mono); font-size: 14px; padding: 2px 8px; border-radius: 4px; border: 1px solid; white-space: nowrap; }
+.colcard .delta.up { color: var(--ok); border-color: #67e3a755; }
+.colcard .delta.dn { color: var(--bad); border-color: #ff7a7a55; }
+.colcard .evt { display: flex; gap: 8px; align-items: baseline; font-size: 14px; line-height: 1.5; }
+.colcard .evt::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex: none; transform: translateY(-1px); }
+.colcard .trend { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px 20px; flex-wrap: wrap; }
+.colcard .spk { flex: 1 1 180px; max-width: 250px; min-width: 0; margin-left: auto; }
+.spark { width: 100%; height: auto; display: block; overflow: visible; }
+.spark .sg { stroke: #8fb4ff1f; }
+.spark text { font-family: var(--f-mono); font-size: 10px; fill: #6f78ad; }
+.spark .ln { fill: none; stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; animation: draw 1s .2s ease-out backwards; }
+@keyframes draw { from { stroke-dashoffset: 1; } }
+.taxbox { display: flex; justify-content: space-between; align-items: flex-end; gap: 12px; flex-wrap: wrap; }
+.taxbox .big { font-family: var(--f-mono); font-size: 34px; color: var(--signal); line-height: 1; }
+.taxbox .big small { font-size: 14px; color: var(--dim); margin-left: 6px; }
+@media (max-width: 520px) { .colcards { grid-template-columns: minmax(0, 1fr); } }
 @keyframes msgin { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 @keyframes msgbad { 0%, 100% { transform: none; } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
 .msg.ok, .msg.info { animation: msgin .25s ease-out; }
@@ -376,6 +481,7 @@ function drawPhoto(cv, kind, res, bits) {
     ctx.fillStyle = bits === 1 ? PAL1[c ? 1 : 0] : PAL2[c];
     ctx.fillRect(Math.floor(i * cs), Math.floor(j * cs), Math.ceil(cs), Math.ceil(cs));
   }
+  if (S >= 200) { ctx.strokeStyle = "rgba(5,7,23,.4)"; ctx.lineWidth = 1; ctx.beginPath(); for (let i = 1; i < res; i++) { const q = Math.floor(i * cs) + .5; ctx.moveTo(q, 0); ctx.lineTo(q, S); ctx.moveTo(0, q); ctx.lineTo(S, q); } ctx.stroke(); }
 }
 /* ---------- media: sound ---------- */
 function wave(kind, t) {
@@ -388,14 +494,24 @@ function wave(kind, t) {
 const quant = (v, bits) => { const half = 2 ** bits / 2; return clamp(Math.round(v * half), -half, half - 1) / half; };
 const sampleSound = (kind, rate, bits) => Array.from({ length: rate }, (_, k) => quant(wave(kind, k / rate), bits));
 function drawWave(cv, samples, rate, bits, mini) {
-  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, pad = mini ? 3 : 10;
-  ctx.fillStyle = "#090b1c"; ctx.fillRect(0, 0, W, H);
-  if (!mini) { ctx.strokeStyle = "#353c80"; ctx.lineWidth = 1; const L = 2 ** bits; for (let i = 0; i <= L; i++) { const y = H / 2 - (i - L / 2) / (L / 2) * (H / 2 - pad); ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); } }
-  const yOf = v => H / 2 - v * (H / 2 - pad);
-  ctx.strokeStyle = "#52a6ff"; ctx.lineWidth = mini ? 1.5 : 2.5; ctx.beginPath();
-  samples.forEach((v, k) => { const x0 = k / rate * W, x1 = (k + 1) / rate * W; k ? ctx.lineTo(x0, yOf(v)) : ctx.moveTo(x0, yOf(v)); ctx.lineTo(x1, yOf(v)); });
-  ctx.stroke();
-  if (!mini) { ctx.fillStyle = "#ffb547"; samples.forEach((v, k) => { ctx.beginPath(); ctx.arc(k / rate * W, yOf(v), 3, 0, 7); ctx.fill(); }); }
+  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, pad = mini ? 3 : 14, mid = H / 2;
+  const yOf = v => mid - v * (mid - pad);
+  const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#0d1336"); bg.addColorStop(.5, "#090b1c"); bg.addColorStop(1, "#0d1336");
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  if (!mini) {
+    const L = 2 ** bits; ctx.lineWidth = 1;
+    for (let i = 0; i <= L; i++) { const y = Math.round(mid - (i - L / 2) / (L / 2) * (mid - pad)) + .5; ctx.strokeStyle = i === L / 2 ? "#6f78ad88" : "#353c8088"; ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    ctx.strokeStyle = "#35408055"; ctx.setLineDash([2, 5]); for (let k = 1; k < 4; k++) { ctx.beginPath(); ctx.moveTo(W * k / 4, 0); ctx.lineTo(W * k / 4, H); ctx.stroke(); } ctx.setLineDash([]);
+  }
+  const path = () => { ctx.beginPath(); samples.forEach((v, k) => { const x0 = k / rate * W, x1 = (k + 1) / rate * W; k ? ctx.lineTo(x0, yOf(v)) : ctx.moveTo(x0, yOf(v)); ctx.lineTo(x1, yOf(v)); }); };
+  if (!mini) { path(); ctx.lineTo(W, mid); ctx.lineTo(0, mid); ctx.closePath(); const fg = ctx.createLinearGradient(0, 0, 0, H); fg.addColorStop(0, "#52a6ff55"); fg.addColorStop(.5, "#52a6ff12"); fg.addColorStop(1, "#52a6ff55"); ctx.fillStyle = fg; ctx.fill(); }
+  ctx.strokeStyle = "#52a6ff"; ctx.lineWidth = mini ? 1.5 : 2.5; ctx.lineJoin = "round";
+  if (!mini) { ctx.shadowColor = "#52a6ff"; ctx.shadowBlur = 10; }
+  path(); ctx.stroke(); ctx.shadowBlur = 0;
+  if (!mini) {
+    samples.forEach((v, k) => { const x = k / rate * W, y = yOf(v); ctx.fillStyle = "#090b1c"; ctx.beginPath(); ctx.arc(x, y, 4.5, 0, 7); ctx.fill(); ctx.fillStyle = "#ffb547"; ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.fill(); });
+    ctx.fillStyle = "#6f78ad"; ctx.font = "11px 'JetBrains Mono', monospace"; ctx.textAlign = "right"; ctx.fillText("+", W - 6, pad + 4); ctx.fillText("−", W - 6, H - pad + 2);
+  }
 }
 let actx = null;
 function playSound(samples, rate) {
@@ -433,15 +549,19 @@ function drawFrame(cv, kind, t, res) {
 function videoPlayer(kind, fps, res) {
   const cv = h("canvas", { class: "view", width: 240, height: 240 });
   const n = fps * 3;
-  const slider = h("input", { type: "range", min: 0, max: n - 1, value: 0, style: "width:min(100%,240px)", "aria-label": "프레임" });
-  const lab = h("span", { class: "mono dim", style: "font-size:13px" });
+  const slider = h("input", { type: "range", min: 0, max: n - 1, value: 0, style: "width:min(100%,260px)", "aria-label": "프레임" });
+  const lab = h("span", {});
+  const ticks = h("div", { class: "ticks", "aria-hidden": "true" }, Array.from({ length: n }, () => h("i")));
   let timer = null;
-  const show = () => { const i = +slider.value, t = i / fps; drawFrame(cv, kind, t, res); lab.textContent = `${i + 1}/${n}프레임 · ${t.toFixed(1)}초`; };
+  const show = () => { const i = +slider.value, t = i / fps; drawFrame(cv, kind, t, res); lab.textContent = `${i + 1}/${n}프레임 · ${t.toFixed(1)}초`; [...ticks.children].forEach((c, k) => { c.className = k === i ? "now" : k < i ? "past" : ""; }); };
   const stop = () => { if (timer) clearInterval(timer); timer = null; };
   slider.oninput = () => { stop(); show(); };
+  ticks.onclick = e => { const r = ticks.getBoundingClientRect(); slider.value = clamp(Math.floor((e.clientX - r.left) / r.width * n), 0, n - 1); stop(); show(); };
   const play = h("button", { class: "btn sm", onclick: () => { stop(); slider.value = 0; show(); timer = setInterval(() => { if (+slider.value >= n - 1 || !cv.isConnected) return stop(); slider.value = +slider.value + 1; show(); }, 1000 / fps); } }, "▶ 재생");
   show();
-  return h("div", { style: "display:flex;flex-direction:column;gap:6px" }, cv, slider, h("div", { class: "row" }, play, lab));
+  return h("div", { style: "display:flex;flex-direction:column;gap:10px" },
+    h("div", { class: "screen", style: "width:min(100%,284px)" }, h("div", { class: "tag" }, h("span", { class: "rec" }, "영상"), lab), h("div", { class: "glass" }, cv), ticks),
+    slider, h("div", { class: "row" }, play));
 }
 
 /* ---------- world generation ---------- */
@@ -557,6 +677,7 @@ function nextPlanet() {
   if (!G.all.includes(p)) G.all.push(p);
   if (G.upg.auto) for (const s of SIG) p.dec[s.k] = p.t[s.k];
   explore();
+  if (G.idx > 0) window.scrollTo(0, 0);
 }
 const STEPS = [["decode", "신호 해독"], ["photo", "물 찾기"], ["sound", "소리 듣기"], ["video", "위험 찾기"]];
 function stageOf(p) {
@@ -626,7 +747,7 @@ function stagePanel(p, st, flash, last) {
     h("p", { class: "dim" }, last ? "이 섹터의 마지막 행성이에요." : `남은 행성 ${G.list.length - G.idx - 1}개`),
     h("button", { class: "btn primary big", id: "next-planet", onclick: nextPlanet }, last ? "정거장으로 →" : "다음 행성으로 →"));
   const k = st, d = p.data[k];
-  const go = h("button", { class: "btn" + (d ? "" : " primary"), id: `scan-${k}`, onclick: () => { explore(scanOne(p, k) ? `${MEDIA[k]} 수신 완료` : "저장 공간이 모자라요"); } }, d ? "다시 스캔" : `${MEDIA[k]} 스캔`);
+  const go = h("button", { class: "btn" + (d ? "" : " primary"), id: `scan-${k}`, onclick: () => { const ok = scanOne(p, k); fresh = ok ? k : null; explore(ok ? `${MEDIA[k]} 수신 완료` : "저장 공간이 모자라요"); } }, d ? "다시 스캔" : `${MEDIA[k]} 스캔`);
   const skip = h("button", { class: "btn ghost", id: `skip-${k}`, onclick: () => { p.skip[k] = true; explore(); } }, "건너뛰기");
   return h("div", { class: "box stage" },
     h("div", { class: "phead" }, h("h3", {}, STEPS.find(x => x[0] === k)[1]), h("span", { class: "code" }, d ? `${MEDIA[k]} · ${fmt(d.cost)}비트` : MEDIA[k])),
@@ -654,13 +775,13 @@ function summaryPanel(p, st) {
 }
 function sigRow(p, sg) {
   const k = sg.k, v = p.t[k];
-  const bulbs = h("div", { class: "bulbs" }, Array.from({ length: 8 }, (_, i) => { const b = 7 - i, lit = (v >> b) & 1; return h("div", { class: "bulb" }, h("div", { class: "b" + (lit ? " lit" : "") }, lit), h("small", {}, 2 ** b)); }));
+  const bulbs = h("div", { class: "bulbs" }, Array.from({ length: 8 }, (_, i) => { const b = 7 - i, lit = (v >> b) & 1, prev = i ? (v >> (b + 1)) & 1 : lit; return h("div", { class: "bulb", style: `--i:${i}` }, h("div", { class: "pulse anim " + (lit ? "hi" : "lo") + (lit !== prev ? " edge" : "") }), h("div", { class: "b" + (lit ? " lit pop" : "") }, lit), h("small", {}, 2 ** b)); }));
   const inp = h("input", { class: "num-in", type: "number", inputmode: "numeric", id: `dec-${p.id}-${k}`, "aria-label": `${sg.t} 10진수`, placeholder: "10진수", min: 0, max: 255 });
   const ok = h("button", { class: "btn primary" }, "해독");
   ok.onclick = () => { if (inp.value === "") return; p.dec[k] = +inp.value;
     G.sec.dec++; G.tot.dec++; if (+inp.value === v) { G.sec.ok++; G.tot.ok++; G.sec.ex = G.sec.ex || { t: sg.t, v }; } explore(+inp.value === v ? `${sg.t}: ${bin8(v)}₍₂₎ = ${v}` : `${sg.t} 해독 실패 · 정답 ${bin8(v)}₍₂₎ = ${placeSum(v)}`); };
   inp.onkeydown = e => { if (e.key === "Enter") ok.click(); };
-  return h("div", { class: "sig" }, bulbs, h("div", { class: "decode-in" }, inp, h("span", { class: "mono dim" }, sg.u || ""), ok));
+  return h("div", { class: "sig" }, bulbs, h("p", { class: "hint" }, "켜진 ", h("b", {}, "1"), "의 자릿값을 모두 더해 10진수로 바꿔 보세요."), h("div", { class: "decode-in" }, inp, h("span", { class: "mono dim" }, sg.u || ""), ok));
 }
 const MEDIA = { photo: "사진", sound: "소리", video: "영상" };
 function costOf(k) {
@@ -695,10 +816,27 @@ function gearFor(k) {
     : [choice("초당", "fps", [[1, "1장"], [2, "2장"], [5, "5장", !G.upg.cam], [10, "10장", !G.upg.cam]]), choice("해상도", "vres", [[8, "8×8"], [16, "16×16"]])];
   return h("div", { class: "opts" }, rows, h("p", { class: "formula" }, formulaOf(k)));
 }
+let fresh = null;
 function mediaView(p, k) {
-  const d = p.data[k];
-  if (k === "photo") { const cv = h("canvas", { class: "view", width: 240, height: 240 }); drawPhoto(cv, p.t.photo, d.res, d.bits); return h("div", { class: "row", style: "align-items:flex-end" }, cv, h("span", { class: "dim", style: "font-size:13px" }, d.bits === 1 ? "검정 = 우주 · 하양 = 행성 (땅, 물, 얼음이 구분되지 않아요)" : ["우주 · 땅 · ", h("b", { style: "color:#3d8bff" }, "물"), " · 얼음"])); }
-  if (k === "sound") { const cv = h("canvas", { class: "wave", width: 460, height: 150 }); drawWave(cv, d.s, d.rate, d.bits); return h("div", { style: "display:flex;flex-direction:column;gap:6px" }, cv, h("div", {}, h("button", { class: "btn sm", onclick: () => playSound(d.s, d.rate) }, "▶ 들어 보기"))); }
+  const d = p.data[k], isNew = fresh === k; fresh = null;
+  if (k === "photo") {
+    const cv = h("canvas", { class: "view", width: 240, height: 240 }); drawPhoto(cv, p.t.photo, d.res, d.bits);
+    const sw = (c, t) => h("span", {}, h("i", { style: `background:${c}` }), t);
+    const legend = d.bits === 1 ? h("div", { class: "legend" }, sw(PAL1[0], "검정 = 우주"), sw(PAL1[1], "하양 = 행성"), h("small", {}, "땅, 물, 얼음이 구분되지 않아요"))
+      : h("div", { class: "legend" }, sw(PAL2[0], "우주"), sw(PAL2[1], "땅"), sw(PAL2[2], "물"), sw(PAL2[3], "얼음"));
+    return h("div", { class: "row", style: "align-items:flex-end;gap:16px" },
+      h("div", { class: "screen", style: "width:min(100%,284px)" }, h("div", { class: "tag" }, h("span", {}, "사진"), h("b", {}, `${d.res}×${d.res} · ${d.bits}비트`)),
+        h("div", { class: "glass" + (isNew ? " scanin" : ""), style: `--steps:${d.res};--dur:${d.res > 8 ? 1 : .8}s` }, cv, h("span", { class: "beam" }))), legend);
+  }
+  if (k === "sound") {
+    const cv = h("canvas", { class: "wave", width: 460, height: 150 }); drawWave(cv, d.s, d.rate, d.bits);
+    const head = h("span", { class: "play" });
+    const go = () => { head.classList.remove("go"); void head.offsetWidth; head.classList.add("go"); playSound(d.s, d.rate); };
+    return h("div", { style: "display:flex;flex-direction:column;gap:10px;max-width:100%" },
+      h("div", { class: "screen", style: "width:min(100%,540px)" }, h("div", { class: "tag" }, h("span", {}, "소리"), h("b", {}, `초당 ${d.rate}번 · ${d.bits}비트`)),
+        h("div", { class: "glass" + (isNew ? " wavein" : "") }, cv, head), h("div", { class: "axis" }, h("span", {}, "0초"), h("span", {}, "1초"))),
+      h("div", {}, h("button", { class: "btn sm", onclick: go }, "▶ 들어 보기")));
+  }
   return videoPlayer(p.t.video, d.fps, d.res);
 }
 const NOTE = {
@@ -783,6 +921,7 @@ function replySignal() {
   const box = h("div", { class: "box stage" });
   const draw = (result) => {
     const cells = h("div", { class: "bulbs" }, bits.map((b, i) => h("div", { class: "bulb" },
+      h("div", { class: "pulse " + (b ? "hi" : "lo") + (i && bits[i - 1] !== b ? " edge" : "") }),
       h("button", { class: "b" + (b ? " lit" : ""), id: `rb-${i}`, disabled: !!result, "aria-pressed": String(!!b), "aria-label": `${2 ** (7 - i)} 자리`, onclick: () => { bits[i] ^= 1; draw(); } }, b), h("small", {}, 2 ** (7 - i)))));
     const sent = bits.reduce((a, b, i) => a + b * 2 ** (7 - i), 0);
     box.replaceChildren(...[
@@ -827,7 +966,7 @@ function drawTable(box) {
   if (D.sort && on(D.sort)) rows.sort((x, y) => { const u = num(x, D.sort), v = num(y, D.sort); if (u == null) return 1; if (v == null) return -1; return (u - v) * D.dir; });
   const srt = (k, t) => h("button", { onclick: () => { if (D.sort === k) D.dir = -D.dir; else { D.sort = k; D.dir = 1; } redraw(); } }, t, D.sort === k ? (D.dir > 0 ? " ▲" : " ▼") : " ↕");
   const numCell = (p, k) => p.dec[k] != null ? h("td", { class: "mono", style: p.dec[k] === p.t[k] ? null : "color:var(--bad)" }, p.dec[k]) : h("td", {}, h("span", { class: "bin" }, bin8(p.t[k])));
-  const chip = (v, yes, no) => v == null ? h("span", { class: "chip" }, "기록 없음") : h("span", { class: "chip", style: "color:var(--text)" }, v === true || v === "quiet" ? yes : no);
+  const chip = (v, yes, no, tone) => v == null ? h("span", { class: "chip dim-t" }, "기록 없음") : h("span", { class: "chip " + (tone ? (v === true ? "warn-t" : "ok-t") : ""), style: tone ? null : "color:var(--text)" }, v === true || v === "quiet" ? yes : no);
   const zoom = (p, k) => e => { e.stopPropagation(); openModal(p, k); };
   const tbody = h("tbody", {}, rows.map(p => {
     const ph = p.data.photo, so = p.data.sound, vi = p.data.video, owner = takenBy(p);
@@ -839,7 +978,7 @@ function drawTable(box) {
       h("td", {}, p.name), sigs.map(sg => numCell(p, sg.k)),
       on("water") ? h("td", {}, h("span", { class: "cellflex" }, phEl, chip(p.note.water, "물 있음", "물 없음"))) : null,
       on("sound") ? h("td", {}, h("span", { class: "cellflex" }, soEl, chip(p.note.sound, "조용함", "시끄러움"))) : null,
-      on("danger") ? h("td", {}, h("span", { class: "cellflex" }, vi ? h("button", { class: "btn sm", "aria-label": `${p.name} 영상 보기`, onclick: zoom(p, "video") }, "▶") : null, chip(p.note.danger, "위험 있음", "위험 없음"))) : null,
+      on("danger") ? h("td", {}, h("span", { class: "cellflex" }, vi ? h("button", { class: "btn sm", "aria-label": `${p.name} 영상 보기`, onclick: zoom(p, "video") }, "▶") : null, chip(p.note.danger, "위험 있음", "위험 없음", true))) : null,
       h("td", {}, owner ? h("span", { class: "chip", style: `border-color:${owner.color};color:${owner.color}` }, `${owner.name}족`) : h("span", { class: "dim" }, "비어 있음")));
   }));
   const ncol = 2 + G.cols.length;
@@ -852,6 +991,7 @@ function drawTable(box) {
   if (filters.length) box.append(h("div", { class: "filters" }, filters));
   else box.append(h("p", { class: "dim", style: "font-size:14px" }, "위에서 열을 골라 표를 만들어 보세요. 고른 열만 표에 나타나요."));
   box.append(
+    h("p", { class: "tbl-hint" }, "행성 줄을 누르면 고른 종족이 그 행성에 정착해요."),
     h("div", { class: "tbl-wrap" }, h("table", { class: "pt", style: `min-width:${Math.min(860, 260 + G.cols.length * 90)}px` },
       h("thead", {}, h("tr", {}, h("th", { scope: "col" }, "행성"), sigs.map(sg => h("th", { scope: "col" }, srt(sg.k, sg.t + (sg.u ? ` ${sg.u}` : "")))),
         on("water") ? h("th", { scope: "col" }, "사진 · 물") : null, on("sound") ? h("th", { scope: "col" }, "소리") : null, on("danger") ? h("th", { scope: "col" }, "영상 · 위험") : null, h("th", { scope: "col" }, "정착"))), tbody)));
@@ -876,11 +1016,21 @@ function eventText(col, k) {
   if (k === "rad") return `방사선 ${t.rad}mSv 때문에 병에 걸린 주민이 늘었어요.`;
   return `중력이 ${t.grav}m/s²라서 다들 몸이 아파요.`;
 }
+function sparkSvg(track, up) {
+  const W = 220, H = 64, L = 6, R = 6, T = 8, B = 18, mx = Math.max(1, ...track) * 1.1;
+  const X = i => L + (W - L - R) * i / (track.length - 1), Y = v => T + (H - T - B) * (1 - v / mx), col = up ? "#67e3a7" : "#ff7a7a";
+  const d = track.map((v, i) => `${i ? "L" : "M"}${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ");
+  let o = `<svg class="spark" viewBox="0 0 ${W} ${H}" aria-hidden="true"><line class="sg" x1="${L}" x2="${W - R}" y1="${H - B}" y2="${H - B}"/>`;
+  track.forEach((v, i) => { o += `<text x="${X(i)}" y="${H - 4}" text-anchor="${i === 0 ? "start" : i === track.length - 1 ? "end" : "middle"}">${i}년</text>`; });
+  o += `<path class="ln" pathLength="1" d="${d}" stroke="${col}"/>`;
+  track.forEach((v, i) => { o += `<circle cx="${X(i)}" cy="${Y(v)}" r="${i === 0 || i === track.length - 1 ? 4 : 2.8}" fill="${i === track.length - 1 ? col : "#0a0e2b"}" stroke="${col}" stroke-width="2"/>`; });
+  return o + "</svg>";
+}
 function report() {
   const YEARS = 3, cards = [];
   let income = 0;
   for (const col of G.colonies.filter(c => c.alive)) {
-    const before = Math.round(col.pop), lines = [];
+    const before = Math.round(col.pop), lines = [], track = [before];
     for (let y = 1; y <= YEARS; y++) {
       const fails = col.conds.filter(c => !c.test(col.planet) && !col.fixes[c.k]);
       if (!fails.length) { col.pop *= 1.2; if (y === YEARS && !lines.length) lines.push(["ok", "모두 만족하며 잘 지내요."]); }
@@ -890,23 +1040,31 @@ function report() {
         for (const f of fails) if (!col.known[f.k]) { col.known[f.k] = true; fresh = true; lines.push(["bad", `${y}년째: ${eventText(col, f.k)}`]); }
         if (!fresh && !lines.length) lines.push(["bad", `문제가 계속돼요. ${fails.map(f => FIX[f.k]).join(", ")}이(가) 필요해요.`]);
       }
+      track.push(Math.round(col.pop));
     }
     const after = Math.round(col.pop);
-    if (after < 25) { col.alive = false; G.hearts--; lines.push(["bad", "정착지가 무너져 남은 주민들이 떠났어요. 신뢰 -1"]); }
+    if (after < 25) { col.alive = false; G.hearts--; lines.push(["bad", "정착지가 무너져 남은 주민들이 떠났어요. 신뢰 -1"]); track[track.length - 1] = 0; }
     else income += Math.floor(after / 10);
-    cards.push({ col, before, after, lines });
+    cards.push({ col, before, after, lines, track });
   }
   G.credits += income;
   if (G.hearts <= 0) return gameOver("정착지가 너무 많이 무너져 이주 위원회가 당신을 해고했어요.");
+  const card = ({ col, before, after, lines, track }, i) => {
+    const end = col.alive ? after : 0, d = end - before;
+    const sp = h("div", { class: "spk" }); sp.innerHTML = sparkSvg(track, end >= before);
+    return h("div", { class: "colcard" + (col.alive ? "" : " lost"), style: `--c:${col.color};--i:${i}` },
+      h("div", { class: "row", style: "flex-wrap:nowrap;gap:12px" }, h("div", { class: "alien" + (end < before ? " mood-angry" : ""), style: `background:${col.color};width:44px;height:44px` }),
+        h("div", { style: "min-width:0;flex:1" }, h("h3", {}, `${col.name}족`), h("p", { class: "dim", style: "font-size:14px" }, col.planet.name)),
+        h("span", { class: "delta " + (d >= 0 ? "up" : "dn") }, `${d >= 0 ? "+" : "−"}${Math.abs(d)}명`)),
+      h("div", { class: "trend" },
+        h("div", { style: "display:flex;flex-direction:column;gap:2px" }, h("span", { class: "label" }, "인구"), h("span", { class: "big", style: `color:${end >= before ? "var(--ok)" : "var(--bad)"}` }, `${before} → ${end}`)), sp),
+      h("div", { style: "display:flex;flex-direction:column;gap:6px" }, lines.map(([k, t]) => h("span", { class: "evt", style: `color:${k === "ok" ? "var(--ok)" : "var(--bad)"}` }, t))));
+  };
   $("#app").replaceChildren(hud("정착지 보고서"), h("div", { class: "wrap" },
-    h("div", { class: "box" }, h("h2", {}, `${YEARS}년이 흘렀어요`), h("p", { class: "mono", style: "color:var(--signal)" }, `세금 +${income} 크레딧`)),
+    h("div", { class: "box" }, h("div", { class: "taxbox" }, h("div", {}, h("span", { class: "code" }, `섹터 ${G.sector}`), h("h2", {}, `${YEARS}년이 흘렀어요`)),
+      h("p", { class: "big" }, `+${income}`, h("small", {}, "크레딧 세금")))),
+    cards.length ? h("div", { class: "colcards" }, cards.map(card)) : h("p", { class: "dim" }, "아직 정착지가 없어요."),
     sectorRecap(),
-    cards.length ? h("div", { class: "lessons" }, cards.map(({ col, before, after, lines }) => h("div", { style: "display:flex;flex-direction:column;gap:6px" },
-      h("div", { class: "row", style: "flex-wrap:nowrap;gap:10px" }, h("div", { class: "alien" + (after < before ? " mood-angry" : ""), style: `background:${col.color};width:40px;height:40px` }),
-        h("b", {}, `${col.name}족 · ${col.planet.name}`)),
-      h("span", { class: "mono", style: `color:${after >= before ? "var(--ok)" : "var(--bad)"}` }, `인구 ${before} → ${col.alive ? after : 0}`),
-      lines.map(([k, t]) => h("span", { style: `color:${k === "ok" ? "var(--ok)" : "var(--bad)"}` }, t)))))
-      : h("p", { class: "dim" }, "아직 정착지가 없어요."),
     h("div", { class: "row" }, h("button", { class: "btn primary", id: "to-shop", onclick: shop }, G.sector >= 3 ? "항해 결과 보기" : "정비소로"))));
   window.scrollTo(0, 0);
 }
@@ -1097,7 +1255,7 @@ function pickSeg(label, key, redraw) {
   return h("div", { class: "row" }, h("span", { class: "label", style: "min-width:44px" }, label), h("div", { class: "seg" }, SIG.map(sg =>
     h("button", { class: "btn sm" + (ARC[key] === sg.k ? " on" : ""), onclick: () => { ARC[key] = sg.k; redraw(); } }, sg.t))));
 }
-const svgBox = (svg, w) => { const d = h("div", { class: "chart", style: `--w:${w}px` }); d.innerHTML = svg; return d; };
+const svgBox = (svg, w, extra) => { const d = h("div", { class: "chart" + (extra ? " " + extra : ""), style: `--w:${w}px` }); d.innerHTML = svg; return d; };
 function arcBar(redraw) {
   const k = ARC.bar, sg = SIG.find(x => x.k === k), rows = G.all.filter(p => p.dec[k] != null);
   const max = Math.max(1, ...rows.map(p => p.dec[k])), nice = Math.ceil(max / 20) * 20;
@@ -1128,10 +1286,21 @@ function arcScatter(redraw, list = G.all, onPick, label = p => p.name) {
   svg += `<line class="axis" x1="${L}" y1="${H - B}" x2="${W - R}" y2="${H - B}"/><line class="axis" x1="${L}" y1="${T}" x2="${L}" y2="${H - B}"/>`;
   svg += `<text class="lab" x="${(L + W - R) / 2}" y="${H - 12}" text-anchor="middle">${esc(sx.t)}${sx.u ? ` (${esc(sx.u)})` : ""} →</text>`;
   svg += `<text class="lab" x="16" y="${(T + H - B) / 2}" text-anchor="middle" transform="rotate(-90 16 ${(T + H - B) / 2})">${esc(sy.t)}${sy.u ? ` (${esc(sy.u)})` : ""} →</text>`;
-  for (const p of rows) {
-    const w = p.note.water, cls = w === true ? "pt-w" : w === false ? "pt-d" : "pt-n";
-    const cx = X(p.dec[kx]), cy = Y(p.dec[ky]);
-    svg += `<g ${onPick ? `data-pick="${p.id}" class="pickable" tabindex="0" role="button"` : ""}><circle class="${cls}" cx="${cx}" cy="${cy}" r="7"/><text class="pname" x="${cx + 11}" y="${cy + 4}">${esc(label(p))}</text></g>`;
+  const wOf = t => [...t].reduce((a, ch) => a + (/[ -~]/.test(ch) ? 7.6 : 13.2), 0);
+  const pts = rows.map(p => ({ p, cx: X(p.dec[kx]), cy: Y(p.dec[ky]) })).sort((a, b) => a.cx - b.cx || a.cy - b.cy);
+  const boxes = pts.map(q => [q.cx - 10, q.cy - 10, q.cx + 10, q.cy + 10]);
+  const hit = (a, b) => a[0] < b[2] && a[2] > b[0] && a[1] < b[3] && a[3] > b[1];
+  for (const q of pts) {
+    const { p, cx, cy } = q, t = label(p), tw = wOf(t), th = 16;
+    const cand = [[cx + 12, cy + 5, "start", [cx + 10, cy - 10, cx + 14 + tw, cy + 10]], [cx - 12, cy + 5, "end", [cx - 14 - tw, cy - 10, cx - 10, cy + 10]],
+      [cx, cy - 15, "middle", [cx - tw / 2, cy - 15 - th, cx + tw / 2, cy - 10]], [cx, cy + 25, "middle", [cx - tw / 2, cy + 10, cx + tw / 2, cy + 25 + 4]]];
+    const ok = c => c[3][0] >= 4 && c[3][2] <= W - 4 && c[3][1] >= 2 && c[3][3] <= H - 2 && !boxes.some(b => hit(b, c[3]));
+    const best = cand.find(ok) || cand[0];
+    boxes.push(best[3]); q.lab = best;
+  }
+  for (const { p, cx, cy, lab } of pts) {
+    const w = p.note.water, cls = w === true ? "pt-w" : w === false ? "pt-d" : "pt-n", o = onPick && takenBy(p);
+    svg += `<g ${onPick ? `data-pick="${p.id}" class="pickable" tabindex="0" role="button"` : ""}><circle class="halo ${cls}" cx="${cx}" cy="${cy}" r="13"/>${o ? `<circle class="own" cx="${cx}" cy="${cy}" r="10.5" stroke="${o.color}"/>` : ""}<circle class="gdot ${cls}" cx="${cx}" cy="${cy}" r="7"/><text class="pname" x="${lab[0]}" y="${lab[1]}" text-anchor="${lab[2]}">${esc(label(p))}</text></g>`;
   }
   svg += "</svg>";
   const key = (cls, t) => h("span", { class: "row", style: "gap:6px" }, h("i", { class: "dot " + cls }), t);
@@ -1148,23 +1317,34 @@ function pickable(box, list, onPick) {
   return box;
 }
 function arcVenn(list = G.all, onPick, label = p => p.name) {
-  const W = 720, H = 600, r = 150, cA = [270, 200], cB = [450, 200], cC = [360, 350];
+  const W = 528, H = 548, r = 150, cA = [270, 200], cB = [450, 200], cC = [360, 350];
   const sets = [["water", true, "물 있음", cA, "va"], ["sound", "quiet", "조용함", cB, "vb"], ["danger", false, "위험 없음", cC, "vc"]];
   const known = list.filter(p => sets.every(([k]) => p.note[k] != null)), unknown = list.filter(p => !known.includes(p));
-  const spots = { "100": [195, 160], "010": [525, 160], "001": [360, 445], "110": [360, 150], "101": [275, 315], "011": [445, 315], "111": [360, 255] };
+  const spots = { "100": [200, 160], "010": [520, 160], "001": [360, 440], "110": [360, 140], "101": [270, 320], "011": [450, 320], "111": [360, 250] };
   const groups = {}, outside = [];
   for (const p of known) { const code = sets.map(([k, v]) => p.note[k] === v ? 1 : 0).join(""); if (code === "000") outside.push(p); else (groups[code] = groups[code] || []).push(p); }
+  const cnt = i => known.filter(p => p.note[sets[i][0]] === sets[i][1]).length;
+  const wOf = t => [...t].reduce((a, ch) => a + (/[ -~]/.test(ch) ? 10 : 17.5), 0);
+  const owner = p => onPick ? takenBy(p) : G.colonies.find(c => c.planet === p && c.alive);
+  const nameEl = (p, x, y, anchor) => {
+    const o = owner(p), t = p.name, w = wOf(t), ax = anchor === "end" ? x - w / 2 : anchor === "start" ? x + w / 2 : x;
+    const dot = o ? `<circle cx="${ax - w / 2 - 10}" cy="${y - 5}" r="5" fill="${o.color}" stroke="#070920" stroke-width="1.5"/>` : "";
+    return `<g ${onPick ? `data-pick="${p.id}" class="pickable" tabindex="0" role="button"` : ""}>${dot}<text class="pname" x="${ax}" y="${y}" text-anchor="middle">${esc(t)}</text></g>`;
+  };
   let svg = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="물, 소리, 위험 벤 다이어그램">`;
-  svg += `<rect class="uni" x="4" y="4" width="${W - 8}" height="${H - 8}" rx="6"/><text class="tick" x="20" y="28">조사한 행성 전체</text>`;
-  for (const [, , t, [x, y], cls] of sets) svg += `<circle class="${cls}" cx="${x}" cy="${y}" r="${r}"/>`;
-  svg += `<text class="setlab" x="${cA[0] - r + 10}" y="${cA[1] - r + 26}">물 있음</text><text class="setlab" x="${cB[0] + r - 10}" y="${cB[1] - r + 26}" text-anchor="end">조용함</text><text class="setlab" x="${cC[0]}" y="${cC[1] + r + 26}" text-anchor="middle">위험 없음</text>`;
+  svg += `<rect class="uni" x="4" y="4" width="${W - 8}" height="${H - 8}" rx="6"/><text class="vtag" x="18" y="28">조사한 행성 전체 ${known.length}</text>`;
+  for (const [, , , [x, y], cls] of sets) svg += `<circle class="${cls}" cx="${x - 96}" cy="${y}" r="${r}"/>`;
+  svg += `<text class="setlab" fill="#8cc4ff" x="${cA[0] - 96 - r + 14}" y="${cA[1] - r + 4}">물 있음 <tspan class="cnt">${cnt(0)}</tspan></text><text class="setlab" fill="#67e3a7" x="${cB[0] - 96 + r - 14}" y="${cB[1] - r + 4}" text-anchor="end">조용함 <tspan class="cnt">${cnt(1)}</tspan></text><text class="setlab" fill="#ffb547" x="${cC[0] - 96}" y="${cC[1] + r + 28}" text-anchor="middle">위험 없음 <tspan class="cnt">${cnt(2)}</tspan></text>`;
   for (const [code, grp] of Object.entries(groups)) {
-    const [x, y] = spots[code], top = y - (grp.length - 1) * 9;
-    grp.forEach((p, i) => { svg += `<text class="pname${onPick ? " pickable" : ""}" ${onPick ? `data-pick="${p.id}" tabindex="0" role="button"` : ""} x="${x}" y="${top + i * 18 + 4}" text-anchor="middle">${esc(label(p))}</text>`; });
+    const [x, y] = spots[code], top = y - (grp.length - 1) * 11;
+    grp.forEach((p, i) => { svg += nameEl(p, x - 96, top + i * 22 + 5, "middle"); });
   }
-  outside.forEach((p, i) => { svg += `<text class="pname${onPick ? " pickable" : ""}" ${onPick ? `data-pick="${p.id}" tabindex="0" role="button"` : ""} x="${W - 24}" y="${H - 24 - (outside.length - 1 - i) * 18}" text-anchor="end">${esc(label(p))}</text>`; });
+  if (outside.length) {
+    svg += `<text class="vtag" x="${W - 18}" y="${H - 26 - outside.length * 22}" text-anchor="end">어디에도 해당 없음</text>`;
+    outside.forEach((p, i) => { svg += nameEl(p, W - 18 - wOf(p.name) / 2 - 1, H - 22 - (outside.length - 1 - i) * 22, "middle"); });
+  }
   svg += "</svg>";
-  return h("div", { style: "display:flex;flex-direction:column;gap:12px;min-width:0" }, pickable(svgBox(svg, W), list, onPick),
+  return h("div", { style: "display:flex;flex-direction:column;gap:12px;min-width:0" }, pickable(svgBox(svg, 560, "nomin venn"), list, onPick),
     unknown.length ? h("p", { class: "dim", style: "font-size:14px" }, `기록이 빠져 다이어그램에 넣지 못한 행성: ${unknown.map(p => p.name).join(", ")}`) : null);
 }
 
@@ -1234,7 +1414,6 @@ function arcMind(redraw) {
   size(); addEventListener("resize", size); requestAnimationFrame(frame);
 })();
 home();
-window.__ps = { get G() { return G; }, newRun, planets, nextPlanet, totalPop, makeAliens };
 })();
 </script>
 
