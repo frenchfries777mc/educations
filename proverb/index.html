@@ -111,9 +111,102 @@
   @keyframes gain{0%{opacity:0; transform:translate(-50%,6px);} 20%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-26px);}}
   @keyframes advf{to{background-size:100% 100%;}}
   @media (prefers-reduced-motion:reduce){ *,*::before,*::after{animation:none !important; transition:none !important;} .gain.on{opacity:1; transform:translate(-50%,-22px);} }
+  /* ===== 사건 기록지 질감 (2차 다듬기) ===== */
+  :root{ --grain:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .36 0 0 0 0 .26 0 0 0 0 .12 0 0 0 .2 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); --ink-g:#3d6fa8; }
+  .sheet,.case,.paper{background-color:var(--paper); background-image:var(--grain), linear-gradient(172deg,rgba(255,255,255,.35),transparent 40%,rgba(120,84,30,.1));}
+  .ink{filter:url(#ink);}
+  /* home */
+  .case{padding:34px 26px 30px; box-shadow:0 1px 0 #fff8 inset, 0 2px 0 var(--paper2), 0 24px 46px rgba(0,0,0,.55); border-radius:4px;}
+  .case::after{content:''; position:absolute; inset:10px; border:1.5px solid rgba(123,98,64,.45); border-radius:2px; pointer-events:none; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120' fill='none' stroke='%237b6240' stroke-width='5' stroke-linecap='round'%3E%3Ccircle cx='50' cy='50' r='34'/%3E%3Cpath d='M76 76l30 30'/%3E%3C/svg%3E") no-repeat right 18px top 16px/58px; opacity:.9;}
+  .case .no{display:inline-block; padding:0 4px 5px; border-bottom:1px solid rgba(123,98,64,.5); letter-spacing:.34em;}
+  .case h1{text-shadow:0 1px 0 #fff9, 1px 2px 0 rgba(120,84,30,.18);}
+  .case .sub{margin-top:6px; word-break:keep-all; text-wrap:balance; padding:0 4px;}
+  #nextBtn{scroll-margin-bottom:64px;}
+  .case .seal{border:3px double var(--stamp); background:rgba(179,38,30,.04); opacity:.88; mix-blend-mode:multiply; right:20px; bottom:16px; filter:url(#ink);}
+  .clip{position:absolute; left:20px; top:-16px; width:26px; height:64px; pointer-events:none; filter:drop-shadow(1px 3px 2px rgba(0,0,0,.35));}
+  .mode{position:relative; display:flex; flex-direction:column; justify-content:flex-start; gap:2px; padding:18px 18px 16px 18px; overflow:hidden; transition:transform .15s, border-color .15s, box-shadow .15s;}
+  .mode::before{content:''; position:absolute; left:0; top:14px; bottom:14px; width:3px; border-radius:0 3px 3px 0; background:var(--brass2); transition:background .15s;}
+  .mode:hover{transform:translateY(-3px); box-shadow:0 14px 26px rgba(0,0,0,.42);} .mode:hover::before{background:var(--brass);}
+  button.mode:active{transform:translateY(1px);}
+  .mode .ic{width:30px; height:30px; color:var(--brass); margin-bottom:8px;}
+  .name-row{position:relative;} 
+  /* stages: 사건 폴더 */
+  .stg{position:relative; transition:transform .15s, border-color .15s; padding:14px 18px 14px 14px;}
+  .stg:hover{transform:translateX(4px);} .stg:active{transform:translateX(2px) scale(.995);}
+  .stg .no{flex:0 0 46px; height:46px; border-radius:6px; background:var(--paper); background-image:var(--grain); color:#3b2a14; display:grid; place-items:center; font-size:22px; box-shadow:0 3px 0 rgba(0,0,0,.35); transform:rotate(-3deg);}
+  .stg .m{font-variant-numeric:tabular-nums;}
+  /* hud */
+  .hud div{display:flex; align-items:baseline; gap:2px; background:linear-gradient(180deg,#1a130e,#120d09);}
+  .hud b{font-variant-numeric:tabular-nums;} .hud .low{border-color:var(--red);} .hud .low b{animation:blink 1s ease-in-out infinite;}
+  .prog{height:6px; border-radius:99px; background:#120d09; border:1px solid var(--line); margin:-2px 0 14px; overflow:hidden;} .prog i{display:block; height:100%; width:0; background:linear-gradient(90deg,var(--brass2),var(--brass)); border-radius:99px; transition:width .5s cubic-bezier(.2,.8,.2,1);}
+  @keyframes blink{50%{opacity:.45;}}
+  /* paper */
+  .paper{border-radius:3px; padding:24px 26px 22px; box-shadow:0 1px 0 #fff7 inset, 0 2px 0 var(--paper2), 0 20px 36px rgba(0,0,0,.5); overflow:visible;}
+  .paper::after{content:''; position:absolute; left:6px; right:6px; bottom:-7px; height:10px; background:var(--paper2); border-radius:0 0 4px 4px; z-index:-1; transform:rotate(.4deg); box-shadow:0 8px 14px rgba(0,0,0,.35);}
+  .paper .tag{display:flex; align-items:center; gap:10px; padding-bottom:8px; border-bottom:1px solid rgba(123,98,64,.45); box-shadow:0 3px 0 -2px rgba(123,98,64,.25); margin-right:96px;}
+  .paper .q{margin:16px 0 6px; letter-spacing:-.005em; word-break:keep-all; text-wrap:balance;}
+  .paper .q .bl{border-bottom:3px solid var(--stamp); background:linear-gradient(180deg,transparent 60%,rgba(179,38,30,.1) 60%); padding:0 .2em; margin:0 .1em;}
+  .paper .q .bl.fill{position:relative; color:#1d5f3b; border-bottom-color:#2f8a57; background:linear-gradient(180deg,transparent 52%,rgba(47,138,87,.22) 52%); animation:wr .5s ease-out both;}
+  @keyframes wr{from{clip-path:inset(0 100% 0 0);} to{clip-path:inset(0 0 0 0);}}
+  .paper .hint{margin-top:6px;}
+  .paper .stamp{right:18px; top:20px; padding:2px 12px; font-size:24px; letter-spacing:.06em; border:3px double; mix-blend-mode:multiply; filter:url(#ink); transform:rotate(-10deg) scale(1.9); transition:none;}
+  .paper .stamp.ok,.paper .stamp.no{animation:thud .38s cubic-bezier(.2,1.4,.4,1) both;}
+  .paper .stamp.ok{color:#1f7a49; border-color:#1f7a49;} 
+  @keyframes thud{0%{opacity:0; transform:rotate(-16deg) scale(2.1);} 55%{opacity:.95; transform:rotate(-9deg) scale(.94);} 100%{opacity:.9; transform:rotate(-10deg) scale(1);}}
+  .paper .exp{border-top:0; margin-top:14px; padding:12px 14px 12px 16px; background:rgba(120,84,30,.08); border-left:3px solid var(--brass2); border-radius:0 4px 4px 0; animation:fup .35s ease both; line-height:1.6;}
+  .paper .exp b{display:block; font-size:18px; color:#241a10; margin-bottom:2px;}
+  .exp .k{display:inline-block; margin-right:8px; padding:0 7px; font-size:12px; font-weight:700; letter-spacing:.1em; color:#fff6dc; background:#7b6240; border-radius:3px; vertical-align:1px;}
+  .paper .exp .bn{margin-top:10px; padding-top:8px; border-top:1px dashed #b49e74;}
+  @keyframes fup{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
+  /* options: 증거 카드 */
+  .opt{position:relative; overflow:hidden; border-radius:10px; padding:14px 16px 14px 14px; line-height:1.4; box-shadow:0 3px 0 rgba(0,0,0,.35); animation:dealin .38s cubic-bezier(.2,.9,.3,1) both; animation-delay:calc(var(--d,0) * 60ms);}
+  .opt::before{content:''; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--brass2); opacity:.7; transition:background .15s, opacity .15s;}
+  .opt:hover:not(:disabled){border-color:var(--brass); transform:translateY(-2px); box-shadow:0 6px 0 rgba(0,0,0,.35), 0 10px 18px rgba(0,0,0,.3);} .opt:hover:not(:disabled)::before{opacity:1; background:var(--brass);}
+  .opt:active:not(:disabled){transform:translateY(1px) scale(.995); box-shadow:0 1px 0 rgba(0,0,0,.35);}
+  .opt .n{background:radial-gradient(circle at 35% 30%,#efca70,var(--brass) 60%,var(--brass2)); box-shadow:0 2px 0 rgba(0,0,0,.35), inset 0 1px 0 #fff7;}
+  .opt.right{border-color:#3fae72; background:linear-gradient(180deg,rgba(47,138,87,.38),rgba(47,138,87,.2)); box-shadow:0 0 0 1px rgba(63,174,114,.4), 0 0 24px rgba(47,138,87,.3);} .opt.right::before{background:#3fae72; opacity:1;}
+  .opt.wrong{border-color:var(--red); background:linear-gradient(180deg,rgba(196,52,43,.3),rgba(196,52,43,.16));} .opt.wrong::before{background:var(--red); opacity:1;}
+  .opt.wrong>span:last-of-type{text-decoration:line-through; text-decoration-color:rgba(255,138,107,.85); text-decoration-thickness:2px; color:#e9c3b8;}
+  .opt.right::after,.opt.wrong::after{position:absolute; right:14px; top:50%; margin-top:-17px; width:34px; height:34px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-size:20px; line-height:1; animation:pop2 .4s cubic-bezier(.2,1.5,.4,1) both;}
+  .opt.right::after{content:'✓'; background:#3fae72; color:#08210f;} .opt.wrong::after{content:'✕'; background:var(--red); color:#fff;}
+  .opt>span:last-of-type{flex:1; min-width:0; padding-right:38px; word-break:keep-all;}
+  .opt:disabled:not(.right):not(.wrong){opacity:.5; box-shadow:none;}
+  @keyframes dealin{from{opacity:0; transform:translateY(10px) rotate(-.4deg);} to{opacity:1; transform:none;}}
+  @keyframes pop2{from{transform:scale(0);} to{transform:scale(1);}}
+  .opt.right{animation:glow .6s ease;} @keyframes glow{0%{transform:scale(1);} 35%{transform:scale(1.025);} 100%{transform:scale(1);}}
+  /* next button: 남은 시간 막대 */
+  .btn.auto{background-image:none; position:relative; overflow:hidden;}
+  .btn.auto::after{content:''; position:absolute; left:0; bottom:0; height:4px; width:100%; background:rgba(29,22,8,.5); transform-origin:left; animation:advb var(--adv,2s) linear forwards;}
+  @keyframes advb{from{transform:scaleX(0);} to{transform:scaleX(1);}}
+  /* lobby / board */
+  .desk{background-image:var(--grain), linear-gradient(180deg,var(--desk2),var(--desk)); background-blend-mode:soft-light,normal;}
+  .code{text-shadow:0 2px 0 rgba(0,0,0,.4); border:2px dashed rgba(212,169,74,.4); border-radius:10px; padding:2px 10px; margin:8px 0;}
+  .rrow{padding:8px 6px;} .rrow.r1 .n{font-weight:700;} .rrow .s{font-variant-numeric:tabular-nums;}
+  /* 카운트다운 */
+  .cd b{animation:cdp .9s cubic-bezier(.2,.9,.3,1) both; text-shadow:0 6px 0 rgba(0,0,0,.4), 0 0 60px rgba(212,169,74,.4);}
+  @keyframes cdp{0%{opacity:0; transform:scale(1.7);} 30%{opacity:1; transform:scale(.95);} 55%{transform:scale(1);} 100%{opacity:.55; transform:scale(.9);}}
+  /* 결과: 종결 보고서 */
+  #sResult .desk{position:relative; background-color:var(--paper); background-image:var(--grain), linear-gradient(172deg,rgba(255,255,255,.3),transparent 40%); color:var(--pen); border:0; border-radius:4px; padding:30px 28px 24px; box-shadow:0 2px 0 var(--paper2), 0 26px 50px rgba(0,0,0,.55);}
+  #sResult .desk::before{content:''; position:absolute; left:50%; top:-12px; width:96px; height:26px; background:rgba(212,169,74,.55); transform:translateX(-50%) rotate(-2deg);}
+  #sResult .big .sm{color:#6a5538; font-family:'Nanum Myeongjo',serif; font-weight:700; letter-spacing:.04em;} #sResult .big .sc{color:#241a10; text-shadow:2px 3px 0 rgba(212,169,74,.55); animation:fup .6s ease both;}
+  #sResult .big .sm#rSub{font-family:'Noto Sans KR',sans-serif; font-weight:500; letter-spacing:0; font-size:15px; line-height:1.7;}
+  #sResult .lbl{color:#7b4f12; border-bottom:1px solid rgba(123,98,64,.45); padding-bottom:6px;}
+  #sResult .big .nb{color:var(--stamp); border:3px double var(--stamp); font-size:19px; padding:2px 14px; mix-blend-mode:multiply; filter:url(#ink); animation:thud .5s .3s cubic-bezier(.2,1.4,.4,1) both;}
+  .rstamp{position:absolute; right:22px; top:22px; border:3px double var(--stamp); color:var(--stamp); font-family:'Black Han Sans',sans-serif; font-size:20px; padding:2px 12px; border-radius:6px; mix-blend-mode:multiply; filter:url(#ink); transform:rotate(9deg); animation:thud2 .5s .15s cubic-bezier(.2,1.4,.4,1) both;}
+  @keyframes thud2{0%{opacity:0; transform:rotate(14deg) scale(2);} 100%{opacity:.88; transform:rotate(9deg) scale(1);}}
+  #sResult .board .rrow{border-bottom-color:rgba(123,98,64,.25); color:var(--pen);} #sResult .rrow .r{color:#8a7557;} #sResult .rrow.r1 .r{color:#b3261e;} #sResult .rrow .p{color:#7b6a52;} #sResult .rrow.me{background:rgba(212,169,74,.28);}
+  #sResult .msg.info{color:#6a5538;}
+  .wr{position:relative; background:#fbf4e1; color:var(--pen); border:1px solid rgba(123,98,64,.35); border-left:4px solid var(--stamp); border-radius:3px; padding:12px 16px; margin-top:10px; box-shadow:0 2px 0 rgba(123,98,64,.25); animation:fup .4s calc(var(--d,0)*50ms) ease both;}
+  .wr b{font-size:19px; color:#241a10; display:block;} .wr small{color:#5d4a33; font-size:14px; line-height:1.6; margin-top:3px;}
+  .wr .wt{display:inline-block; font-weight:700; color:#7b4f12; background:rgba(212,169,74,.3); border-radius:3px; padding:0 8px; margin-bottom:5px;}
+  .wr .mine{text-decoration:line-through; text-decoration-color:var(--stamp); color:#8a5a4f;} .wr .ans{font-weight:700; color:#1d5f3b; background:linear-gradient(180deg,transparent 55%,rgba(47,138,87,.2) 55%);}
+  #sResult .btn.ghost{color:var(--pen); border-color:rgba(123,98,64,.6);}
+  @media(max-width:520px){ .paper{padding:20px 18px 18px;} .paper .tag{margin-right:84px; font-size:12px; letter-spacing:.06em;} .paper .stamp{font-size:20px; right:12px; top:16px;} .case::after{background-size:44px; background-position:right 12px top 12px;} #sResult .desk{padding:26px 16px 20px;} .rstamp{font-size:15px; right:12px; top:12px;} .opt{font-size:16px;} .code{letter-spacing:.08em;} }
+  @media (prefers-reduced-motion:reduce){ .opt,.paper .exp,.wr,#sResult .big .sc{animation:none !important;} .paper .stamp.ok,.paper .stamp.no{opacity:.9; transform:rotate(-10deg) !important;} .rstamp{opacity:.88;} }
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.8 2.0" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter></svg>
 <div class="wrap">
   <header>
     <a class="logo" href="./"><svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="17" cy="17" r="10"/><path d="M25 25l10 10"/><path d="M12 15a7 7 0 0 1 6-4"/></svg>속담 탐정</a>
@@ -121,13 +214,13 @@
   </header>
 
   <section class="screen on" id="sHome">
-    <div class="case"><div class="no">사건 기록 제0001호</div><h1>속담 탐정</h1><div class="sub">단서를 풀어 속담과 관용구 사건을 해결하세요</div><div class="seal">수사 중</div></div>
+    <div class="case"><svg class="clip" viewBox="0 0 26 64" fill="none" stroke="#9aa0a6" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M8 40V11a5 5 0 0 1 10 0v38a8 8 0 0 1-16 0V16"/></svg><div class="no">사건 기록 제0001호</div><h1>속담 탐정</h1><div class="sub">단서를 풀어 속담과 관용구 사건을 해결하세요</div><div class="seal">수사 중</div></div>
     <p class="kr-note hide" id="krNote">속담과 관용구는 한국어로 나와요. 뜻은 번역해서 보여 줘요.</p>
     <div class="name-row"><input type="text" id="nameIn" maxlength="16" placeholder="탐정 이름" autocomplete="off"><button id="diceBtn" title="이름 뽑기" aria-label="이름 뽑기">🎲</button></div>
     <div class="modes">
-      <button class="mode" id="soloBtn"><h3>혼자 수사하기</h3><p>사건 유형을 골라 혼자 풀어요. 최고 기록이 남아요.</p></button>
-      <button class="mode" id="hostBtn"><h3>사무소 열기</h3><p>방 코드를 만들어 반 친구들과 같은 사건을 함께 풀어요. 최대 40명.</p></button>
-      <div class="mode"><h3>코드로 입장</h3><p>선생님이 알려 준 5자리 코드를 넣어요.</p><div class="join"><input type="text" id="codeIn" maxlength="5" placeholder="CODE" autocomplete="off"><button class="btn" id="joinBtn">입장</button></div></div>
+      <button class="mode" id="soloBtn"><svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="17" cy="17" r="10"/><path d="M25 25l10 10"/></svg><h3>혼자 수사하기</h3><p>사건 유형을 골라 혼자 풀어요. 최고 기록이 남아요.</p></button>
+      <button class="mode" id="hostBtn"><svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 35V8h18v27"/><path d="M4 35h32"/><circle cx="21" cy="22" r="1.6" fill="currentColor"/></svg><h3>사무소 열기</h3><p>방 코드를 만들어 반 친구들과 같은 사건을 함께 풀어요. 최대 40명.</p></button>
+      <div class="mode"><svg class="ic" viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="13" cy="20" r="7"/><path d="M20 20h16M30 20v6M35 20v4"/></svg><h3>코드로 입장</h3><p>선생님이 알려 준 5자리 코드를 넣어요.</p><div class="join"><input type="text" id="codeIn" maxlength="5" placeholder="CODE" autocomplete="off"><button class="btn" id="joinBtn">입장</button></div></div>
     </div>
     <div class="msg" id="homeMsg" style="text-align:center"></div>
   </section>
@@ -159,6 +252,7 @@
 
   <section class="screen" id="sGame">
     <div class="hud"><div>사건 <b id="gNo">1/10</b></div><div class="sc">점수 <b id="gScore">0</b><span class="gain" id="gain" aria-hidden="true"></span></div><div id="gLivesBox" class="hide">목숨 <b id="gLives"></b></div><div id="gTimeBox">남은 시간 <b id="gTime">0:00</b></div><button class="btn ghost hide" id="endNow2" style="padding:6px 14px; font-size:14px">수사 마감</button></div>
+    <div class="prog" id="prog" aria-hidden="true"><i></i></div>
     <div class="grow" id="gRow">
       <div>
         <div class="paper" id="paper"><div class="stamp" id="stamp"></div><div class="tag" id="gTag"></div><div class="q" id="gQ"></div><div class="hint" id="gHint"></div><div class="exp" id="gExp" role="status" aria-live="polite"></div></div>
@@ -192,83 +286,83 @@
 <script>
 (function(){
 'use strict';
-// [앞부분, 뒷부분, 뜻, 빈칸 낱말, 오답 낱말 3개]
+// [앞부분, 뒷부분, 뜻, 빈칸 낱말, 빈칸 오답 3개, 이어 붙이기 오답(그럴듯한 뒷부분) 3개]
 var PV=[
-['가는 말이 고와야','오는 말이 곱다','내가 남에게 좋게 해야 남도 나에게 좋게 한다','곱다',['거칠다','짧다','높다']],
-['발 없는 말이','천 리 간다','말은 순식간에 멀리 퍼지니 조심해야 한다','천 리',['백 리','십 리','만 리']],
-['낮말은 새가 듣고','밤말은 쥐가 듣는다','아무도 안 듣는 것 같아도 말은 새어 나가니 조심해야 한다','쥐',['고양이','개','닭']],
-['소 잃고','외양간 고친다','일이 잘못된 뒤에 뒤늦게 대비한다','외양간',['대장간','대문','울타리']],
-['호랑이도','제 말 하면 온다','없는 곳에서 어떤 사람 이야기를 하면 마침 그 사람이 나타난다','호랑이',['사자','늑대','곰']],
-['원숭이도','나무에서 떨어진다','아무리 잘하는 사람도 실수할 때가 있다','원숭이',['다람쥐','고양이','까치']],
-['세 살 버릇','여든까지 간다','어릴 때 몸에 밴 버릇은 늙어서도 고치기 어렵다','여든',['아흔','예순','스물']],
-['우물 안','개구리','넓은 세상을 모르고 좁은 생각에 갇혀 있는 사람','개구리',['올챙이','두꺼비','물고기']],
-['백지장도','맞들면 낫다','쉬운 일도 힘을 합치면 더 쉽다','맞들면',['찢으면','구기면','접으면']],
-['티끌 모아','태산','작은 것도 모이면 큰 것이 된다','태산',['바다','언덕','평야']],
-['열 번 찍어','안 넘어가는 나무 없다','꾸준히 노력하면 이루지 못할 일이 없다','열 번',['한 번','세 번','일곱 번']],
-['천 리 길도','한 걸음부터','아무리 큰 일도 작은 시작에서 비롯된다','한 걸음',['두 걸음','열 걸음','백 걸음']],
-['낫 놓고','기역 자도 모른다','아주 기초적인 것도 모를 만큼 무식하다','기역',['니은','디귿','히읗']],
-['누워서','떡 먹기','하기가 아주 쉬운 일','떡',['밥','과자','죽']],
-['식은 죽','먹기','어렵지 않게 쉽게 할 수 있는 일','식은',['뜨거운','끓는','따뜻한']],
-['되로 주고','말로 받는다','조금 주고 훨씬 많이 돌려받는다','말로',['섬으로','홉으로','자루로']],
-['가재는','게 편이다','처지가 비슷한 쪽끼리 편이 된다','게',['새우','물고기','거북']],
-['꿩 먹고','알 먹는다','한 가지 일로 두 가지 이득을 본다','알',['털','깃','뼈']],
-['도랑 치고','가재 잡는다','한 번에 두 가지 이로운 일을 이룬다','가재',['붕어','미꾸라지','올챙이']],
-['믿는 도끼에','발등 찍힌다','믿고 있던 사람에게 배신당한다','발등',['손등','무릎','이마']],
-['서당 개 삼 년이면','풍월을 읊는다','무엇이든 오래 보고 들으면 자연히 알게 된다','삼 년',['일 년','오 년','십 년']],
-['개구리','올챙이 적 생각 못 한다','형편이 나아진 뒤 어려웠던 때를 잊는다','올챙이',['송사리','도롱뇽','붕어']],
-['달면 삼키고','쓰면 뱉는다','자기 이익에 따라 이쪽저쪽 태도를 바꾼다','뱉는다',['모은다','나눈다','감춘다']],
-['등잔 밑이','어둡다','가까이 있는 것을 오히려 잘 모른다','어둡다',['밝다','따뜻하다','좁다']],
-['원수는','외나무다리에서 만난다','피하고 싶은 사람을 피할 수 없는 곳에서 만난다','외나무다리',['징검다리','큰길','돌다리']],
-['호랑이 굴에 가야','호랑이 새끼를 잡는다','큰 성공을 하려면 위험을 무릅써야 한다','굴',['산','숲','집']],
-['고래 싸움에','새우 등 터진다','힘센 사람들 싸움에 약한 사람이 피해를 본다','새우',['멸치','조개','문어']],
-['하룻강아지','범 무서운 줄 모른다','철없이 겁 없이 덤빈다','범',['곰','늑대','여우']],
-['아니 땐 굴뚝에','연기 날까','원인이 있어야 결과도 있다','굴뚝',['지붕','창문','우물']],
-['윗물이','맑아야 아랫물이 맑다','윗사람이 바르게 행동해야 아랫사람도 바르게 한다','맑아야',['깊어야','차가워야','많아야']],
-['가랑비에','옷 젖는 줄 모른다','작은 것도 쌓이면 어느새 큰 것이 된다','가랑비',['소나기','장대비','폭풍']],
-['사공이 많으면','배가 산으로 간다','간섭하는 사람이 많으면 일이 잘 안 된다','산',['바다','강','섬']],
-['같은 값이면','다홍치마','이왕이면 더 좋은 것을 고른다','다홍치마',['노랑치마','검정치마','초록치마']],
-['말 한마디에','천 냥 빚도 갚는다','말만 잘해도 어려운 일을 풀 수 있다','천 냥',['백 냥','한 푼','열 냥']],
-['비 온 뒤에','땅이 굳는다','어려움을 겪은 뒤에 더 단단해진다','굳는다',['마른다','꺼진다','녹는다']],
-['짚신도','짝이 있다','누구에게나 어울리는 짝이 있다','짝',['값','끈','바닥']],
-['소귀에','경 읽기','아무리 가르쳐도 알아듣지 못한다','경',['노래','편지','북']],
-['병 주고','약 준다','해를 끼쳐 놓고 도와주는 척한다','약',['밥','돈','물']],
-['지렁이도','밟으면 꿈틀한다','아무리 순한 사람도 괴롭히면 화를 낸다','꿈틀한다',['도망간다','죽는다','웃는다']],
-['쥐구멍에도','볕 들 날 있다','어려운 사람에게도 좋은 때가 온다','볕',['비','눈','달']],
-['작은 고추가','맵다','몸집이 작아도 속이 단단하고 능력이 뛰어나다','고추',['마늘','양파','후추']],
-['못된 송아지','엉덩이에 뿔 난다','못된 사람이 하는 짓은 점점 나빠진다','엉덩이',['등','발','꼬리']],
-['가는 날이','장날이다','뜻밖의 일이 우연히 겹친다','장날',['휴일','잔칫날','생일']],
-['공든','탑이 무너지랴','정성껏 한 일은 헛되지 않는다','탑',['집','성','다리']],
-['호미로 막을 것을','가래로 막는다','작을 때 고치지 않으면 나중에 훨씬 힘이 든다','가래',['낫','바늘','젓가락']],
-['모로 가도','서울만 가면 된다','방법이 어떻든 목적만 이루면 된다','서울',['부산','평양','제주']],
-['말이','씨가 된다','말한 대로 일이 이루어질 수 있으니 말을 조심해야 한다','씨',['뿌리','열매','잎']],
-['첫술에','배부르랴','처음부터 만족할 수는 없다','배부르랴',['졸리랴','추우랴','아프랴']],
-['가까운 이웃이','먼 친척보다 낫다','가까이 사는 이웃이 멀리 있는 친척보다 도움이 된다','낫다',['못하다','같다','멀다']]
+['가는 말이 고와야','오는 말이 곱다','내가 남에게 좋게 말하고 행동해야 남도 나에게 좋게 대한다','곱다',['거칠다','짧다','높다'],['오는 말이 거칠다','오는 정이 곱다','가는 말이 곱다']],
+['발 없는 말이','천 리 간다','말은 순식간에 멀리 퍼지니 조심해야 한다','천 리',['백 리','십 리','만 리'],['만 리 간다','금세 잊힌다','바람이 가져간다']],
+['낮말은 새가 듣고','밤말은 쥐가 듣는다','아무도 안 듣는 것 같아도 말은 새어 나가니 조심해야 한다','쥐',['고양이','개','닭'],['밤말은 고양이가 듣는다','밤길은 쥐가 안다','밤말은 아무도 못 듣는다']],
+['소 잃고','외양간 고친다','일이 잘못된 뒤에 뒤늦게 대비한다','외양간',['대장간','대문','울타리'],['대장간 고친다','소 찾아 나선다','울타리 세운다']],
+['호랑이도','제 말 하면 온다','없는 곳에서 어떤 사람 이야기를 하면 마침 그 사람이 나타난다','호랑이',['사자','늑대','곰'],['제 새끼는 안 해친다','굴에서 나온다','배가 고프면 온다']],
+['원숭이도','나무에서 떨어진다','아무리 잘하는 사람도 실수할 때가 있다','원숭이',['다람쥐','고양이','까치'],['나무를 잘 탄다','바나나를 놓친다','바위에서 미끄러진다']],
+['세 살 버릇','여든까지 간다','어릴 때 몸에 밴 버릇은 늙어서도 고치기 어렵다','여든',['아흔','예순','스물'],['아흔까지 간다','열 살이면 사라진다','커서 바뀐다']],
+['우물 안','개구리','넓은 세상을 모르고 좁은 생각에 갇혀 있는 사람','개구리',['올챙이','두꺼비','물고기'],['올챙이','두꺼비','잉어']],
+['백지장도','맞들면 낫다','쉬운 일도 힘을 합치면 더 쉽다','맞들면',['찢으면','구기면','접으면'],['찢으면 큰일 난다','혼자 들어도 낫다','접으면 낫다']],
+['티끌 모아','태산','작은 것도 모이면 큰 것이 된다','태산',['바다','언덕','평야'],['동산','바다','먼지 덩이']],
+['열 번 찍어','안 넘어가는 나무 없다','꾸준히 노력하면 이루지 못할 일이 없다','열 번',['한 번','세 번','일곱 번'],['넘어가는 나무가 있다','안 부러지는 도끼 없다','안 베이는 풀 없다']],
+['천 리 길도','한 걸음부터','아무리 큰 일도 작은 시작에서 비롯된다','한 걸음',['두 걸음','열 걸음','백 걸음'],['지름길부터','한 시간부터','첫 고개부터']],
+['낫 놓고','기역 자도 모른다','아주 기초적인 것도 모를 만큼 무식하다','기역',['니은','디귿','히읗'],['니은 자도 모른다','글자를 안 읽는다','한글도 못 쓴다']],
+['누워서','떡 먹기','하기가 아주 쉬운 일','떡',['밥','과자','죽'],['밥 먹기','잠자기','과일 먹기']],
+['식은 죽','먹기','어렵지 않게 쉽게 할 수 있는 일','식은',['뜨거운','끓는','따뜻한'],['쑤기','데우기','나누기']],
+['되로 주고','말로 받는다','조금 주고 훨씬 많이 돌려받는다','말로',['섬으로','홉으로','자루로'],['되로 받는다','섬으로 받는다','말로 갚는다']],
+['가재는','게 편이다','처지가 비슷한 쪽끼리 편이 된다','게',['새우','물고기','거북'],['새우 편이다','물고기 편이다','제 편이다']],
+['꿩 먹고','알 먹는다','한 가지 일로 두 가지 이득을 본다','알',['털','깃','뼈'],['깃 줍는다','둥지 얻는다','알도 놓친다']],
+['도랑 치고','가재 잡는다','한 번에 두 가지 이로운 일을 이룬다','가재',['붕어','미꾸라지','올챙이'],['붕어 잡는다','물 길어 온다','고기 굽는다']],
+['믿는 도끼에','발등 찍힌다','믿고 있던 사람에게 배신당한다','발등',['손등','무릎','이마'],['손등 찍힌다','발목 다친다','이마 찧는다']],
+['서당 개 삼 년이면','풍월을 읊는다','무엇이든 오래 보고 들으면 자연히 알게 된다','삼 년',['일 년','오 년','십 년'],['글을 읽는다','노래를 부른다','짖는 법을 배운다']],
+['개구리','올챙이 적 생각 못 한다','형편이 나아진 뒤 어려웠던 때를 잊는다','올챙이',['송사리','도롱뇽','붕어'],['올챙이 적 생각 한다','헤엄치던 때를 잊는다','연못을 떠나지 못한다']],
+['달면 삼키고','쓰면 뱉는다','자기 이익에 따라 이쪽저쪽 태도를 바꾼다','뱉는다',['모은다','나눈다','감춘다'],['쓰면 약이 된다','쓰면 삼킨다','시면 뱉는다']],
+['등잔 밑이','어둡다','가까이 있는 것을 오히려 잘 모른다','어둡다',['밝다','따뜻하다','좁다'],['밝다','뜨겁다','넓다']],
+['원수는','외나무다리에서 만난다','피하고 싶은 사람을 피할 수 없는 곳에서 만난다','외나무다리',['징검다리','큰길','돌다리'],['징검다리에서 만난다','좁은 길에서 만난다','다리 위에서 헤어진다']],
+['호랑이 굴에 가야','호랑이 새끼를 잡는다','큰 성공을 하려면 위험을 무릅써야 한다','굴',['산','숲','집'],['호랑이 가죽을 얻는다','호랑이를 피한다','사자 새끼를 잡는다']],
+['고래 싸움에','새우 등 터진다','힘센 사람들 싸움에 약한 사람이 피해를 본다','새우',['멸치','조개','문어'],['새우 등이 휜다','멸치가 덕을 본다','조개 입 벌린다']],
+['하룻강아지','범 무서운 줄 모른다','철없이 겁 없이 덤빈다','범',['곰','늑대','여우'],['곰 무서운 줄 모른다','호랑이 잡아먹는다','하루 만에 큰다']],
+['아니 땐 굴뚝에','연기 날까','원인이 있어야 결과도 있다','굴뚝',['지붕','창문','우물'],['불 날까','구름 낄까','재 쌓일까']],
+['윗물이','맑아야 아랫물이 맑다','윗사람이 바르게 행동해야 아랫사람도 바르게 한다','맑아야',['깊어야','차가워야','많아야'],['맑아도 아랫물은 흐리다','깊어야 아랫물이 깊다','흘러야 아랫물이 흐른다']],
+['가랑비에','옷 젖는 줄 모른다','작은 것도 쌓이면 어느새 큰 것이 된다','가랑비',['소나기','장대비','폭풍'],['옷 마르는 줄 모른다','우산 필요한 줄 모른다','소나기 오는 줄 모른다']],
+['사공이 많으면','배가 산으로 간다','간섭하는 사람이 많으면 일이 잘 안 된다','산',['바다','강','섬'],['배가 빨리 간다','배가 뒤집힌다','배가 바다로 간다']],
+['같은 값이면','다홍치마','이왕이면 더 좋은 것을 고른다','다홍치마',['노랑치마','검정치마','초록치마'],['분홍치마','남색 치마','다홍 저고리']],
+['말 한마디에','천 냥 빚도 갚는다','말만 잘해도 어려운 일을 풀 수 있다','천 냥',['백 냥','한 푼','열 냥'],['천 냥이 생긴다','천 냥 빚이 는다','열 냥 빚도 못 갚는다']],
+['비 온 뒤에','땅이 굳는다','어려움을 겪은 뒤에 더 단단해진다','굳는다',['마른다','꺼진다','녹는다'],['땅이 질척하다','땅이 마른다','꽃이 핀다']],
+['짚신도','짝이 있다','누구에게나 어울리는 짝이 있다','짝',['값','끈','바닥'],['한 짝이면 된다','제 날이 좋다','끈이 닳는다']],
+['소귀에','경 읽기','아무리 가르쳐도 알아듣지 못한다','경',['노래','편지','북'],['노래 부르기','피리 불기','글 가르치기']],
+['병 주고','약 준다','해를 끼쳐 놓고 도와주는 척한다','약',['밥','돈','물'],['약 판다','밥 준다','의원 부른다']],
+['지렁이도','밟으면 꿈틀한다','아무리 순한 사람도 괴롭히면 화를 낸다','꿈틀한다',['도망간다','죽는다','웃는다'],['밟으면 죽는다','밟아도 가만있다','만지면 도망간다']],
+['쥐구멍에도','볕 들 날 있다','어려운 사람에게도 좋은 때가 온다','볕',['비','눈','달'],['비 올 날 있다','쥐 나올 날 있다','달 뜰 날 있다']],
+['작은 고추가','맵다','몸집이 작아도 속이 단단하고 능력이 뛰어나다','고추',['마늘','호박','가지'],['달다','쓰다','더디 자란다']],
+['못된 송아지','엉덩이에 뿔 난다','못된 사람이 하는 짓은 점점 나빠진다','엉덩이',['등','발','꼬리'],['엉덩이가 크다','머리에 뿔 난다','뿔이 빠진다']],
+['가는 날이','장날이다','뜻밖의 일이 우연히 겹친다','장날',['휴일','잔칫날','생일'],['휴일이다','잔칫날이다','비 오는 날이다']],
+['공든','탑이 무너지랴','정성껏 한 일은 헛되지 않는다','탑',['집','성','다리'],['집이 무너지랴','탑도 무너진다','돌이 닳으랴']],
+['호미로 막을 것을','가래로 막는다','작을 때 고치지 않으면 나중에 훨씬 힘이 든다','가래',['쟁기','도끼','곡괭이'],['삽으로 막는다','호미로 또 막는다','손으로 막는다']],
+['모로 가도','서울만 가면 된다','방법이 어떻든 목적만 이루면 된다','서울',['부산','평양','제주'],['부산만 가면 된다','빨리만 가면 된다','바로 가야 한다']],
+['말이','씨가 된다','말한 대로 일이 이루어질 수 있으니 말을 조심해야 한다','씨',['뿌리','열매','잎'],['뿌리가 된다','열매가 된다','씨가 마른다']],
+['첫술에','배부르랴','처음부터 만족할 수는 없다','배부르랴',['졸리랴','추우랴','아프랴'],['배고프랴','맛 알랴','잠 오랴']],
+['가까운 이웃이','먼 친척보다 낫다','가까이 사는 이웃이 멀리 있는 친척보다 도움이 된다','낫다',['못하다','같다','멀다'],['먼 친척보다 못하다','가까운 친척보다 낫다','먼 이웃보다 멀다']]
 ];
 // [문장 ({}가 빈칸), 뜻, 오답 낱말 3개]
 var ID=[
 ['발이 {넓다}','아는 사람이 많다',['크다','길다','빠르다']],
 ['손이 {크다}','씀씀이가 후하고 통이 크다',['작다','넓다','깊다']],
 ['입이 {무겁다}','비밀을 잘 지키고 말이 적다',['가볍다','짧다','작다']],
-['귀가 {얇다}','남의 말에 쉽게 넘어간다',['두껍다','크다','밝다']],
+['귀가 {얇다}','남의 말에 쉽게 넘어가다',['두껍다','크다','밝다']],
 ['눈이 {높다}','좋고 나쁨을 가리는 기준이 까다롭다',['낮다','깊다','좁다']],
 ['간이 {크다}','겁이 없고 대담하다',['작다','넓다','짧다']],
-['어깨가 {무겁다}','책임이 커서 마음에 부담이 된다',['가볍다','넓다','높다']],
+['어깨가 {무겁다}','책임이 커서 마음에 부담이 되다',['가볍다','넓다','높다']],
 ['손에 {땀을} 쥐다','몹시 긴장하며 지켜보다',['물을','돈을','비를']],
 ['바가지를 {긁다}','불평하며 잔소리를 심하게 하다',['쓰다','던지다','깨다']],
 ['미역국을 {먹다}','시험에 떨어지다',['마시다','끓이다','버리다']],
 ['파리를 {날리다}','장사가 안 되어 한가하다',['잡다','쫓다','기르다']],
-['산통을 {깨다}','잘되어 가던 일을 망쳐 놓다',['붙이다','만들다','닦다']],
+['산통을 {깨다}','잘되어 가던 일을 망쳐 놓다',['부수다','엎다','가르다']],
 ['한 우물을 {파다}','한 가지 일에 꾸준히 힘쓰다',['메우다','마시다','던지다']],
 ['발등에 {불이} 떨어지다','일이 몹시 급해지다',['비가','눈이','물이']],
 ['눈코 뜰 {새} 없다','몹시 바쁘다',['곳','일','물']],
-['눈에 {밟히다}','잊히지 않고 자꾸 아른거리다',['던지다','묻다','열리다']],
-['한솥밥을 {먹다}','한 집이나 한 단체에서 함께 지내다',['버리다','팔다','굶다']],
+['눈에 {밟히다}','잊히지 않고 자꾸 아른거리다',['띄다','익다','들다']],
+['한솥밥을 {먹다}','한 집이나 한 단체에서 함께 지내다',['짓다','얻다','푸다']],
 ['시치미를 {떼다}','알면서도 모르는 척하다',['붙이다','감다','자르다']],
-['오지랖이 {넓다}','쓸데없이 남의 일에 참견한다',['좁다','크다','길다']],
+['오지랖이 {넓다}','쓸데없이 남의 일에 참견하다',['좁다','크다','길다']],
 ['쥐도 새도 {모르게}','아무도 모르게 몰래',['알게','보게','듣게']],
-['입이 {짧다}','음식을 심하게 가린다',['길다','넓다','크다']],
-['배가 {아프다}','남이 잘되는 것을 보고 샘이 난다',['부르다','고프다','크다']],
-['얼굴이 {두껍다}','부끄러운 줄을 모른다',['얇다','작다','하얗다']],
+['입이 {짧다}','음식을 심하게 가리다',['길다','넓다','크다']],
+['배가 {아프다}','남이 잘되는 것을 보고 샘이 나다',['부르다','고프다','크다']],
+['얼굴이 {두껍다}','부끄러운 줄을 모르다',['얇다','작다','하얗다']],
 ['하늘의 {별} 따기','몹시 어려운 일',['달','구름','해']],
 ['식은{땀을} 흘리다','몹시 놀라거나 당황하다',['눈물을','피를','물을']],
 ['콧대가 {높다}','잘난 체하며 거만하다',['낮다','길다','굵다']],
@@ -400,7 +494,7 @@ var I18N={
 };
 // meanings of the proverbs and idioms: [en, fr, de, es, ja]
 var MEAN={
-"내가 남에게 좋게 해야 남도 나에게 좋게 한다":["If you treat others well, they will treat you well too", "Si l'on est bon avec les autres, ils seront bons avec nous", "Wer andere gut behandelt, wird auch gut behandelt", "Si tratas bien a los demás, ellos también te tratarán bien", "自分が人に良くすれば、人も自分に良くしてくれる"],
+"내가 남에게 좋게 말하고 행동해야 남도 나에게 좋게 대한다":["If you treat others well, they will treat you well too", "Si l'on est bon avec les autres, ils seront bons avec nous", "Wer andere gut behandelt, wird auch gut behandelt", "Si tratas bien a los demás, ellos también te tratarán bien", "自分が人に良くすれば、人も自分に良くしてくれる"],
 "말은 순식간에 멀리 퍼지니 조심해야 한다":["Words spread far in an instant, so be careful what you say", "Les paroles se répandent loin en un instant, alors attention à ce qu'on dit", "Worte verbreiten sich im Nu weit, also pass auf, was du sagst", "Las palabras se extienden lejos en un instante, así que cuidado con lo que dices", "言葉はあっという間に遠くまで広がるので気をつけるべきだ"],
 "아무도 안 듣는 것 같아도 말은 새어 나가니 조심해야 한다":["Even when no one seems to be listening, words leak out, so be careful", "Même si personne ne semble écouter, les paroles finissent par s'ébruiter, alors prudence", "Auch wenn scheinbar niemand zuhört, sickern Worte durch, also sei vorsichtig", "Aunque parezca que nadie escucha, las palabras se filtran, así que ten cuidado", "誰も聞いていないようでも話は漏れるので気をつけるべきだ"],
 "일이 잘못된 뒤에 뒤늦게 대비한다":["Taking precautions only after things have already gone wrong", "Prendre des précautions trop tard, une fois le mal fait", "Erst Vorsorge treffen, wenn es schon zu spät ist", "Tomar precauciones cuando ya es demasiado tarde", "事がうまくいかなくなってから、遅れて備える"],
@@ -452,10 +546,10 @@ var MEAN={
 "아는 사람이 많다":["Knows a lot of people", "Connaître beaucoup de monde", "Viele Leute kennen", "Conocer a mucha gente", "知り合いが多い"],
 "씀씀이가 후하고 통이 크다":["Spends generously and is big-hearted", "Dépenser sans compter et voir les choses en grand", "Großzügig sein und mit vollen Händen geben", "Ser generoso y gastar a lo grande", "気前がよく太っ腹だ"],
 "비밀을 잘 지키고 말이 적다":["Keeps secrets well and says little", "Savoir garder un secret et parler peu", "Verschwiegen sein und wenig reden", "Guardar bien los secretos y hablar poco", "秘密をよく守り口数が少ない"],
-"남의 말에 쉽게 넘어간다":["Easily swayed by what others say", "Se laisser facilement influencer par les autres", "Sich leicht von anderen beeinflussen lassen", "Dejarse convencer fácilmente por los demás", "人の言葉にすぐ乗せられる"],
+"남의 말에 쉽게 넘어가다":["Easily swayed by what others say", "Se laisser facilement influencer par les autres", "Sich leicht von anderen beeinflussen lassen", "Dejarse convencer fácilmente por los demás", "人の言葉にすぐ乗せられる"],
 "좋고 나쁨을 가리는 기준이 까다롭다":["Has very high standards", "Être très exigeant dans ses choix", "Sehr hohe Ansprüche haben", "Ser muy exigente", "良し悪しを見分ける基準が厳しい"],
 "겁이 없고 대담하다":["Fearless and bold", "Sans peur et audacieux", "Furchtlos und kühn", "Valiente y audaz", "怖いもの知らずで大胆だ"],
-"책임이 커서 마음에 부담이 된다":["Feels the weight of a heavy responsibility", "Ressentir le poids d'une lourde responsabilité", "Eine große Verantwortung lastet auf einem", "Sentir el peso de una gran responsabilidad", "責任が大きくて気が重い"],
+"책임이 커서 마음에 부담이 되다":["Feels the weight of a heavy responsibility", "Ressentir le poids d'une lourde responsabilité", "Eine große Verantwortung lastet auf einem", "Sentir el peso de una gran responsabilidad", "責任が大きくて気が重い"],
 "몹시 긴장하며 지켜보다":["Watch with great tension", "Regarder avec une grande tension", "Mit großer Anspannung zusehen", "Mirar con mucha tensión", "ひどく緊張しながら見守る"],
 "불평하며 잔소리를 심하게 하다":["Complain and nag constantly", "Se plaindre et faire des reproches sans arrêt", "Ständig meckern und nörgeln", "Quejarse y regañar sin parar", "不満を言って口うるさく小言を言う"],
 "시험에 떨어지다":["Fail an exam", "Échouer à un examen", "Durch eine Prüfung fallen", "Suspender un examen", "試験に落ちる"],
@@ -467,11 +561,11 @@ var MEAN={
 "잊히지 않고 자꾸 아른거리다":["Can't forget it; it keeps coming back to mind", "Impossible à oublier, ça revient sans cesse à l'esprit", "Nicht vergessen können, es geht einem immer wieder durch den Kopf", "No poder olvidarlo; vuelve una y otra vez a la mente", "忘れられず、何度も目に浮かぶ"],
 "한 집이나 한 단체에서 함께 지내다":["Live or work together in the same home or group", "Vivre ou travailler ensemble sous le même toit ou dans le même groupe", "Im selben Haus oder in derselben Gruppe zusammenleben", "Convivir en la misma casa o el mismo grupo", "同じ家や同じ団体で一緒に過ごす"],
 "알면서도 모르는 척하다":["Pretend not to know when you do", "Faire semblant de ne pas savoir", "So tun, als wüsste man nichts", "Hacerse el desentendido", "知っているのに知らないふりをする"],
-"쓸데없이 남의 일에 참견한다":["Meddles in other people's business for no reason", "Se mêler inutilement des affaires des autres", "Sich unnötig in fremde Angelegenheiten einmischen", "Meterse sin necesidad en asuntos ajenos", "余計に人のことに口出しする"],
+"쓸데없이 남의 일에 참견하다":["Meddles in other people's business for no reason", "Se mêler inutilement des affaires des autres", "Sich unnötig in fremde Angelegenheiten einmischen", "Meterse sin necesidad en asuntos ajenos", "余計に人のことに口出しする"],
 "아무도 모르게 몰래":["Secretly, without anyone knowing", "En secret, sans que personne ne le sache", "Heimlich, ohne dass es jemand merkt", "En secreto, sin que nadie se entere", "誰にも知られずにこっそり"],
 "일이 너무 바빠 누구 도움이라도 받고 싶다":["So busy you'd take help from anyone", "Être si débordé qu'on accepterait l'aide de n'importe qui", "So beschäftigt, dass man jede Hilfe nehmen würde", "Tan ocupado que aceptarías la ayuda de cualquiera", "忙しすぎて誰の助けでも借りたい"],
-"남이 잘되는 것을 보고 샘이 난다":["Feel jealous when others do well", "Être jaloux de la réussite des autres", "Neidisch werden, wenn es anderen gut geht", "Sentir envidia cuando a otros les va bien", "人がうまくいくのを見てねたましくなる"],
-"부끄러운 줄을 모른다":["Has no sense of shame", "Ne connaître aucune honte", "Kein Schamgefühl haben", "No tener vergüenza", "恥知らずだ"],
+"남이 잘되는 것을 보고 샘이 나다":["Feel jealous when others do well", "Être jaloux de la réussite des autres", "Neidisch werden, wenn es anderen gut geht", "Sentir envidia cuando a otros les va bien", "人がうまくいくのを見てねたましくなる"],
+"부끄러운 줄을 모르다":["Has no sense of shame", "Ne connaître aucune honte", "Kein Schamgefühl haben", "No tener vergüenza", "恥知らずだ"],
 "몹시 어려운 일":["Something extremely difficult", "Une chose extrêmement difficile", "Etwas äußerst Schwieriges", "Algo dificilísimo", "ひどく難しいこと"],
 "몹시 놀라거나 당황하다":["Be badly startled or flustered", "Être très surpris ou paniqué", "Sehr erschrecken oder in Panik geraten", "Asustarse o agobiarse mucho", "ひどく驚いたりあわてたりする"],
 "잘난 체하며 거만하다":["Stuck-up and arrogant", "Prétentieux et arrogant", "Eingebildet und arrogant", "Creído y arrogante", "偉ぶって傲慢だ"],
@@ -516,7 +610,7 @@ var STAGEDEF=[null,
  {n:'종합 수사',d:'속담과 관용구 다섯 가지 유형이 뒤섞여 나와요',cnt:15},
  {n:'무한 수사',d:'목숨 3개로 시작해요. 틀리면 목숨이 하나씩 줄고, 다 잃을 때까지 사건이 끝없이 이어져요',cnt:300}];
 var NSTAGES=6, RSTAGES=5;
-var PVG=[[1,2,46],[8,13,14],[17,18],[9,30,11],[3,44],[10,43],[34,39]], IDG=[[7,24],[13,14,20]];
+var PVG=[[1,2,46],[8,13,14],[17,18],[9,30,11],[3,44],[10,43],[34,39],[11,47]], IDG=[[7,24],[13,14],[4,20]];
 translateStatic();
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
@@ -525,9 +619,9 @@ function tone(f,t,d,type,v){ var o=actx.createOscillator(), g=actx.createGain();
 function sfx(k){
   if(!snd) return;
   try{ actx=actx||new (window.AudioContext||window.webkitAudioContext)(); if(actx.state==='suspended') actx.resume();
-    if(k==='ok'){ tone(660,0,.14); tone(880,.1,.22); }
-    else if(k==='bonus'){ tone(660,0,.12); tone(880,.09,.12); tone(1175,.18,.26); }
-    else if(k==='no'){ tone(260,0,.18,'triangle',.14); tone(180,.14,.3,'triangle',.14); }
+    if(k==='ok'){ tone(95,0,.12,'sine',.2); tone(660,.04,.14); tone(880,.14,.22); }
+    else if(k==='bonus'){ tone(95,0,.12,'sine',.2); tone(660,.04,.12); tone(880,.13,.12); tone(1175,.22,.26); }
+    else if(k==='no'){ tone(90,0,.14,'sine',.22); tone(260,.04,.18,'triangle',.12); tone(180,.18,.3,'triangle',.12); }
     else if(k==='end'){ tone(523,0,.15); tone(659,.14,.15); tone(784,.28,.3); }
   }catch(e){}
 }
@@ -574,7 +668,7 @@ function makeCases(seed,count,sid){
   seq.forEach(function(t){
     var p, id, full;
     if(t==='A'){ p=nextP(); full=p[0]+' '+p[1];
-      out.push(mk(tr('이어 붙이기'),esc(p[0])+' <span class="bl">　　　</span>',tr('뒷부분을 찾아 이어 붙이세요.'),p[1],pick3(PV.map(function(x){ return x[1]; }).filter(function(x){ return x===p[1]||!overlap(x,p[1]); }),p[1]),full,tm(p[2]))); }
+      out.push(mk(tr('이어 붙이기'),esc(p[0])+' <span class="bl">　　　</span>',tr('뒷부분을 찾아 이어 붙이세요.'),p[1],p[5].slice(),full,tm(p[2]))); }
     else if(t==='B'){ p=nextP(); full=p[0]+' '+p[1];
       out.push(mk(tr('뜻 풀이'),'“'+esc(full)+'”',tr('이 속담의 뜻은 무엇일까요?'),tm(p[2]),pick3(PV.map(function(x){ return x[2]; }),p[2],mateP).map(tm),full,tm(p[2]))); }
     else if(t==='C'){ p=nextP(); full=p[0]+' '+p[1];
@@ -802,13 +896,13 @@ function beginRound(cdMs,durMs,totalMs,resume){
     if(S.done||S.cur>=S.cases.length){ S.done=true; waitOthers(); } else if(cdMs>0) timers.push(setTimeout(showCase,cdMs)); else showCase();
     hud();
   } else{ $('wCode').textContent=S.code; show('sWatch'); }
-  if(cdMs>0){ $('cd').classList.add('on'); (function step(k){ $('cdNum').textContent=k; if(k>1) timers.push(setTimeout(function(){ step(k-1); },1000)); })(Math.round(cdMs/1000)); timers.push(setTimeout(function(){ $('cd').classList.remove('on'); S.phase='play'; },cdMs)); }
+  if(cdMs>0){ $('cd').classList.add('on'); (function step(k){ var cb=$('cdNum'); cb.textContent=k; cb.style.animation='none'; void cb.offsetWidth; cb.style.animation=''; if(k>1) timers.push(setTimeout(function(){ step(k-1); },1000)); })(Math.round(cdMs/1000)); timers.push(setTimeout(function(){ $('cd').classList.remove('on'); S.phase='play'; },cdMs)); }
   tickT=setInterval(tick,250); tick();
   if(S.role==='guest') sendT=setInterval(function(){ if(dirtyScore){ dirtyScore=false; report(); } },400);
   if(S.role==='host'){ boardDirty=true; boardT=setInterval(function(){ if(boardDirty){ boardDirty=false; pushBoard(); } },700); }
 }
 function report(){ send(S.conn,{t:'score',score:S.score,stage:S.cur,done:S.done}); }
-function hud(){ var no=Math.max(1,Math.min(S.locked?S.cur:S.cur+1,S.cases.length)); $('gNo').textContent=endless()?tr('{0}번째',no):no+'/'+S.cases.length; $('gLives').textContent=endless()?new Array(Math.max(0,S.lives)+1).join('♥')+new Array(Math.max(0,3-S.lives)+1).join('♡'):''; $('gScore').textContent=S.score; }
+function hud(){ var no=Math.max(1,Math.min(S.locked?S.cur:S.cur+1,S.cases.length)); $('gNo').textContent=endless()?tr('{0}번째',no):no+'/'+S.cases.length; $('gLives').textContent=endless()?new Array(Math.max(0,S.lives)+1).join('♥')+new Array(Math.max(0,3-S.lives)+1).join('♡'):''; $('gScore').textContent=S.score; var pg=$('prog'); pg.classList.toggle('hide',endless()); pg.firstChild.style.width=(S.cases.length?Math.min(100,S.cur/S.cases.length*100):0)+'%'; }
 function tick(){
   if(!timed()) return;
   var left=S.endAt-Date.now(), txt=fmt(Math.min(left,S.totalMs));
@@ -827,7 +921,7 @@ function showCase(){
   $('gain').classList.remove('on'); $('gLivesBox').classList.remove('hit');
   $('gTag').textContent=tr('사건 {0} · {1}',String(S.cur+1).padStart(2,'0'),c.tag); $('gQ').innerHTML=c.q; $('gHint').textContent=c.hint;
   $('gExp').className='exp'; $('gExp').innerHTML=''; $('stamp').className='stamp'; $('stamp').textContent='';
-  $('paper').classList.remove('shake'); $('opts').innerHTML=c.opts.map(function(o,i){ return '<button class="opt" data-i="'+i+'"><span class="n">'+(i+1)+'</span><span>'+esc(o)+'</span></button>'; }).join('');
+  $('paper').classList.remove('shake'); $('opts').innerHTML=c.opts.map(function(o,i){ return '<button class="opt" data-i="'+i+'" style="--d:'+i+'"><span class="n">'+(i+1)+'</span><span>'+esc(o)+'</span></button>'; }).join('');
   $('nextBtn').classList.add('hide'); $('nextBtn').classList.remove('auto');
 }
 $('opts').addEventListener('click',function(e){ var b=e.target.closest('.opt'); if(b&&!S.locked) pick(+b.dataset.i); });
@@ -845,7 +939,7 @@ function pick(i){
   $('stamp').textContent=tr(ok?'해결':'미제'); $('stamp').className='stamp '+(ok?'ok':'no');
   if(!ok&&endless()){ S.lives--; lost=true; }
   var note=ok?esc(tr('정답 +{0}점',100)+(bonus?' · '+tr('빠른 수사 보너스 +{0}점',bonus):'')):esc(tr('정답은 초록색 보기예요.'))+(lost?'<br>'+esc(tr(S.lives>0?'목숨이 하나 줄었어요 (남은 목숨 {0}개)':'목숨을 모두 잃었어요',S.lives)):'');
-  $('gExp').innerHTML='<b>'+esc(c.full)+'</b><br>'+esc(c.meaning)+'<span class="bn'+(ok?'':' bad')+'">'+note+'</span>'; $('gExp').className='exp on';
+  $('gExp').innerHTML='<b>'+esc(c.full)+'</b><span class="k">'+esc(tr('뜻'))+'</span>'+esc(c.meaning)+'<span class="bn'+(ok?'':' bad')+'">'+note+'</span>'; $('gExp').className='exp on';
   if(ok){ var g=$('gain'); g.textContent='+'+(100+bonus); g.classList.remove('on'); void g.offsetWidth; g.classList.add('on'); }
   else{ var pp=$('paper'); pp.classList.remove('shake'); void pp.offsetWidth; pp.classList.add('shake'); buzz(); }
   S.cur++; dirtyScore=true; hud(); boardDirty=true;
@@ -856,6 +950,7 @@ function pick(i){
   var wait=ok?2400:5000, nb=$('nextBtn');
   nb.classList.remove('hide','auto'); void nb.offsetWidth; nb.style.setProperty('--adv',wait+'ms'); nb.classList.add('auto'); nb.textContent=tr(S.done?'수사 마치기':'다음 사건');
   clearTimeout(advT); advT=setTimeout(nextCase,wait);
+  try{ var rm=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches; setTimeout(function(){ if(S.locked) nb.scrollIntoView({block:'nearest',behavior:rm?'auto':'smooth'}); },380); }catch(e){}
   if(S.done&&S.role==='host') checkAllDone();
 }
 $('nextBtn').onclick=nextCase;
@@ -897,8 +992,8 @@ function showResult(rk){
     if(S.score>0&&S.score>prevBest){ var nb=document.createElement('div'); nb.className='nb'; nb.textContent=tr('새 최고 기록!'); $('rSub').insertAdjacentElement('afterend',nb); } }
   else{ $('rTitle').textContent=tr('수사 결과'); var me=null; (rk||[]).forEach(function(e){ if(e.t===token||(S.role!=='host'&&e.n===S.name)) me=e; });
     $('rRank').innerHTML='<div class="board">'+(rk||[]).map(function(e){ return rowHtml(e,me&&e.r===me.r&&e.n===me.n); }).join('')+'</div>'; }
-  $('wCnt').textContent=S.wrongs.length?'('+S.wrongs.length+')':'';
-  $('rWrong').innerHTML=S.wrongs.length?S.wrongs.map(function(w){ return '<div class="wr"><span class="wt">'+esc(w.tag)+'</span><b>'+esc(w.full)+'</b><small>'+esc(tr('뜻: {0}',w.meaning))+'</small><small>'+esc(tr('내 답: {0} → 정답: {1}',w.picked,w.answer))+'</small></div>'; }).join(''):'<div class="msg info">'+esc(tr('틀린 사건이 없어요. 완벽한 수사였어요!'))+'</div>';
+  $('wCnt').textContent=S.wrongs.length?'('+S.wrongs.length+')':''; var old=document.querySelector('#sResult .rstamp'); if(old) old.remove(); var rs=document.createElement('div'); rs.className='rstamp'; rs.setAttribute('aria-hidden','true'); rs.textContent=tr('수사 완료'); $('sResult').firstElementChild.appendChild(rs);
+  $('rWrong').innerHTML=S.wrongs.length?S.wrongs.map(function(w,wi){ return '<div class="wr" style="--d:'+Math.min(wi,10)+'"><span class="wt">'+esc(w.tag)+'</span><b>'+esc(w.full)+'</b><small>'+esc(tr('뜻: {0}',w.meaning))+'</small><small>'+esc(tr('내 답: {0} → 정답: {1}','\u0001'+w.picked+'\u0002','\u0003'+w.answer+'\u0004')).replace('\u0001','<span class="mine">').replace('\u0002','</span>').replace('\u0003','<span class="ans">').replace('\u0004','</span>')+'</small></div>'; }).join(''):'<div class="msg info">'+esc(tr('틀린 사건이 없어요. 완벽한 수사였어요!'))+'</div>';
   sfx('end');
   $('againBtn').classList.toggle('hide',S.role==='guest'); $('againBtn').textContent=tr(S.role==='host'?'사무소로 돌아가기':'다시 수사');
   show('sResult');
