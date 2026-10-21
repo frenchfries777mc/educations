@@ -326,6 +326,7 @@
     .belt-demo .track{animation:none;}
   }
 </style>
+<script src="https://frenchfries777mc.github.io/games/ff-lang.js"></script>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter></svg>
@@ -336,7 +337,7 @@
   <div class="hdr-r">
     <div class="net" id="net"><i></i><span id="netTxt">오프라인</span></div>
     <select class="lang" id="langSel" aria-label="언어">
-      <option value="ko">한국어</option><option value="en">English</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="ja">日本語</option>
+      <option value="ko">한국어</option><option value="en">English</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="es">Español</option><option value="ja">日本語</option><option value="zh">简体中文</option><option value="pt">Português (Brasil)</option><option value="ru">Русский</option><option value="tr">Türkçe</option><optgroup label="가상 언어"><option value="nw">Newspeak</option><option value="gk">번역기 한국어</option><option value="au" style="font-family:'FF Aurebesh',system-ui">🌐 Aurebesh</option></optgroup>
     </select>
   </div>
 </header>
@@ -480,97 +481,97 @@
 (function(){
 'use strict';
 var I18N={
-"2분":["2 min","2 min","2 Min.","2 min","2分"],
-"3분":["3 min","3 min","3 Min.","3 min","3分"],
-"5분":["5 min","5 min","5 Min.","5 min","5分"],
-"✓ 정상 통과":["✓ Pass as OK","✓ Valider","✓ In Ordnung","✓ Dar por bueno","✓ 正常で通す"],
-"거기는 멀쩡해요":["That part was fine","Cette partie était correcte","Das war richtig","Esa parte estaba bien","そこは正しかったよ"],
-"검사 통과":["PASSED","VALIDÉ","GEPRÜFT","APROBADO","検査合格"],
-"검수 라인":["Inspection line","Ligne de contrôle","Prüfband","Línea de control","検品ライン"],
-"고장 난 문장이 통과됐어요":["A broken sentence got through","Une phrase fautive est passée","Ein fehlerhafter Satz ist durchgerutscht","Pasó una frase con error","壊れた文が通ってしまった"],
-"고친 문장 합계":["Sentences fixed","Phrases réparées","Reparierte Sätze","Frases arregladas","直した文の合計"],
-"고칠 곳이 없는 문장이었어요":["Nothing needed fixing","Il n'y avait rien à corriger","Da war nichts zu reparieren","No había nada que arreglar","直す所のない文だった"],
-"공장 들어가기":["Enter a factory","Entrer dans une usine","Fabrik betreten","Entrar a una fábrica","工場に入る"],
-"공장 열기":["Open a factory","Ouvrir une usine","Fabrik eröffnen","Abrir una fábrica","工場を開く"],
-"공장에 연결하는 중...":["Connecting to the factory...","Connexion à l'usine...","Verbinde mit der Fabrik...","Conectando a la fábrica...","工場に接続中..."],
-"공장을 여는 중...":["Opening the factory...","Ouverture de l'usine...","Fabrik wird eröffnet...","Abriendo la fábrica...","工場を開いています..."],
-"공장을 열지 못했어요 ({0}). 잠시 후 다시 해 보세요.":["Couldn't open the factory ({0}). Try again soon.","Impossible d'ouvrir l'usine ({0}). Réessayez.","Fabrik konnte nicht eröffnet werden ({0}). Bitte erneut versuchen.","No se pudo abrir la fábrica ({0}). Inténtalo de nuevo.","工場を開けませんでした（{0}）。少ししてからもう一度。"],
-"공장을 찾을 수 없어요. 코드를 확인하세요.":["Factory not found. Check the code.","Usine introuvable. Vérifiez le code.","Fabrik nicht gefunden. Prüfe den Code.","No se encontró la fábrica. Revisa el código.","工場が見つかりません。コードを確認して。"],
-"공장이 가득 찼어요 (최대 40명).":["The factory is full (max 40).","L'usine est pleine (40 max).","Die Fabrik ist voll (max. 40).","La fábrica está llena (máx. 40).","工場が満員です（最大40人）。"],
-"나가기":["Leave","Quitter","Verlassen","Salir","退出"],
-"남은 시간":["Time left","Temps restant","Restzeit","Tiempo restante","残り時間"],
-"내 순위 {0}위 / {1}명":["My rank {0} / {1}","Mon rang {0} / {1}","Mein Platz {0} / {1}","Mi puesto {0} / {1}","自分の順位 {0}位 / {1}人"],
-"높임법":["Honorifics","Formes honorifiques","Höflichkeitsformen","Honoríficos","敬語"],
-"다른 부품이 맞아요":["Wrong part","Mauvaise pièce","Falsches Teil","Pieza equivocada","別の部品が正解"],
-"다시 볼 문장":["Sentences to review","Phrases à revoir","Sätze zum Wiederholen","Frases para repasar","見直す文"],
-"다시 연결 중":["Reconnecting","Reconnexion","Verbinde neu","Reconectando","再接続中"],
-"다시 하기":["Play again","Rejouer","Nochmal","Otra vez","もう一度"],
-"다음 ▶":["Next ▶","Suivant ▶","Weiter ▶","Siguiente ▶","次へ ▶"],
-"띄어쓰기":["Spacing","Espacement","Leerzeichen","Espaciado","分かち書き"],
-"링크를 복사했어요":["Link copied","Lien copié","Link kopiert","Enlace copiado","リンクをコピーしました"],
-"맞춤법":["Spelling","Orthographe","Rechtschreibung","Ortografía","つづり"],
-"목숨":["Lives","Vies","Leben","Vidas","ライフ"],
-"목숨 3개. 갈수록 벨트가 빨라져요.":["3 lives. The belt keeps speeding up.","3 vies. Le tapis accélère.","3 Leben. Das Band wird immer schneller.","3 vidas. La cinta va cada vez más rápido.","ライフ3つ。ベルトはだんだん速くなる。"],
-"무작위 이름":["Random name","Nom aléatoire","Zufälliger Name","Nombre aleatorio","ランダムな名前"],
-"문장 수리공":["Sentence Fixer","Réparateur de phrases","Satz-Mechaniker","Reparafrases","文章修理工"],
-"문장 호응":["Agreement","Accord","Satzbezug","Concordancia","文の呼応"],
-"문장은 한국어로 나와요.":["The sentences are in Korean.","Les phrases sont en coréen.","Die Sätze sind auf Koreanisch.","Las frases están en coreano.","文は韓国語で出ます。"],
-"방 코드":["Room code","Code de la salle","Raumcode","Código de sala","ルームコード"],
-"방 코드 5자리를 입력하세요.":["Enter the 5-character room code.","Entrez le code à 5 caractères.","Gib den 5-stelligen Raumcode ein.","Escribe el código de 5 caracteres.","5文字のルームコードを入力して。"],
-"방 코드로 친구를 불러요. 최대 40명.":["Invite friends with a room code. Up to 40.","Invitez vos amis avec un code. 40 max.","Lade Freunde per Raumcode ein. Bis zu 40.","Invita a tus amigos con un código. Hasta 40.","ルームコードで友だちを呼ぶ。最大40人。"],
-"방장과 연결 끊김":["Lost the host","Hôte perdu","Verbindung zum Host weg","Sin conexión con el anfitrión","ホストと切断"],
-"방장과 연결이 끊겼어요":["Lost connection to the host","Connexion à l'hôte perdue","Verbindung zum Host verloren","Se perdió la conexión con el anfitrión","ホストとの接続が切れました"],
-"방장도 작업":["Host plays too","L'hôte joue aussi","Host spielt mit","El anfitrión también juega","ホストも参加"],
-"방장이 다시 시작하면 대기실로 이동해요.":["You'll go to the lobby when the host starts again.","Vous irez au salon quand l'hôte relancera.","Du kommst in die Lobby, wenn der Host neu startet.","Irás a la sala cuando el anfitrión vuelva a empezar.","ホストが再開すると待合室に移動します。"],
-"방장이 시작하기를 기다리는 중":["Waiting for the host to start","En attente de l'hôte","Warte auf den Start durch den Host","Esperando a que empiece el anfitrión","ホストの開始を待っています"],
-"벨트로 고장 난 문장이 들어와요. 틀린 어절을 눌러 고치고, 멀쩡한 문장은 통과시키세요.":["Broken sentences roll in on the belt. Tap the wrong word to fix it, and pass the ones that are fine.","Des phrases fautives arrivent sur le tapis. Touchez le mot fautif pour le réparer et laissez passer les phrases correctes.","Fehlerhafte Sätze kommen übers Band. Tippe das falsche Wort an, um es zu reparieren, und lass korrekte Sätze durch.","Llegan frases rotas por la cinta. Toca la palabra mal escrita para arreglarla y deja pasar las correctas.","ベルトで壊れた文が流れてくる。間違った語をタップして直し、正しい文は通そう。"],
-"복사":["Copy","Copier","Kopieren","Copiar","コピー"],
-"불량":["DEFECT","DÉFAUT","FEHLER","DEFECTO","不良"],
-"생산 현황":["Output","Production","Produktion","Producción","生産状況"],
-"생산 현황판":["Output board","Tableau de production","Produktionstafel","Tablero de producción","生産状況ボード"],
-"서버 연결 끊김":["Server lost","Serveur perdu","Server getrennt","Servidor perdido","サーバー切断"],
-"수리 완료":["FIXED","RÉPARÉ","REPARIERT","ARREGLADO","修理完了"],
-"순위":["Rank","Rang","Platz","Puesto","順位"],
-"시간 초과":["TOO SLOW","TROP LENT","ZU LANGSAM","DEMASIADO LENTO","時間切れ"],
-"아직 아무도 없어요":["Nobody here yet","Personne pour l'instant","Noch niemand da","Aún no hay nadie","まだ誰もいません"],
-"언어":["Language","Langue","Sprache","Idioma","言語"],
-"연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.":["Couldn't load the connection library. Check your internet and reload.","Impossible de charger l'outil de connexion. Vérifiez Internet et rechargez.","Verbindungsbibliothek nicht geladen. Prüfe das Internet und lade neu.","No se pudo cargar la conexión. Revisa internet y recarga.","接続ツールを読み込めません。ネット接続を確認して再読み込みして。"],
-"연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.":["Connection timed out. Check the code and try again.","Délai dépassé. Vérifiez le code et réessayez.","Zeitüberschreitung. Prüfe den Code und versuche es erneut.","Se agotó el tiempo. Revisa el código e inténtalo de nuevo.","接続がタイムアウト。コードを確認してもう一度。"],
-"연결됨":["Connected","Connecté","Verbunden","Conectado","接続済み"],
-"연결하지 못했어요 ({0}).":["Couldn't connect ({0}).","Connexion impossible ({0}).","Keine Verbindung ({0}).","No se pudo conectar ({0}).","接続できません（{0}）。"],
-"오프라인":["Offline","Hors ligne","Offline","Sin conexión","オフライン"],
-"이름":["Name","Nom","Name","Nombre","名前"],
-"이름 바꾸기":["Rename","Renommer","Umbenennen","Cambiar nombre","名前を変更"],
-"이름을 먼저 입력하세요.":["Enter your name first.","Entrez d'abord votre nom.","Gib zuerst deinen Namen ein.","Primero escribe tu nombre.","先に名前を入力して。"],
-"이름을 바꿨어요":["Name changed","Nom modifié","Name geändert","Nombre cambiado","名前を変更しました"],
-"이름을 입력하세요":["Enter your name","Entrez votre nom","Gib deinen Namen ein","Escribe tu nombre","名前を入力"],
-"작업 시간":["Shift length","Durée du service","Schichtlänge","Duración del turno","作業時間"],
-"작업 시간 {0}":["Shift {0}","Service {0}","Schicht {0}","Turno {0}","作業時間 {0}"],
-"작업 시작":["Start shift","Commencer","Schicht starten","Empezar turno","作業開始"],
-"작업 일지":["Work log","Journal de travail","Arbeitsprotokoll","Registro de trabajo","作業日誌"],
-"작업 종료! 결과를 기다리는 중":["Shift over! Waiting for results","Fin du service ! En attente des résultats","Schicht vorbei! Warte auf Ergebnisse","¡Fin del turno! Esperando resultados","作業終了！結果を待っています"],
-"작업 지시서":["Work order","Bon de travail","Auftrag","Orden de trabajo","作業指示書"],
-"작업자":["Worker","Ouvrier","Arbeiter","Obrero","作業員"],
-"작업자를 기다리는 중":["Waiting for workers","En attente d'ouvriers","Warte auf Arbeiter","Esperando obreros","作業員を待っています"],
-"점수":["Score","Score","Punkte","Puntos","スコア"],
-"정상 문장":["Correct sentences","Phrases correctes","Korrekte Sätze","Frases correctas","正しい文"],
-"정상 문장이에요":["That one was fine","Phrase correcte","Der Satz war richtig","Esa estaba bien","正しい文でした"],
-"정확도":["Accuracy","Précision","Genauigkeit","Precisión","正確さ"],
-"지금 끝내기":["End now","Terminer","Jetzt beenden","Terminar ya","今すぐ終了"],
-"지켜보기":["Watch","Regarder","Zuschauen","Mirar","見守る"],
-"참가":["Join","Entrer","Beitreten","Entrar","参加"],
-"처리":["Done","Traitées","Bearbeitet","Hechas","処理"],
-"처리한 문장":["Sentences handled","Phrases traitées","Bearbeitete Sätze","Frases procesadas","処理した文"],
-"처음으로":["Home","Accueil","Start","Inicio","最初へ"],
-"최고 콤보":["Best combo","Meilleur combo","Beste Kombo","Mejor combo","最高コンボ"],
-"출근한 작업자":["Workers on shift","Ouvriers présents","Arbeiter in der Schicht","Obreros en turno","出勤した作業員"],
-"출입증":["ID badge","Badge","Ausweis","Credencial","入館証"],
-"코드":["Code","Code","Code","Código","コード"],
-"콤보":["Combo","Combo","Kombo","Combo","コンボ"],
-"틀린 문장이 없어요. 완벽한 작업이에요!":["No mistakes. Perfect work!","Aucune erreur. Travail parfait !","Keine Fehler. Perfekte Arbeit!","Sin errores. ¡Trabajo perfecto!","ミスなし。完璧な作業！"],
-"틀린 어절을 누르면 수리 부품이 나와요":["Tap the wrong word to get repair parts","Touchez le mot fautif pour voir les pièces","Tippe das falsche Wort an, um Ersatzteile zu sehen","Toca la palabra mal para ver las piezas","間違った語をタップすると部品が出る"],
-"함께 하기":["Play","Jouer","Mitspielen","Jugar","一緒にやる"],
-"혼자 작업":["Solo shift","Service solo","Allein arbeiten","Turno en solitario","ひとりで作業"]
+"2분":["2 min","2 min","2 Min.","2 min","2分","2 分钟","2 min","2 мин","2 dk","2 time","2 분"],
+"3분":["3 min","3 min","3 Min.","3 min","3分","3 分钟","3 min","3 мин","3 dk","3 time","3 분"],
+"5분":["5 min","5 min","5 Min.","5 min","5分","5 分钟","5 min","5 мин","5 dk","5 time","5 분"],
+"✓ 정상 통과":["✓ Pass as OK","✓ Valider","✓ In Ordnung","✓ Dar por bueno","✓ 正常で通す","✓ 合格放行","✓ Passar como OK","✓ Пропустить как верное","✓ Sorunsuz geçir","✓ Go as YESGOOD","✓ 통과하다 처럼 오케이"],
+"거기는 멀쩡해요":["That part was fine","Cette partie était correcte","Das war richtig","Esa parte estaba bien","そこは正しかったよ","那部分没问题","Essa parte estava certa","Эта часть была верной","O kısım doğruydu","That part was fine","거기는 멀쩡합니다"],
+"검사 통과":["PASSED","VALIDÉ","GEPRÜFT","APROBADO","検査合格","合格","APROVADO","ПРОЙДЕНО","GEÇTİ","PASSED","통과하했다!"],
+"검수 라인":["Inspection line","Ligne de contrôle","Prüfband","Línea de control","検品ライン","检验线","Linha de inspeção","Линия контроля","Denetim hattı","Inspection line","Inspection 줄"],
+"고장 난 문장이 통과됐어요":["A broken sentence got through","Une phrase fautive est passée","Ein fehlerhafter Satz ist durchgerutscht","Pasó una frase con error","壊れた文が通ってしまった","一个错句被放过去了","Uma frase quebrada passou","Пропущено ошибочное предложение","Bozuk bir cümle geçti","Broken sentence getted thru","고장 난 문장이 통과되었습니다"],
+"고친 문장 합계":["Sentences fixed","Phrases réparées","Reparierte Sätze","Frases arregladas","直した文の合計","改正的句子","Frases corrigidas","Исправленные предложения","Düzeltilen cümleler","Sentences rectified","Sentences 고치했다"],
+"고칠 곳이 없는 문장이었어요":["Nothing needed fixing","Il n'y avait rien à corriger","Da war nichts zu reparieren","No había nada que arreglar","直す所のない文だった","没有需要改的","Nada precisava de correção","Исправлять было нечего","Düzeltilecek bir şey yoktu","Unthing musted fixing","아무것도 필요한 고치하는 중"],
+"공장 들어가기":["Enter a factory","Entrer dans une usine","Fabrik betreten","Entrar a una fábrica","工場に入る","进入工厂","Entrar numa fábrica","Войти на завод","Fabrikaya gir","Enter factory","들어가다 하나의 factory"],
+"공장 열기":["Open a factory","Ouvrir une usine","Fabrik eröffnen","Abrir una fábrica","工場を開く","开设工厂","Abrir uma fábrica","Открыть завод","Fabrika aç","Open factory","열다 하나의 factory"],
+"공장에 연결하는 중...":["Connecting to the factory...","Connexion à l'usine...","Verbinde mit der Fabrik...","Conectando a la fábrica...","工場に接続中...","正在连接工厂……","Conectando à fábrica...","Подключение к заводу...","Fabrikaya bağlanılıyor...","Connecting to factory...","공장에 연결하는 중..."],
+"공장을 여는 중...":["Opening the factory...","Ouverture de l'usine...","Fabrik wird eröffnet...","Abriendo la fábrica...","工場を開いています...","正在开设工厂……","Abrindo a fábrica...","Открываем завод...","Fabrika açılıyor...","Opening factory...","열하는 중 그 factory..."],
+"공장을 열지 못했어요 ({0}). 잠시 후 다시 해 보세요.":["Couldn't open the factory ({0}). Try again soon.","Impossible d'ouvrir l'usine ({0}). Réessayez.","Fabrik konnte nicht eröffnet werden ({0}). Bitte erneut versuchen.","No se pudo abrir la fábrica ({0}). Inténtalo de nuevo.","工場を開けませんでした（{0}）。少ししてからもう一度。","无法开设工厂（{0}）。请稍后再试。","Não foi possível abrir a fábrica ({0}). Tente de novo em breve.","Не удалось открыть завод ({0}). Попробуйте позже.","Fabrika açılamadı ({0}). Birazdan tekrar dene.","Uncan open factory ({0}). Redo plusnow.","할 수 있었다 아니다 열다 그 factory ({0}). 시도하다 다시 곧."],
+"공장을 찾을 수 없어요. 코드를 확인하세요.":["Factory not found. Check the code.","Usine introuvable. Vérifiez le code.","Fabrik nicht gefunden. Prüfe den Code.","No se encontró la fábrica. Revisa el código.","工場が見つかりません。コードを確認して。","找不到工厂。请检查代码。","Fábrica não encontrada. Confira o código.","Завод не найден. Проверьте код.","Fabrika bulunamadı. Kodu kontrol et.","Factory unfound. See cipher.","Factory 아니다 설립하다. 수표 그 암호."],
+"공장이 가득 찼어요 (최대 40명).":["The factory is full (max 40).","L'usine est pleine (40 max).","Die Fabrik ist voll (max. 40).","La fábrica está llena (máx. 40).","工場が満員です（最大40人）。","工厂已满（最多 40 人）。","A fábrica está cheia (máx. 40).","Завод заполнен (макс. 40).","Fabrika dolu (en fazla 40).","Factory is full (doubleplus 40).","그 factory 이다 가득 찬 (최대 40)."],
+"나가기":["Leave","Quitter","Verlassen","Salir","退出","离开","Sair","Выйти","Çık","Unenter","떠나다!"],
+"남은 시간":["Time left","Temps restant","Restzeit","Tiempo restante","残り時間","剩余时间","Tempo restante","Осталось времени","Kalan süre","Time left","시간 왼쪽"],
+"내 순위 {0}위 / {1}명":["My rank {0} / {1}","Mon rang {0} / {1}","Mein Platz {0} / {1}","Mi puesto {0} / {1}","自分の順位 {0}位 / {1}人","我的名次 {0} / {1}","Minha posição {0} / {1}","Моё место {0} / {1}","Sıram {0} / {1}","My rank {0} / {1}","나의 계급 {0} / {1}"],
+"높임법":["Honorifics","Formes honorifiques","Höflichkeitsformen","Honoríficos","敬語","敬语","Honoríficos","Вежливые формы","Saygı ifadeleri","Honorifics","높임법"],
+"다른 부품이 맞아요":["Wrong part","Mauvaise pièce","Falsches Teil","Pieza equivocada","別の部品が正解","错误部分","Parte errada","Ошибочная часть","Yanlış kısım","Ungood part","틀린 part"],
+"다시 볼 문장":["Sentences to review","Phrases à revoir","Sätze zum Wiederholen","Frases para repasar","見直す文","要复习的句子","Frases para revisar","Предложения для повторения","Gözden geçirilecek cümleler","Sentences to review","Sentences 에게 검토"],
+"다시 연결 중":["Reconnecting","Reconnexion","Verbinde neu","Reconectando","再接続中","重新连接中","Reconectando","Переподключение","Yeniden bağlanıyor","Reconnecting","다시 연결 중"],
+"다시 하기":["Play again","Rejouer","Nochmal","Otra vez","もう一度","再玩一次","Jogar de novo","Сыграть ещё","Tekrar oyna","Rejoyduty","놀다 다시"],
+"다음 ▶":["Next ▶","Suivant ▶","Weiter ▶","Siguiente ▶","次へ ▶","下一首 ▶","Próxima ▶","Далее ▶","Sonraki ▶","Plusnow ▶","다음 ▶"],
+"띄어쓰기":["Spacing","Espacement","Leerzeichen","Espaciado","分かち書き","空格","Espaçamento","Пробелы","Boşluklar","Spacing","띄어쓰기"],
+"링크를 복사했어요":["Link copied","Lien copié","Link kopiert","Enlace copiado","リンクをコピーしました","已复制链接","Link copiado","Ссылка скопирована","Bağlantı kopyalandı","Tie doublewrote","고리 베껴진"],
+"맞춤법":["Spelling","Orthographe","Rechtschreibung","Ortografía","つづり","拼写","Ortografia","Орфография","Yazım","Spelling","맞춤법"],
+"목숨":["Lives","Vies","Leben","Vidas","ライフ","生命","Vidas","Жизни","Canlar","Lives","목숨"],
+"목숨 3개. 갈수록 벨트가 빨라져요.":["3 lives. The belt keeps speeding up.","3 vies. Le tapis accélère.","3 Leben. Das Band wird immer schneller.","3 vidas. La cinta va cada vez más rápido.","ライフ3つ。ベルトはだんだん速くなる。","3 条命。传送带越来越快。","3 vidas. A esteira só acelera.","3 жизни. Конвейер всё ускоряется.","3 can. Konveyör giderek hızlanır.","3 lives. belt keeps speeding up.","3 lives. 그 belt 유지하다들 속도하는 중 위로."],
+"무작위 이름":["Random name","Nom aléatoire","Zufälliger Name","Nombre aleatorio","ランダムな名前","随机名字","Nome aleatório","Случайное имя","Rastgele ad","Unplanful name","무작위 이름"],
+"문장 수리공":["Sentence Fixer","Réparateur de phrases","Satz-Mechaniker","Reparafrases","文章修理工","改句高手","Conserta-Frases","Исправитель предложений","Cümle Tamircisi","Sentence Fixer","문장 수리공"],
+"문장 호응":["Agreement","Accord","Satzbezug","Concordancia","文の呼応","呼应","Concordância","Согласование","Uyum","Agreement","문장 호응"],
+"문장은 한국어로 나와요.":["The sentences are in Korean.","Les phrases sont en coréen.","Die Sätze sind auf Koreanisch.","Las frases están en coreano.","文は韓国語で出ます。","句子是韩语。","As frases estão em coreano.","Предложения на корейском.","Cümleler Korece.","Sentences is in Eastasian.","그 sentences 이다 안에 한국인."],
+"방 코드":["Room code","Code de la salle","Raumcode","Código de sala","ルームコード","房间代码","Código da sala","Код комнаты","Oda kodu","Place cipher","방 암호"],
+"방 코드 5자리를 입력하세요.":["Enter the 5-character room code.","Entrez le code à 5 caractères.","Gib den 5-stelligen Raumcode ein.","Escribe el código de 5 caracteres.","5文字のルームコードを入力して。","输入 5 位房间代码。","Digite o código de 5 caracteres.","Введите код комнаты из 5 символов.","5 karakterli oda kodunu gir.","Enter 5-comrade place cipher.","들어가다 그 5-성격 방 암호."],
+"방 코드로 친구를 불러요. 최대 40명.":["Invite friends with a room code. Up to 40.","Invitez vos amis avec un code. 40 max.","Lade Freunde per Raumcode ein. Bis zu 40.","Invita a tus amigos con un código. Hasta 40.","ルームコードで友だちを呼ぶ。最大40人。","用房间代码邀请朋友。最多 40 人。","Convide amigos com um código de sala. Até 40.","Пригласите друзей по коду комнаты. До 40.","Arkadaşlarını oda koduyla davet et. En fazla 40.","Summon comrades with place cipher. Up to 40.","초대하다 친구들 와 함께 하나의 방 암호. 위로 에게 40."],
+"방장과 연결 끊김":["Lost the host","Hôte perdu","Verbindung zum Host weg","Sin conexión con el anfitrión","ホストと切断","与房主断开","Perdeu o anfitrião","Связь с ведущим потеряна","Oda sahibi kayboldu","Unwon host","Lost 그 숙주"],
+"방장과 연결이 끊겼어요":["Lost connection to the host","Connexion à l'hôte perdue","Verbindung zum Host verloren","Se perdió la conexión con el anfitrión","ホストとの接続が切れました","与房主断开了连接","Conexão com o anfitrião perdida","Связь с хозяином потеряна","Ev sahibiyle bağlantı koptu","Unwon connection to host","Lost 연줄 에게 그 숙주"],
+"방장도 작업":["Host plays too","L'hôte joue aussi","Host spielt mit","El anfitrión también juega","ホストも参加","房主也一起玩","O anfitrião também joga","Ведущий тоже играет","Oda sahibi de oynar","Host joyduties plus","숙주 놀다들 또한"],
+"방장이 다시 시작하면 대기실로 이동해요.":["You'll go to the lobby when the host starts again.","Vous irez au salon quand l'hôte relancera.","Du kommst in die Lobby, wenn der Host neu startet.","Irás a la sala cuando el anfitrión vuelva a empezar.","ホストが再開すると待合室に移動します。","房主再次开始时你会进入大厅。","Você vai ao lobby quando o anfitrião começar de novo.","Вы попадёте в лобби, когда ведущий начнёт снова.","Oda sahibi yeniden başlatınca lobiye gideceksin.","You'll go to ministry when host starts re.","당신은 의지 가다 에게 그 로비 언제 그 숙주 시작한다 다시."],
+"방장이 시작하기를 기다리는 중":["Waiting for the host to start","En attente de l'hôte","Warte auf den Start durch den Host","Esperando a que empiece el anfitrión","ホストの開始を待っています","等待房主开始","Esperando o anfitrião começar","Ждём, когда ведущий начнёт","Oda sahibinin başlatması bekleniyor","Waiting for host to start","기다리는 중 위하여 그 숙주 에게 시작하다"],
+"벨트로 고장 난 문장이 들어와요. 틀린 어절을 눌러 고치고, 멀쩡한 문장은 통과시키세요.":["Broken sentences roll in on the belt. Tap the wrong word to fix it, and pass the ones that are fine.","Des phrases fautives arrivent sur le tapis. Touchez le mot fautif pour le réparer et laissez passer les phrases correctes.","Fehlerhafte Sätze kommen übers Band. Tippe das falsche Wort an, um es zu reparieren, und lass korrekte Sätze durch.","Llegan frases rotas por la cinta. Toca la palabra mal escrita para arreglarla y deja pasar las correctas.","ベルトで壊れた文が流れてくる。間違った語をタップして直し、正しい文は通そう。","错句在传送带上滚滚而来。点错的词来改正，没问题的就放行。","Frases quebradas chegam na esteira. Toque na palavra errada para corrigir e deixe passar as que estão certas.","По конвейеру едут ошибочные предложения. Нажмите на неверное слово, чтобы исправить, а верные пропускайте.","Bozuk cümleler konveyörde gelir. Yanlış kelimeye dokunup düzelt, sorunsuz olanları geçir.","Broken sentences roll in on belt. Touch ungood word to rectify it, plus go ones that is fine.","Broken sentences roll 안에 위에 그 belt. 수도꼭지 그 틀린 word 에게 고치다 그것, 그리고 통과하다 그 위에들 저것 이다 fine."],
+"복사":["Copy","Copier","Kopieren","Copiar","コピー","复制","Copiar","Копировать","Kopyala","Doublewrite","베끼다!"],
+"불량":["DEFECT","DÉFAUT","FEHLER","DEFECTO","不良","次品","DEFEITO","БРАК","KUSURLU","DEFECT","불량"],
+"생산 현황":["Output","Production","Produktion","Producción","生産状況","产量","Produção","Выработка","Üretim","Output","생산 현황"],
+"생산 현황판":["Output board","Tableau de production","Produktionstafel","Tablero de producción","生産状況ボード","产量榜","Quadro de produção","Табло выработки","Üretim panosu","Output wallwrite","Output 판자"],
+"서버 연결 끊김":["Server lost","Serveur perdu","Server getrennt","Servidor perdido","サーバー切断","与服务器断开","Servidor perdido","Связь с сервером потеряна","Sunucu kayboldu","Minitrue machine unwon","섬기는 사람 lost"],
+"수리 완료":["FIXED","RÉPARÉ","REPARIERT","ARREGLADO","修理完了","已修正","CORRIGIDO","ИСПРАВЛЕНО","DÜZELTİLDİ","RECTIFIED","고치했다!"],
+"순위":["Rank","Rang","Platz","Puesto","順位","排名","Posição","Место","Sıra","Rank","계급"],
+"시간 초과":["TOO SLOW","TROP LENT","ZU LANGSAM","DEMASIADO LENTO","時間切れ","太慢了","LENTO DEMAIS","СЛИШКОМ МЕДЛЕННО","ÇOK YAVAŞ","PLUSUNFAST","또한 느린"],
+"아직 아무도 없어요":["Nobody here yet","Personne pour l'instant","Noch niemand da","Aún no hay nadie","まだ誰もいません","这里还没有人","Ninguém aqui ainda","Здесь пока никого","Burada henüz kimse yok","Unperson here yet","Nobody 여기 아직"],
+"언어":["Language","Langue","Sprache","Idioma","言語","语言","Idioma","Язык","Dil","Speak","언어"],
+"연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.":["Couldn't load the connection library. Check your internet and reload.","Impossible de charger l'outil de connexion. Vérifiez Internet et rechargez.","Verbindungsbibliothek nicht geladen. Prüfe das Internet und lade neu.","No se pudo cargar la conexión. Revisa internet y recarga.","接続ツールを読み込めません。ネット接続を確認して再読み込みして。","无法加载连接库。请检查网络并重新加载。","Não foi possível carregar a biblioteca de conexão. Verifique a internet e recarregue.","Не удалось загрузить библиотеку подключения. Проверьте интернет и перезагрузите.","Bağlantı kütüphanesi yüklenemedi. İnternetini kontrol edip yeniden yükle.","Uncan truefetch connection library. See your internet plus reload.","할 수 있었다 아니다 짐 그 연줄 library. 수표 당신의 인터넷 그리고 reload."],
+"연결 시간이 초과됐어요. 코드를 확인하고 다시 해 보세요.":["Connection timed out. Check the code and try again.","Délai dépassé. Vérifiez le code et réessayez.","Zeitüberschreitung. Prüfe den Code und versuche es erneut.","Se agotó el tiempo. Revisa el código e inténtalo de nuevo.","接続がタイムアウト。コードを確認してもう一度。","连接超时。请检查代码后重试。","Tempo de conexão esgotado. Confira o código e tente de novo.","Время подключения истекло. Проверьте код и попробуйте снова.","Bağlantı zaman aşımına uğradı. Kodu kontrol edip tekrar dene.","Connection timed unin. See cipher plus redo.","연줄 시간했다 밖으로. 수표 그 암호 그리고 시도하다 다시."],
+"연결됨":["Connected","Connecté","Verbunden","Conectado","接続済み","已连接","Conectado","Подключено","Bağlandı","Connected","연결됨"],
+"연결하지 못했어요 ({0}).":["Couldn't connect ({0}).","Connexion impossible ({0}).","Keine Verbindung ({0}).","No se pudo conectar ({0}).","接続できません（{0}）。","无法连接（{0}）。","Não foi possível conectar ({0}).","Не удалось подключиться ({0}).","Bağlanılamadı ({0}).","Uncan connect ({0}).","할 수 있었다 아니다 connect ({0})."],
+"오프라인":["Offline","Hors ligne","Offline","Sin conexión","オフライン","离线","Offline","Не в сети","Çevrimdışı","Untelescreened","선 밖에"],
+"이름":["Name","Nom","Name","Nombre","名前","名字","Nome","Имя","İsim","Name","이름"],
+"이름 바꾸기":["Rename","Renommer","Umbenennen","Cambiar nombre","名前を変更","改名","Renomear","Переименовать","Yeniden adlandır","Rename","이름 바꾸기"],
+"이름을 먼저 입력하세요.":["Enter your name first.","Entrez d'abord votre nom.","Gib zuerst deinen Namen ein.","Primero escribe tu nombre.","先に名前を入力して。","请先输入名字。","Digite seu nome primeiro.","Сначала введите имя.","Önce adını gir.","Enter your name one.","들어가다 당신의 이름 첫째."],
+"이름을 바꿨어요":["Name changed","Nom modifié","Name geändert","Nombre cambiado","名前を変更しました","名字已更改","Nome alterado","Имя изменено","Ad değiştirildi","Name rectified","이름 바뀐"],
+"이름을 입력하세요":["Enter your name","Entrez votre nom","Gib deinen Namen ein","Escribe tu nombre","名前を入力","输入你的名字","Digite seu nome","Введите имя","Adını gir","Enter your name","들어가다 당신의 이름"],
+"작업 시간":["Shift length","Durée du service","Schichtlänge","Duración del turno","作業時間","班次时长","Duração do turno","Длина смены","Vardiya süresi","Shift length","작업 시간"],
+"작업 시간 {0}":["Shift {0}","Service {0}","Schicht {0}","Turno {0}","作業時間 {0}","第 {0} 班","Turno {0}","Смена {0}","Vardiya {0}","Shift {0}","작업 시간 {0}"],
+"작업 시작":["Start shift","Commencer","Schicht starten","Empezar turno","作業開始","开始上班","Começar turno","Начать смену","Vardiyaya başla","Start shift","시작하다 shift"],
+"작업 일지":["Work log","Journal de travail","Arbeitsprotokoll","Registro de trabajo","作業日誌","工作日志","Diário de trabalho","Рабочий журнал","İş günlüğü","Do log","일하다 통나무"],
+"작업 종료! 결과를 기다리는 중":["Shift over! Waiting for results","Fin du service ! En attente des résultats","Schicht vorbei! Warte auf Ergebnisse","¡Fin del turno! Esperando resultados","作業終了！結果を待っています","下班了！等待结果","Fim do turno! Esperando resultados","Смена окончена! Ждём результатов","Vardiya bitti! Sonuçlar bekleniyor","Shift up! Waiting for results","Shift 넘어! 기다리는 중 위하여 결과들"],
+"작업 지시서":["Work order","Bon de travail","Auftrag","Orden de trabajo","作業指示書","工单","Ordem de serviço","Наряд","İş emri","Do order","일하다 order"],
+"작업자":["Worker","Ouvrier","Arbeiter","Obrero","作業員","工人","Operário","Рабочий","İşçi","Worker","작업자"],
+"작업자를 기다리는 중":["Waiting for workers","En attente d'ouvriers","Warte auf Arbeiter","Esperando obreros","作業員を待っています","等待工人","Esperando operários","Ждём рабочих","İşçiler bekleniyor","Waiting for workers","기다리는 중 위하여 workers"],
+"점수":["Score","Score","Punkte","Puntos","スコア","分数","Pontuação","Очки","Puan","Goodcount","악보"],
+"정상 문장":["Correct sentences","Phrases correctes","Korrekte Sätze","Frases correctas","正しい文","正确的句子","Frases corretas","Верные предложения","Doğru cümleler","Good sentences","정상 문장"],
+"정상 문장이에요":["That one was fine","Phrase correcte","Der Satz war richtig","Esa estaba bien","正しい文でした","那句是对的","Essa estava certa","Это было верно","O doğruydu","That one was fine","저것 하나 였다 fine"],
+"정확도":["Accuracy","Précision","Genauigkeit","Precisión","正確さ","准确率","Precisão","Точность","Doğruluk","Goodaim","정확도"],
+"지금 끝내기":["End now","Terminer","Jetzt beenden","Terminar ya","今すぐ終了","立即结束","Encerrar agora","Завершить сейчас","Şimdi bitir","Unstart now","끝 지금"],
+"지켜보기":["Watch","Regarder","Zuschauen","Mirar","見守る","观看","Assistir","Смотреть","İzle","See","지켜보기"],
+"참가":["Join","Entrer","Beitreten","Entrar","参加","参加","Entrar","Войти","Katıl","Enter","합류하다!"],
+"처리":["Done","Traitées","Bearbeitet","Hechas","処理","完成","Feito","Готово","Bitti","Done","된"],
+"처리한 문장":["Sentences handled","Phrases traitées","Bearbeitete Sätze","Frases procesadas","処理した文","处理的句子","Frases processadas","Обработано предложений","İşlenen cümleler","Sentences handled","Sentences 손잡이 달린"],
+"처음으로":["Home","Accueil","Start","Inicio","最初へ","首页","Início","Главная","Ana sayfa","Ministry","집"],
+"최고 콤보":["Best combo","Meilleur combo","Beste Kombo","Mejor combo","最高コンボ","最高连击","Maior combo","Лучшее комбо","En iyi kombo","Goodest combo","최고의 combo"],
+"출근한 작업자":["Workers on shift","Ouvriers présents","Arbeiter in der Schicht","Obreros en turno","出勤した作業員","在班的工人","Operários no turno","Рабочие на смене","Vardiyadaki işçiler","Workers on shift","출근한 작업자"],
+"출입증":["ID badge","Badge","Ausweis","Credencial","入館証","工牌","Crachá","Пропуск","Kimlik kartı","ID goodmark","나는했다 badge"],
+"코드":["Code","Code","Code","Código","コード","代码","Código","Код","Kod","Cipher","암호"],
+"콤보":["Combo","Combo","Kombo","Combo","コンボ","连击","Combo","Комбо","Kombo","Combo","콤보"],
+"틀린 문장이 없어요. 완벽한 작업이에요!":["No mistakes. Perfect work!","Aucune erreur. Travail parfait !","Keine Fehler. Perfekte Arbeit!","Sin errores. ¡Trabajo perfecto!","ミスなし。完璧な作業！","零失误。完美的工作！","Sem erros. Trabalho perfeito!","Без ошибок. Идеальная работа!","Hiç hata yok. Kusursuz iş!","Unmistakes. Doubleplusgood do!","틀린 문장이 존재하지 않습니다. 완벽한 작업입니다!"],
+"틀린 어절을 누르면 수리 부품이 나와요":["Tap the wrong word to get repair parts","Touchez le mot fautif pour voir les pièces","Tippe das falsche Wort an, um Ersatzteile zu sehen","Toca la palabra mal para ver las piezas","間違った語をタップすると部品が出る","点错的词来领取修理零件","Toque na palavra errada para pegar peças de reparo","Нажмите на неверное слово, чтобы получить запчасти","Tamir parçası almak için yanlış kelimeye dokun","Touch ungood word to get repair parts","수도꼭지 그 틀린 word 에게 얻다 repair parts"],
+"함께 하기":["Play","Jouer","Mitspielen","Jugar","一緒にやる","播放","Tocar","Играть","Çal","Joyduty","놀다!"],
+"혼자 작업":["Solo shift","Service solo","Allein arbeiten","Turno en solitario","ひとりで作業","单人上班","Turno solo","Одиночная смена","Tek kişilik vardiya","Oneful shift","독주 shift"]
 };
 // [sentence with {wrong|right|distractor,distractor}, category, rule]   no braces = sentence with nothing to fix
 // S 맞춤법 · W 띄어쓰기 · H 문장 호응 · P 높임법
@@ -717,7 +718,7 @@ var qs = new URLSearchParams(location.search);
 var CATS = { S:'맞춤법', W:'띄어쓰기', H:'문장 호응', P:'높임법', N:'정상 문장' };
 
 // ---------- language: shared Frenchfries777 setting, else the browser language ----------
-var LANGS=['ko','en','fr','de','es','ja'], LIDX={en:0,fr:1,de:2,es:3,ja:4}, LKEY='arenaClashLang';
+var LANGS=['ko','en','fr','de','es','ja','zh','pt','ru','tr','nw','gk'], LIDX={en:0,fr:1,de:2,es:3,ja:4,zh:5,pt:6,ru:7,tr:8,nw:9,gk:10}, LKEY='arenaClashLang';
 var lang = (function(){
   var v=null; try{ v=localStorage.getItem(LKEY); }catch(e){}
   if(LANGS.indexOf(v)>=0) return v;
@@ -793,12 +794,22 @@ var RNAMES={ko:[['날쌘','꼼꼼한','용감한','졸린','배고픈','씩씩�
   fr:[['Mécano','Robot','Marteau','Boulon','Rouage','Soudeur','Chef','Clé','Ouvrier','Riveteur'],['rapide','soigneux','brave','endormi','affamé','hardi','calme','brillant','costaud','actif']],
   de:[['Flinke','Genaue','Mutige','Müde','Hungrige','Kühne','Stille','Fleißige','Starke','Schnelle'],['Mechanikerin','Schraube','Zange','Robo','Meisterin','Feile','Kurbel','Welle','Mutter','Feder']],
   es:[['Mecánico','Robot','Martillo','Tornillo','Engranaje','Soldador','Jefe','Llave','Obrero','Remache'],['veloz','cuidadoso','valiente','dormido','hambriento','audaz','tranquilo','brillante','fuerte','activo']],
-  ja:[['すばやい','ていねいな','勇敢な','ねむい','はらぺこ','元気な','しずかな','ピカピカの','がんじょうな','はたらき者の'],['職人','技師','班長','工場長','ロボ','ハンマー','レンチ','ネジ','歯車','溶接工']]};
+  ja:[['すばやい','ていねいな','勇敢な','ねむい','はらぺこ','元気な','しずかな','ピカピカの','がんじょうな','はたらき者の'],['職人','技師','班長','工場長','ロボ','ハンマー','レンチ','ネジ','歯車','溶接工']],
+ zh:[["敏捷的","细心的","勇敢的","困倦的","饥饿的","大胆的","安静的","闪亮的","结实的","忙碌的"],["修理工","机械师","工头","机器人","锤子","扳手","螺栓","齿轮","焊工","铆工"]],
+ pt:[["Veloz","Cuidadoso","Corajoso","Sonolento","Faminto","Ousado","Quieto","Brilhante","Robusto","Ocupado"],["Consertador","Mecânico","Capataz","Robô","Martelo","Chave inglesa","Parafuso","Engrenagem","Soldador","Rebitador"]],
+ ru:[["Шустрый","Аккуратный","Смелый","Сонный","Голодный","Дерзкий","Тихий","Блестящий","Крепкий","Занятой"],["Мастер","Механик","Бригадир","Робот","Молот","Гаечный ключ","Болт","Шестерня","Сварщик","Клепальщик"]],
+ tr:[["Hızlı","Titiz","Cesur","Uykulu","Aç","Atak","Sessiz","Parlak","Sağlam","Meşgul"],["Tamirci","Makinist","Usta başı","Robot","Çekiç","İngiliz anahtarı","Cıvata","Dişli","Kaynakçı","Perçinci"]],
+ nw:[["Swift","Careful","Brave","Sleepy","Hungry","Bold","Quiet","Shiny","Sturdy","Busy"],["Fixer","Mechanic","Foreman","Robot","Hammer","Wrench","Bolt","Gear","Welder","Riveter"]],
+ gk:[["날쌘","꼼꼼한","용감한","졸린","배고픈","대담한","조용한","반짝이는","튼튼한","부지런한"],["수리공","기술자","반장","공장장","로봇","망치","렌치","나사","톱니","기름칠"]]};
 (function(){ var ok=POOL.filter(function(p){ return !p.err; }).map(function(p){ return '<div class="slip" data-kr>'+esc(p.disp)+'</div>'; }); var h=ok.slice(0,14).join(''); $('demo').innerHTML=h+h; })();
 $('nameIn').value = lsGet('munjang.name') || '';
 $('diceBtn').onclick=function(){ var L=RNAMES[lang], pick=function(a){ return a[Math.floor(Math.random()*a.length)]; }; var n; do { n=pick(L[0])+' '+pick(L[1]); } while(n.length>16); $('nameIn').value=n; };
-$('langSel').value = lang;
+var VLABEL={ko:'가상 언어',en:'Fictional languages',es:'Idiomas ficticios',fr:'Langues fictives',de:'Fiktive Sprachen',ja:'架空の言語',zh:'虚构语言',pt:'Idiomas fictícios',ru:'Вымышленные языки',tr:'Kurgusal diller',nw:'Unreal speaks',gk:"Fictional 언어들"};
+function auOn(){ try{ return !!(window.FFLang&&FFLang.script&&FFLang.script()==='au'); }catch(e){ return false; } }
+$('langSel').value = auOn()?'au':lang; $('langSel').querySelector('optgroup').label=VLABEL[lang]||VLABEL.en;
 $('langSel').onchange = function(){
+  var _v=this.value, _was=auOn(); if(_v==='au'||_was){ try{ localStorage.setItem(LKEY, _v==='au'?'en':_v); }catch(e){} try{ if(window.FFLang) FFLang.set(_v); }catch(e){} location.reload(); return; }
+  this.querySelector('optgroup').label=VLABEL[_v]||VLABEL.en;
   lang=this.value; lsSet(LKEY, lang);
   if(window.FFLang) try{ FFLang.set(lang); }catch(e){}
   translateStatic(); setNet(netNow[0], netNow[1]);
@@ -1326,7 +1337,7 @@ window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.pha
 #ffBack:hover{border-color:#ffb23f}
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:8px;bottom:8px;opacity:.6;border-radius:12px}#ffBack .ffb-i{width:30px;height:30px;font-size:16px}#ffBack:active,#ffBack:focus-visible{opacity:1}}
 </style>
-<script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기'};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
+<script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기',zh:"返回 Educations",pt:"Voltar ao Educations",ru:"Назад в Educations",tr:"Educations'a dön",nw:"Ungo to Educations",gk:"Educations로 뒤쪽"};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
 <a id="ffCR" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener" style="position:fixed;right:10px;bottom:6px;z-index:40;font:11px/1.2 system-ui,sans-serif;color:#fff;opacity:.45;text-decoration:none;text-shadow:0 1px 2px #000;pointer-events:auto">© 2026 Frenchfries777 · CC BY-NC-ND 4.0</a>
 </body>
 </html>
