@@ -463,6 +463,30 @@ let save = { best: 0, runs: 0 };
 try { save = Object.assign(save, JSON.parse(localStorage.getItem(SAVE_KEY)) || {}); } catch (e) {}
 const persist = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch (e) {} };
 
+/* ---------- background music (separate mp3 next to the page; starts on the first tap, follows the sound button) ---------- */
+const BGM = (() => {
+  const ALT = "https://frenchfries777mc.github.io/educations/planetsearch/";
+  let el = null, alt = false, on = true, btn = null;
+  try { on = localStorage.getItem("planet-search-music") !== "0"; } catch (e) {}
+  const play = () => {
+    if (!on) return;
+    try {
+      if (!el) { el = new Audio("planetsearch-music.mp3"); el.loop = true; el.preload = "auto"; el.volume = .5; el.onerror = () => { if (!alt) { alt = true; el.src = ALT + "planetsearch-music.mp3"; el.load(); } }; }
+      if (el.paused) { const q = el.play(); if (q && q.catch) q.catch(() => {}); }
+    } catch (e) {}
+  };
+  const stop = () => { if (el && !el.paused) { try { el.pause(); } catch (e) {} } };
+  const label = () => { if (btn) { btn.textContent = on ? "♪ 음악 켜짐" : "♪ 음악 꺼짐"; btn.setAttribute("aria-pressed", on ? "true" : "false"); } };
+  const toggle = () => { on = !on; try { localStorage.setItem("planet-search-music", on ? "1" : "0"); } catch (e) {} label(); on ? play() : stop(); };
+  const init = () => {
+    btn = h("button", { class: "btn sm", id: "music-btn", style: "position:fixed;right:12px;bottom:12px;z-index:50;opacity:.85", onclick: toggle });
+    document.body.append(btn); label();
+    addEventListener("pointerdown", play, { once: false });
+    document.addEventListener("visibilitychange", () => { document.hidden ? stop() : play(); });
+  };
+  return { init };
+})();
+
 /* ---------- media: photos ---------- */
 // 0 space, 1 land, 2 water, 3 ice
 function planetClass(kind, x, y) {
@@ -1413,6 +1437,7 @@ function arcMind(redraw) {
   }
   size(); addEventListener("resize", size); requestAnimationFrame(frame);
 })();
+BGM.init();
 home();
 })();
 </script>
