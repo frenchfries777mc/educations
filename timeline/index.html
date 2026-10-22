@@ -1230,7 +1230,6 @@ function showResult(d){
 }
 $('againBtn').onclick = function(){ if(S.role==='host') enterLobby(); else if(S.role==='solo') startSolo(); };
 $('homeBtn').onclick = goHome;
-window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.phase!=='idle' && onlineCount()>0){ e.preventDefault(); e.returnValue=''; } });
 
 })();
 </script>
