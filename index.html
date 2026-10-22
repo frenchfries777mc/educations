@@ -185,6 +185,10 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .badge{position:absolute; top:14px; left:14px; z-index:1; font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:99px; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);}
   .body{padding:4px 26px 26px; margin-top:-34px; position:relative; z-index:1; display:flex; flex-direction:column; flex:1;}
   .game h2{margin:0; line-height:1.05;}
+  .game h2:has(.gl){display:flex; align-items:center; gap:.3em;}
+  .sc h2:has(.gl){font-size:35px;}
+@media (max-width:480px){.game h2:has(.gl),.sc h2:has(.gl){font-size:27px;}}
+  .gl{width:1.3em; height:1.3em; flex:0 0 auto;} .gt{min-width:0;}
   .tags{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0;}
   .tags span{font-size:13px; font-weight:500; padding:3px 10px; border-radius:99px;}
   .desc{margin:14px 0 0; font-size:15.5px; flex:1;}
@@ -329,7 +333,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <article class="game ps">
       <a class="shot" href="planetsearch/" aria-label="행성 탐사 플레이"><span class="badge">데이터 탐험</span><img src="planetsearch.webp" alt="행성 탐사 첫 화면" loading="lazy"></a>
       <div class="body">
-        <h2>행성 탐사</h2>
+        <h2><img class="gl" src="logos/planetsearch.svg" alt="" aria-hidden="true"><span class="gt">행성 탐사</span></h2>
         <div class="motto"><i></i>PLANET SEARCH<i></i></div>
         <div class="tags"><span>중1 정보 · 데이터</span><span>혼자 · 반 코드</span><span>로그인 없이</span></div>
         <div class="desc">
@@ -348,7 +352,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <article class="game sc">
       <a class="shot" href="speedcode/" aria-label="SpeedCode 플레이"><span class="badge">실시간 대결</span><img src="speedcode.webp" alt="SpeedCode 첫 화면" loading="lazy"></a>
       <div class="body">
-        <h2>SPEED<b>CODE</b></h2>
+        <h2><img class="gl" src="logos/speedcode.svg" alt="" aria-hidden="true"><span class="gt">SPEED<b>CODE</b></span></h2>
         <div class="motto" data-notr><i></i>BINARY → DECIMAL<i></i></div>
         <div class="tags"><span>최대 40명</span><span>방 코드로 참가</span><span>로그인 없이</span></div>
         <div class="desc">
@@ -367,7 +371,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <article class="game tl">
       <a class="shot" href="timeline/" aria-label="Timeline Battle 플레이"><span class="badge">역사 퀴즈 대결</span><img src="timeline.webp" alt="Timeline Battle 게임 화면" loading="lazy"></a>
       <div class="body">
-        <h2>Timeline <b>Battle</b></h2>
+        <h2><img class="gl" src="logos/timeline.svg" alt="" aria-hidden="true"><span class="gt">Timeline <b>Battle</b></span></h2>
         <div class="motto"><i></i>역사 타임라인 배틀<i></i></div>
         <div class="tags"><span>역사 · 과학사</span><span>사건 카드 121장</span><span>혼자 · 반 코드로 최대 40명</span><span>로그인 없이</span></div>
         <div class="desc">
@@ -386,7 +390,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <article class="game mj">
       <a class="shot" href="munjang/" aria-label="문장 수리공 플레이"><span class="badge">맞춤법 · 띄어쓰기</span><img src="munjang.webp" alt="문장 수리공 게임 화면" loading="lazy"></a>
       <div class="body">
-        <h2>문장 수리공</h2>
+        <h2><img class="gl" src="logos/munjang.svg" alt="" aria-hidden="true"><span class="gt">문장 수리공</span></h2>
         <div class="motto"><i></i>SENTENCE REPAIR WORKS<i></i></div>
         <div class="tags"><span>국어 · 맞춤법</span><span>문장 131개</span><span>혼자 · 방 코드로 최대 40명</span><span>로그인 없이</span></div>
         <div class="desc">
@@ -405,7 +409,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <article class="game bl">
       <a class="shot" href="balance/" aria-label="평형 설계실 플레이"><span class="badge">중1 과학 · 힘의 평형</span><img src="balance.webp" alt="평형 설계실 게임 화면" loading="lazy"></a>
       <div class="body">
-        <h2>평형 설계실</h2>
+        <h2><img class="gl" src="logos/balance.svg" alt="" aria-hidden="true"><span class="gt">평형 설계실</span></h2>
         <div class="motto"><i></i>BALANCE BLUEPRINT<i></i></div>
         <div class="tags"><span>과학 · 힘의 평형</span><span>도면 6종류</span><span>혼자 · 방 코드로 최대 40명</span><span>로그인 없이</span></div>
         <div class="desc">
@@ -424,7 +428,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <article class="game pv">
       <a class="shot" href="proverb/" aria-label="속담 탐정 플레이"><span class="badge">속담 · 관용구</span><img src="proverb.webp" alt="속담 탐정 게임 화면" loading="lazy"></a>
       <div class="body">
-        <h2>속담 탐정</h2>
+        <h2><img class="gl" src="logos/proverb.svg" alt="" aria-hidden="true"><span class="gt">속담 탐정</span></h2>
         <div class="motto"><i></i>사건 기록 제0001호<i></i></div>
         <div class="tags"><span>국어 · 속담과 관용구</span><span>사건 유형 5가지</span><span>혼자 · 방 코드로 최대 40명</span><span>로그인 없이</span></div>
         <div class="desc">
