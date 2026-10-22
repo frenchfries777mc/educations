@@ -1360,7 +1360,6 @@ $('csvBtn').onclick=function(){
 };
 $('againBtn').onclick=function(){ if(S.role==='solo') startSolo(S.name); else if(S.role==='host') enterLobby(); };
 $('homeBtn').onclick=goHome;
-window.addEventListener('beforeunload', function(e){ if(S.role==='host' && S.phase!=='idle' && onlineCount()>0){ e.preventDefault(); e.returnValue=''; } });
 })();
 </script>
 <a id="ffBack" href="../" aria-label="Educations"><span class="ffb-i">🍟</span><span class="ffb-t">Educations</span></a>
