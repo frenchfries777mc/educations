@@ -1,0 +1,4 @@
+- speedcode/index.html | 자주 틀린 자릿값, 자릿값 {n}에서 가장 많이 틀렸어요. 이 자리를 한 번 더 확인해 보세요. | educations | 2026-10-23
+- proverb/index.html | 속담·관용구 78개 장면(그림 이모지, 상황 한 줄, 대사)은 한국어 전용이라 번역하지 않음. 다른 언어는 장면이 나오지 않음 | educations | 2026-10-23
+- balance/index.html | 느리게 다시 보기, 합력, 돌리는 힘 | educations | 2026-10-23
+- timeline/index.html | 사건 지도의 장소 이름 121개(EVLOC)는 한국어 화면에서만 보이고 다른 언어에서는 핀만 보임 | educations | 2026-10-23
