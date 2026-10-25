@@ -108,7 +108,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
   .sw a{font-family:'Oswald',sans-serif; font-weight:600; font-size:13.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--dim); text-decoration:none; padding:4px 13px; border-radius:99px; transition:color .15s,background .15s;}
   .sw a:hover{color:var(--text);}
   .sw a.on{background:linear-gradient(90deg,var(--fry),var(--fry2)); color:#1c1405;}
-  @media(max-width:520px){ header{flex-wrap:wrap;} .swr{order:3; flex:1 0 100%; margin:14px 0 0;} }
+  @media(max-width:520px){ header{flex-wrap:wrap;} .swr{order:3; flex:1 0 100%; margin:14px 0 0; min-width:0;} .sw{min-width:0;} .sw a{padding:4px 9px;} }
   .hero{padding:58px 0 34px;}
   .hero .eyebrow{display:inline-block; font-size:13px; font-weight:700; letter-spacing:.14em; color:var(--fry); text-transform:uppercase;}
   .hero h1{font-family:'Oswald','Noto Sans KR',sans-serif; font-weight:700; font-size:clamp(40px,7vw,76px); line-height:1.02; margin:10px 0 0; text-transform:uppercase; letter-spacing:.01em;}
