@@ -13,6 +13,7 @@ var css=document.createElement('style'); css.textContent=
 '.onl > b{color:var(--text,#eef0f5);} .onl .on-c{display:inline-flex; gap:5px; padding:3px 10px; border:1px solid var(--line); border-radius:999px; font-size:13px;} .onl .on-c b{color:var(--text,#eef0f5);}'+
 '.onl .on-f{display:inline-flex; flex-wrap:wrap; align-items:center; gap:6px;} .onl .on-p{display:inline-flex; gap:5px; align-items:center; padding:3px 10px; border-radius:999px; background:rgba(63,224,160,.12); border:1px solid rgba(63,224,160,.35); color:var(--text,#eef0f5); font-size:13px;} .onl .on-p small{color:var(--dim,#8a93a6); font-size:11.5px;}';
 document.head.appendChild(css);
+function L(s){ try{ return (window.SI18N&&SI18N.T)?SI18N.T(s):s; }catch(e){ return s; } }
 function esc(s){ return String(s).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function token(){ try{ var s=JSON.parse(localStorage.getItem(SKEY)||'null'); if(s&&s.access_token&&(!s.expires_at||s.expires_at*1000>Date.now())) return s.access_token; }catch(e){} return null; }
 function rpc(name, tok){ return fetch(URL_+'/rest/v1/rpc/'+name,{method:'POST',headers:{'apikey':KEY,'Authorization':'Bearer '+(tok||KEY),'Content-Type':'application/json'},body:'{}'}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); }); }
@@ -23,12 +24,12 @@ function refresh(){
   var tok=token();
   rpc('ff_online').then(function(rows){
     var c={}; (rows||[]).forEach(function(x){ c[x.place]=x.people; });
-    var html='<span class="on-dot"></span><b>지금 '+(c.all||0)+'명 접속 중</b>';
-    ORDER.concat(Object.keys(c).filter(function(k){ return k!=='all'&&ORDER.indexOf(k)<0; })).forEach(function(g){ if(c[g]&&g!=='all') html+='<span class="on-c"><span>'+esc(PLACE[g]||g)+'</span> <b>'+c[g]+'</b></span>'; });
+    var html='<span class="on-dot"></span><b>'+esc(L('지금 '+(c.all||0)+'명 접속 중'))+'</b>';
+    ORDER.concat(Object.keys(c).filter(function(k){ return k!=='all'&&ORDER.indexOf(k)<0; })).forEach(function(g){ if(c[g]&&g!=='all') html+='<span class="on-c"><span>'+esc(L(PLACE[g]||g))+'</span> <b>'+c[g]+'</b></span>'; });
     if(!tok){ bar.innerHTML=html; return; }
     return rpc('ff_online_friends',tok).then(function(f){ f=f||[]; if(!f.length){ bar.innerHTML=html; return; }
       return names(f.slice(0,8).map(function(x){ return x.user_id; })).then(function(nm){
-        html+='<span class="on-f"><span>친구</span>'+f.slice(0,8).map(function(x){ return '<span class="on-p">'+esc(nm[x.user_id]||'???')+'<small>'+esc(PLACE[x.place]||x.place)+'</small></span>'; }).join('')+'</span>';
+        html+='<span class="on-f"><span>'+esc(L('친구'))+'</span>'+f.slice(0,8).map(function(x){ return '<span class="on-p">'+esc(nm[x.user_id]||'???')+'<small>'+esc(L(PLACE[x.place]||x.place))+'</small></span>'; }).join('')+'</span>';
         bar.innerHTML=html; }); },function(){ bar.innerHTML=html; });
   }).catch(function(){ bar.innerHTML=''; }).then(function(){ busy=false; });
 }
