@@ -528,10 +528,11 @@ document.addEventListener('keydown',function(e){ var t=e.target, typing=t&&(t.ta
 (function(){
   var bg=document.querySelector('.hero-bg'); if(!bg) return;
   var rm=matchMedia('(prefers-reduced-motion:reduce)').matches, narrow=matchMedia('(max-width:640px)').matches;
-  if(rm) return;
+  var sd=navigator.connection&&navigator.connection.saveData;
+  if(rm||sd) return;
   var clips=['planetsearch','balance','proverb','speedcode','timeline','munjang'], vids=[], mp4=document.createElement('video').canPlayType('video/mp4; codecs="avc1.42E01E"');
   bg.querySelectorAll('i').forEach(function(el,k){
-    var v=document.createElement('video'); v.muted=true; v.defaultMuted=true; v.loop=true; v.playsInline=true; v.autoplay=true; v.preload='auto';
+    var v=document.createElement('video'); v.muted=true; v.defaultMuted=true; v.loop=true; v.playsInline=true; v.autoplay=true; v.preload=narrow?'metadata':'auto';
     ['muted','loop','playsinline','webkit-playsinline','autoplay','disablepictureinpicture','aria-hidden'].forEach(function(n){ v.setAttribute(n,n==='aria-hidden'?'true':''); });
     v.style.opacity=0; v.style.transition='opacity .6s';
     v.src='hero/'+clips[k]+(mp4?'.mp4':'.webm'); el.appendChild(v); vids.push(v);
