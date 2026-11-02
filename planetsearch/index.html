@@ -937,11 +937,11 @@ function videoPlayer(kind, fps, res) {
 }
 
 /* ---------- world generation ---------- */
-const SYL = ["케", "플", "라", "오", "르", "테", "니", "브", "실", "바", "텔", "루", "스", "마", "카", "에", "코", "보", "타", "미", "아", "델", "이", "온", "주", "노", "하", "가", "렌", "포"];
-// the same names in Latin letters for other languages (the Korean name still decides uniqueness, so a class code gives everyone the same planets)
-const SYL_L = ["ke", "ple", "ra", "o", "ru", "te", "ni", "bri", "sil", "ba", "tel", "lu", "sa", "ma", "ka", "e", "ko", "bo", "ta", "mi", "a", "del", "i", "on", "ju", "no", "ha", "ga", "ren", "po"];
+// planet names come only from this list [Korean, Latin letters for other languages]; the Korean name still decides uniqueness, so a class code gives everyone the same planets
+const PLANET_NAMES = [["트렌터", "Trantor"], ["터미너스", "Terminus"], ["로셈", "Rossem"], ["타젠더", "Tazenda"], ["아나크레온", "Anacreon"], ["산태니", "Santanni"], ["스미르노", "Smyrno"], ["칼간", "Kalgan"], ["네오트렌터", "Neotrantor"], ["가이아", "Gaia"], ["지구", "Earth"], ["콤포렐론", "Comporellon"], ["코렐", "Korell"], ["사이웨나", "Siwenna"], ["시리우스", "Sirius"], ["알파", "Alpha"], ["솔라리아", "Solaria"]];
 const ROMAN = lang !== "ko" && lang !== "gk";
-function planetName(used) { let n, d; do { const a = [pick(SYL), pick(SYL)]; if (rnd() < .4) a.push(pick(SYL)); const sx = " " + pick(["b", "c", "d", "e"]); n = a.join("") + sx; d = ROMAN ? a.map(x => SYL_L[SYL.indexOf(x)]).join("").replace(/^./, c => c.toUpperCase()) + sx : n; } while (used.has(n)); used.add(n); return [n, d]; }
+// a name not used yet; once all 17 are taken (many colonies), the list starts again with " 2", " 3"...
+function planetName(used) { for (let k = 1; ; k++) { const free = PLANET_NAMES.filter(([ko]) => !used.has(k > 1 ? ko + " " + k : ko)); if (!free.length) continue; const [ko, la] = pick(free), sx = k > 1 ? " " + k : ""; used.add(ko + sx); return [ko + sx, (ROMAN ? la : ko) + sx]; } }
 // numeric signals, each sent as 8 bits
 const SIG = [
   { k: "temp", t: tr("온도"), u: "℃" }, { k: "grav", t: tr("중력"), u: "m/s²" }, { k: "oxy", t: tr("산소"), u: "%" },
