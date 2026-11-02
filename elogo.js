@@ -6,7 +6,7 @@ var M={"❄": "snowflake", "🕸": "web", "🌌": "galaxy", "🛰": "satellite",
 var BASE=(function(){ var s=document.currentScript&&document.currentScript.src||''; return s.replace(/[^\/]*$/,'')+'emoji/'; })();
 var RE=new RegExp('('+Object.keys(M).sort(function(a,b){ return b.length-a.length; }).map(function(k){ return k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }).join('|')+')\\uFE0F?','g');
 var SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,OPTION:1,SELECT:1,INPUT:1,TITLE:1,NOSCRIPT:1,CANVAS:1};
-var st=document.createElement('style'); st.textContent='img.el{width:1.15em;height:1.15em;vertical-align:-.2em;display:inline-block;object-fit:contain;pointer-events:none;}'; document.head.appendChild(st);
+var st=document.createElement('style'); st.textContent='img.el{width:1.15em;height:1.15em;vertical-align:-.2em;display:inline-block;object-fit:contain;pointer-events:none;} #ffBack .ffb-i:has(img.el){background:none;} #ffBack .ffb-i img.el{width:32px;height:32px;vertical-align:0;}'; document.head.appendChild(st);
 function fix(t){
   var p=t.parentNode; if(!p||SKIP[p.nodeName]||(p.closest&&p.closest('[data-noel]'))) return;
   var s=t.nodeValue; RE.lastIndex=0; if(!RE.test(s)) return; RE.lastIndex=0;
