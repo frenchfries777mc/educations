@@ -135,6 +135,7 @@
   .gauge{background:linear-gradient(180deg,#0f0e0c,#181613); border:1px solid var(--line); border-radius:8px; padding:8px 12px; position:relative; overflow:hidden; box-shadow:inset 0 2px 6px rgba(0,0,0,.6), 0 1px 0 rgba(255,255,255,.04); transition:border-color .2s, box-shadow .2s;}
   .gauge.bump b{animation:bump .32s ease-out; display:inline-block; transform-origin:left center;}
   @keyframes bump{40%{transform:scale(1.22);} }
+  .gauge.hot.hot2{border-color:#ff9d3d; box-shadow:inset 0 2px 6px rgba(0,0,0,.6), 0 0 22px rgba(255,140,60,.5);} .gauge.hot.hot2 b{color:#ffb23f;}
   .gauge.hot{border-color:var(--yel2); box-shadow:inset 0 2px 6px rgba(0,0,0,.6), 0 0 14px rgba(245,197,24,.28);}
   .gauge small{display:block; font-size:12px; color:var(--mute); letter-spacing:.06em;}
   .gauge b{font-family:'Do Hyeon',sans-serif; font-weight:400; font-size:30px; line-height:1.1; color:var(--yel);}
@@ -1158,7 +1159,7 @@ function hud(){
   if(S.combo!==hudPrev.combo && S.combo>0) bump($('gCombo'));
   var lostIdx = S.lives<hudPrev.lives ? S.lives : -1;
   $('gScore').textContent=S.score; $('gCombo').textContent=S.combo;
-  $('gCombo').closest('.gauge').classList.toggle('hot', S.combo>=3);
+  $('gCombo').closest('.gauge').classList.toggle('hot', S.combo>=3); $('gCombo').closest('.gauge').classList.toggle('hot2', S.combo>=6);
   var h=''; for(var i=0;i<LIVES;i++) h+='<i class="'+(i<S.lives?'':'off'+(i===lostIdx?' lost':''))+'">⚙</i>'; $('gLives').innerHTML=h;
   hudPrev={ score:S.score, combo:S.combo, lives:S.lives };
 }
@@ -1192,7 +1193,7 @@ function nextSlip(){
   var drift=Math.max(0, ($('lane').clientWidth-2*$('lane').querySelector('.press').offsetWidth-sb.offsetWidth)/2-4);
   sb.style.transition='transform .45s cubic-bezier(.2,.8,.3,1)'; sb.style.transform='translateX(calc(-50% + '+Math.round(drift)+'px))';
   timers.push(setTimeout(function(){ if(!cur || cur.p!==p || cur.done) return; sb.style.transition='transform '+dur+'ms linear'; sb.style.transform='translateX(calc(-50% - '+Math.round(drift)+'px))'; }, 460));
-  $('rollers').classList.add('run');
+  $('rollers').style.animationDuration=Math.max(.2, .5-Math.min(S.combo,10)*.03)+'s'; $('rollers').classList.add('run');
   var ts=$('slipTime'); ts.classList.remove('late'); ts.style.transition='none'; ts.style.width='100%'; void ts.offsetWidth; ts.style.transition='width '+(dur+450)+'ms linear'; ts.style.setProperty('transition-duration',(dur+450)+'ms','important'); ts.style.width='0%';
   timers.push(setTimeout(function(){ if(cur && cur.p===p && !cur.done) ts.classList.add('late'); }, Math.round((dur+450)*.7)));
   clearTimeout(slipT); slipT=setTimeout(function(){ if(cur && cur.p===p && !cur.done) resolve(false, 'time'); }, dur+450);
@@ -1244,7 +1245,7 @@ function resolve(good, how){
     gain=100+Math.round(50*frac)+Math.min(S.combo,10)*10;
     S.score+=gain; S.ok++; S.combo++; S.best=Math.max(S.best,S.combo); c.ok++; S.lastOk=Date.now();
     var pp=$('gPop'); pp.textContent='+'+gain; pp.classList.remove('go'); void pp.offsetWidth; pp.classList.add('go');
-    var gn=$('gain'); gn.textContent='+'+gain; gn.className='gain'+(S.combo>=4?' hot':''); void gn.offsetWidth; gn.classList.add('go');
+    var gn=$('gain'); gn.textContent='+'+gain+(S.combo>=3?' 🔥'+tr('{0}연속', S.combo):''); gn.className='gain'+(S.combo>=4?' hot':''); void gn.offsetWidth; gn.classList.add('go');
     if(how==='fix') document.querySelectorAll('#words .w.sel').forEach(function(x,k){ x.classList.remove('sel'); x.classList.add('fix'); if(k===0) x.textContent=fixedWord(p); else x.remove(); });
     lamps('ok');
   } else {
