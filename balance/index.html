@@ -508,13 +508,13 @@ html[data-ff-theme] select.lang option{background:var(--bg);color:var(--text)}
 /* sheets become cards */
 html[data-ff-theme] .sheet,html[data-ff-theme] .intro .sheet{background:var(--bg)!important;border:1px solid var(--fry)!important;border-left:8px solid var(--fry)!important;border-radius:16px!important;outline:0!important;box-shadow:none!important;color:var(--text)}
 html[data-ff-theme] .sheet::before{display:none!important}
-html[data-ff-theme] .sheet::after{content:'';position:absolute;left:16px;right:auto;top:auto;bottom:0;width:70px;height:3px;background:var(--fry);border:0!important;pointer-events:none}
+html[data-ff-theme] .sheet::after{display:none!important}
 html[data-ff-theme] .tag{font-family:'Oswald',sans-serif;color:var(--fry)!important;letter-spacing:.2em;font-weight:600;font-size:12px}
 html[data-ff-theme] h3,html[data-ff-theme] .report h2,html[data-ff-theme] .intro h2,html[data-ff-theme] .report h3{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;text-shadow:none}
 /* home hero */
 html[data-ff-theme] .hero{border-right:1px solid var(--fry)!important}
 html[data-ff-theme] .hero h1{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;line-height:1.02;border-left:8px solid var(--fry);padding-left:20px;margin-top:10px}
-html[data-ff-theme] .hero h1::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:10px}
+html[data-ff-theme] .hero h1::after{display:none!important}
 html[data-ff-theme] .hero .en{font-family:'Oswald',sans-serif;color:var(--fry);letter-spacing:.2em;font-weight:600}
 html[data-ff-theme] .hero .lead,html[data-ff-theme] .legend,html[data-ff-theme] .hint,html[data-ff-theme] .msg.info,html[data-ff-theme] .meRank,html[data-ff-theme] .cap{color:var(--text)!important}
 html[data-ff-theme] .legend b{color:var(--fry)}
@@ -537,7 +537,7 @@ html[data-ff-theme] .act .no,html[data-ff-theme] .stg .no{border:1px solid var(-
 html[data-ff-theme] .act .t,html[data-ff-theme] .stg .t{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;font-size:20px}
 html[data-ff-theme] .act .d,html[data-ff-theme] .stg .d{color:inherit;opacity:.85}
 html[data-ff-theme] .stg{background:var(--bg)!important;border:1px solid var(--fry)!important;border-radius:16px!important;box-shadow:none!important;color:var(--text)!important;position:relative}
-html[data-ff-theme] .stg::after{content:'';position:absolute;left:16px;bottom:0;width:50px;height:3px;background:var(--fry)}
+html[data-ff-theme] .stg::after{display:none!important}
 html[data-ff-theme] .stg:hover{background:color-mix(in srgb,var(--fry) 12%,var(--bg))!important;transform:none;box-shadow:0 0 0 1px var(--fry)!important}
 html[data-ff-theme] .stg .m{color:var(--fry)!important}
 html[data-ff-theme] .seg{border:1px solid var(--fry)!important;border-radius:99px!important;background:transparent!important;overflow:hidden}
