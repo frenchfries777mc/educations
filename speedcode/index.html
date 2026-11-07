@@ -574,6 +574,36 @@ html[data-ff-theme] .toast{border-radius:99px;color:var(--text)}
 html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
 @media(max-width:680px){html[data-ff-theme] .title{padding-left:14px}}
 </style>
+<style id="ffPhoneFit">
+/* phone home: tighter cards so the solo row clears the fixed Educations button and the footer line */
+@media(max-width:600px){
+  #sHome .homeGrid{gap:8px;}
+  #sHome .panel{padding:12px 16px;}
+  #sHome .soloPanel{padding:10px 16px; gap:6px;}
+  #sHome .soloPanel .soloRow{gap:6px;}
+  #sHome .panel.card h3{margin-bottom:4px;}
+  #sHome .panel.card p{margin:0 0 8px;}
+  #sHome .panel.card:nth-of-type(3) p{display:none;}
+  #sHome .panel .inp{height:48px; padding-top:0; padding-bottom:0;}
+  #sHome .btn.wide{margin-top:8px; padding-top:12px; padding-bottom:12px;}
+}
+/* phones, multiplayer: keep the OK key on screen without scrolling */
+@media(max-width:600px){
+  .play:not(.solo) .side h4, .play:not(.solo) .meRank{display:none;}
+  .play:not(.solo) .side{padding:6px 8px;}
+}
+@media(max-width:600px) and (max-height:780px){
+  .hud .stat{padding:5px 12px;}
+  .tbar{margin-top:6px;}
+  .screen{padding-top:10px;}
+  .stage{padding:10px 12px;}
+  .ans{height:46px; margin-top:8px;}
+  .bit .v{height:clamp(36px,6.4vh,52px);}
+  .pad, .pad2{gap:6px; margin-top:8px;}
+  .pad button, .pad2 button{height:clamp(40px,6.4vh,50px);}
+  .skip{margin-top:4px;}
+}
+</style>
 </head>
 <body class="onHome">
 <div class="ship" aria-hidden="true">
