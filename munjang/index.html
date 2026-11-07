@@ -434,6 +434,123 @@
 </style>
 <script src="https://frenchfries777.com/games/ff-lang.js"></script>
 <style>html,body{touch-action:manipulation;}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap">
+<style id="ff-rich-app">
+/* rich look: flat page, gold lines, left-barred Oswald titles, gold-bordered cards, pill buttons (colors only --bg --text --dim --fry --fry2); the belt, slips and stamps keep their art */
+html[data-ff-theme][data-ff-theme]:root{--plate:var(--bg);--plate2:var(--bg);--line:var(--fry);--ink:var(--text);--mute:var(--dim);--yel:var(--fry);--yelf:var(--fry);--yel2:var(--fry2)}
+html[data-ff-theme] body{background:var(--bg)!important;color:var(--text)!important;font-family:'Oswald','Noto Sans KR',system-ui,sans-serif}
+html[data-ff-theme] .hz{display:none}
+html[data-ff-theme] header{border-bottom:2px solid var(--fry);padding-bottom:14px}
+html[data-ff-theme] .logo{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;letter-spacing:.04em}
+html[data-ff-theme] .logo .gear{background:var(--fry)!important;color:var(--bg)!important;box-shadow:none!important}
+html[data-ff-theme] select.lang{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px;padding:6px 12px}
+html[data-ff-theme] select.lang option{background:var(--bg);color:var(--text)}
+html[data-ff-theme] .net i{box-shadow:none}
+/* home title */
+html[data-ff-theme] .sign{text-align:left;margin:28px 0 8px}
+html[data-ff-theme] .sign .board{display:block;background:none!important;border:0!important;box-shadow:none!important;padding:0!important}
+html[data-ff-theme] .sign .bulbs{display:none}
+html[data-ff-theme] .sign h1{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;color:var(--text)!important;text-shadow:none!important;letter-spacing:0;line-height:1.02;border-left:8px solid var(--fry);padding-left:20px;text-transform:uppercase}
+html[data-ff-theme] .sign h1::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:10px}
+html[data-ff-theme] .sign .sub{color:var(--fry)!important;font-family:'Oswald',sans-serif;letter-spacing:.2em;font-weight:600;margin:0 0 10px}
+html[data-ff-theme] .sign .board{display:flex;flex-direction:column-reverse}
+html[data-ff-theme] .tagline{color:var(--text)!important;text-align:left;font-weight:500;margin:6px 0 20px;max-width:560px}
+/* cards */
+html[data-ff-theme] .plate,html[data-ff-theme] .badge,html[data-ff-theme] .ctl,html[data-ff-theme] .gauge,html[data-ff-theme] .floor,html[data-ff-theme] .memo,html[data-ff-theme] .log,html[data-ff-theme] .tcard,html[data-ff-theme] .toast,html[data-ff-theme] .stats div,html[data-ff-theme] .mist > div{background:var(--bg)!important;border:1px solid var(--fry)!important;box-shadow:none!important;border-radius:16px;color:var(--text)}
+html[data-ff-theme] .ctl{border:0!important;border-radius:0}
+html[data-ff-theme] .plate,html[data-ff-theme] .badge,html[data-ff-theme] .floor,html[data-ff-theme] .memo,html[data-ff-theme] .log{border-left:8px solid var(--fry)!important}
+html[data-ff-theme] .plate::before,html[data-ff-theme] .plate .b3,html[data-ff-theme] .plate .b4{display:none}
+html[data-ff-theme] .plate::after{content:'';position:absolute;left:16px;right:auto;bottom:0;top:auto;width:70px;height:3px;border-radius:0;background:var(--fry);box-shadow:none}
+html[data-ff-theme] .badge::after{display:none}
+html[data-ff-theme] .badge .clip{display:none}
+html[data-ff-theme] .badge .top{background:transparent!important;color:var(--fry)!important;border-bottom:1px solid var(--fry);letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .badge .ph{border:1px solid var(--fry);border-radius:12px;overflow:hidden}
+html[data-ff-theme] .badge label,html[data-ff-theme] .badge dt{color:var(--fry)!important;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .badge dd{color:var(--text)!important}
+html[data-ff-theme] .badge .info{border-color:var(--fry)}
+html[data-ff-theme] .lbl{font-family:'Oswald','Noto Sans KR',sans-serif;color:var(--fry)!important;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .gauge small,html[data-ff-theme] .stats small{color:var(--fry)!important;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .gauge b,html[data-ff-theme] .stats b,html[data-ff-theme] .log h2,html[data-ff-theme] .log h3,html[data-ff-theme] .memo .h,html[data-ff-theme] .codePlate .code{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;text-shadow:none}
+html[data-ff-theme] .gauge b,html[data-ff-theme] .codePlate .code{color:var(--fry)}
+html[data-ff-theme] .gauge.hot,html[data-ff-theme] .gauge.hot.hot2{background:var(--bg)!important;box-shadow:none!important}
+html[data-ff-theme] .gbar,html[data-ff-theme] .timeStrip{background:transparent!important;border:1px solid var(--fry);border-radius:6px}
+html[data-ff-theme] .gbar i,html[data-ff-theme] .gbar b,html[data-ff-theme] .timeStrip i{background:var(--fry)!important;box-shadow:none!important}
+html[data-ff-theme] .timeStrip i.late{background:var(--fry2)!important}
+html[data-ff-theme] .lives i{background:var(--fry)!important;color:var(--bg)!important;box-shadow:none!important;border:1px solid var(--fry)}
+html[data-ff-theme] .lives i.off,html[data-ff-theme] .lives i.lost{background:transparent!important;color:var(--dim)!important}
+/* machine frame (art inside stays) */
+html[data-ff-theme] .machine{background:transparent!important;border-bottom:1px solid var(--fry)!important;box-shadow:none!important}
+html[data-ff-theme] .machine .tag{color:var(--fry)!important;font-family:'Oswald',sans-serif;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .floor{overflow:hidden}
+html[data-ff-theme] .tools{background:transparent!important;border-color:var(--fry)!important}
+html[data-ff-theme] .tools .hint{color:var(--text)!important}
+html[data-ff-theme] .opt{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important;font-family:'Oswald','Noto Sans KR',sans-serif}
+html[data-ff-theme] .opt:hover{background:var(--fry)!important;color:var(--bg)!important;filter:none}
+html[data-ff-theme] .opt .kb{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .opt.right{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .opt.wrong{background:transparent!important;border-style:dashed!important;color:var(--dim)!important}
+html[data-ff-theme] .passBtn{background:var(--fry)!important;color:var(--bg)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;text-shadow:none}
+html[data-ff-theme] .passBtn:disabled{background:transparent!important;color:var(--dim)!important;opacity:.6}
+/* big buttons, inputs, tabs */
+html[data-ff-theme] .big{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important}
+html[data-ff-theme] .big:hover:not(:disabled){background:var(--fry)!important;color:var(--bg)!important;filter:none}
+html[data-ff-theme] .big.grn{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .big .k,html[data-ff-theme] .big.red .k,html[data-ff-theme] .big.grn .k{background:transparent!important;color:inherit!important;border:1px solid currentColor;box-shadow:none!important}
+html[data-ff-theme] .big b{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600}
+html[data-ff-theme] .big small{color:inherit!important;opacity:.85}
+html[data-ff-theme] .big:disabled{opacity:.45}
+html[data-ff-theme] .nrow input,html[data-ff-theme] .joinRow input,html[data-ff-theme] .rename input{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px;padding-left:16px;box-shadow:none}
+html[data-ff-theme] .nrow input::placeholder,html[data-ff-theme] .joinRow input::placeholder{color:var(--dim)!important}
+html[data-ff-theme] .nrow button,html[data-ff-theme] .rename button,html[data-ff-theme] .small,html[data-ff-theme] .link button{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px;box-shadow:none!important}
+html[data-ff-theme] .nrow button:hover,html[data-ff-theme] .rename button:hover,html[data-ff-theme] .small:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .seg{background:transparent!important;border:1px solid var(--fry)!important;border-radius:99px;overflow:hidden;box-shadow:none!important}
+html[data-ff-theme] .seg button{background:transparent!important;color:var(--text)!important;box-shadow:none!important}
+html[data-ff-theme] .seg button.on{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .tcard{border-radius:99px}
+html[data-ff-theme] .tcard.me{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .tbadge{border-color:var(--fry);color:var(--fry)}
+html[data-ff-theme] .msg.info,html[data-ff-theme] .meRank,html[data-ff-theme] .kr-note,html[data-ff-theme] .link{color:var(--text)}
+/* explanation card and work log */
+html[data-ff-theme] .memo::before{display:none}
+html[data-ff-theme] .memo .next{background:var(--fry)!important;color:var(--bg)!important;border-radius:99px;box-shadow:none!important;padding:6px 20px}
+html[data-ff-theme] .memo .rule,html[data-ff-theme] .memo .tip,html[data-ff-theme] .memo .fixed,html[data-ff-theme] .log .who,html[data-ff-theme] .memo .diff .arr{color:var(--text)!important}
+html[data-ff-theme] .memo .h.ok,html[data-ff-theme] .memo .h.bad,html[data-ff-theme] .memo .h.pass,html[data-ff-theme] .memo .diff ins,html[data-ff-theme] .memo .diff del,html[data-ff-theme] .memo .fixed u{color:var(--fry)!important;background:transparent!important}
+html[data-ff-theme] .memo .diff del{color:var(--dim)!important}
+html[data-ff-theme] .memo .h .cat{color:var(--fry)!important;background:transparent!important;border:1px solid var(--fry)}
+html[data-ff-theme] .memo .tip{border-top-color:var(--fry)}
+html[data-ff-theme] .memo .tip b{background:var(--fry)!important;color:var(--bg)!important;border-radius:99px}
+html[data-ff-theme] .memo.ok,html[data-ff-theme] .memo.bad,html[data-ff-theme] .memo.pass{border-left-color:var(--fry)}
+html[data-ff-theme] .clip .clamp{display:none}
+html[data-ff-theme] .clip .board2{background:none!important;box-shadow:none!important;padding:0}
+html[data-ff-theme] .log{background-image:none!important;padding:26px 22px 30px}
+html[data-ff-theme] .log h2{text-transform:uppercase;font-size:44px}
+html[data-ff-theme] .stats div{border-left:1px solid var(--fry)!important;border-radius:12px}
+html[data-ff-theme] .cat .t{background:transparent!important;border:1px solid var(--fry)}
+html[data-ff-theme] .cat .t i{background:var(--fry)!important}
+html[data-ff-theme] .cat .t i.mid,html[data-ff-theme] .cat .t i.lo{background:var(--fry2)!important}
+html[data-ff-theme] .mist .r,html[data-ff-theme] .mist .s,html[data-ff-theme] .mist .mc{color:var(--text)!important}
+html[data-ff-theme] .mist .mc{border-color:var(--fry);background:transparent!important;color:var(--fry)!important}
+html[data-ff-theme] .mist .s del,html[data-ff-theme] .mist .s ins{background:transparent!important}
+html[data-ff-theme] .mist .s ins{color:var(--fry)!important}
+html[data-ff-theme] .verdict{background:transparent!important;color:var(--fry)!important;border:2px solid var(--fry)!important;box-shadow:none!important;border-radius:12px;opacity:1!important;mix-blend-mode:normal!important;background-image:none!important}
+html[data-ff-theme] .verdict::after{display:none}
+html[data-ff-theme] .rtab th,html[data-ff-theme] .rtab td{border-color:var(--fry)!important;color:var(--text)}
+html[data-ff-theme] .rtab th{color:var(--fry);letter-spacing:.2em;text-transform:uppercase}
+html[data-ff-theme] .rtab tr.me td{background:transparent!important;color:var(--fry)}
+html[data-ff-theme] .rtab tr.r1 td.n:first-child,html[data-ff-theme] .rtab tr.r2 td.n:first-child,html[data-ff-theme] .rtab tr.r3 td.n:first-child{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .rrow{background:transparent!important;border:1px solid var(--fry)!important;border-radius:12px}
+html[data-ff-theme] .rrow .fill{background:var(--fry)!important;opacity:.22}
+html[data-ff-theme] .rrow .r,html[data-ff-theme] .rrow.r1 .r{color:var(--fry)!important}
+html[data-ff-theme] .rrow.me{border-width:2px!important}
+html[data-ff-theme] .resBtns .big{box-shadow:none!important}
+html[data-ff-theme] .cd{background:var(--bg)!important}
+html[data-ff-theme] .cd .siren{display:none}
+html[data-ff-theme] .cd b,html[data-ff-theme] .cd span{color:var(--fry)!important;text-shadow:none!important;font-family:'Oswald',sans-serif}
+html[data-ff-theme] .toast{border-radius:99px;color:var(--text)}
+html[data-ff-theme] .pop{color:var(--fry);text-shadow:none}
+html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
+@media(max-width:700px){html[data-ff-theme] .sign h1{padding-left:14px}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="2.2"/></filter></svg>
