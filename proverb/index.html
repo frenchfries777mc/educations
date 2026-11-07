@@ -214,8 +214,8 @@
 
   /* ===== site design =====
      The site skin (ff-lang.js) also defines --bg/--line, so the walnut palette is restated with higher specificity. */
-  html[data-ff-theme][data-ff-theme]:root{ --bg:#16110d; --line:#4a3a2c; --brassf:var(--brass); --field:#120d09; --field2:#1a130e; --onbrass:#1d1608; }
-  html[data-ff-theme=light][data-ff-theme]:root{ --bg:#ffffff; --desk:#ffffff; --desk2:#faf8f3; --line:#e4dfd2; --ink:#161616; --mute:#444444; --brass:#a67c00; --brass2:#b8923a; --brassf:#d4a62a; --paper:#fffdf8; --paper2:#f3eee0; --pen:#161616; --red:#c62f2f; --ok:#1f8a4c; --field:#faf8f3; --field2:#fff; color-scheme:light; }
+  html[data-ff-theme][data-ff-theme]:root{ --brassf:var(--brass); --field:#120d09; --field2:#1a130e; --onbrass:#1d1608; }
+  html[data-ff-theme=light][data-ff-theme]:root{ --desk:#ffffff; --desk2:#faf8f3; --line:#e4dfd2; --ink:#161616; --mute:#444444; --brass:#a67c00; --brass2:#b8923a; --brassf:#d4a62a; --paper:#fffdf8; --paper2:#f3eee0; --pen:#161616; --red:#c62f2f; --ok:#1f8a4c; --field:#faf8f3; --field2:#fff; color-scheme:light; }
   html[data-ff-theme=light] body{background:radial-gradient(ellipse 70% 40% at 50% 0%, rgba(212,166,42,.10), transparent 70%), #fff;}
   html[data-ff-theme=light] .msg{color:#c62f2f;}
   html[data-ff-theme=light] .net i{background:#aaa;}
@@ -268,6 +268,89 @@
 <script src="../teacher.js" defer></script>
 <script src="https://frenchfries777.com/games/ff-lang.js"></script>
 <style>html,body{touch-action:manipulation;}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap">
+<style id="ff-rich-app">
+/* rich look: flat page, gold lines, left-barred Oswald titles, gold-bordered cards, pill buttons (colors only --bg --text --dim --fry --fry2) */
+html[data-ff-theme][data-ff-theme][data-ff-theme]:root{--desk:var(--bg);--desk2:var(--bg);--field:var(--bg);--field2:var(--bg);--paper:var(--bg);--paper2:var(--bg);--pen:var(--text);--line:var(--fry);--ink:var(--text);--mute:var(--dim);--brass:var(--fry);--brassf:var(--fry);--brass2:var(--fry2);--onbrass:var(--bg)}
+html[data-ff-theme],html[data-ff-theme] body{background:var(--bg)!important}
+html[data-ff-theme] body{color:var(--text)!important;background-image:none!important;font-family:'Oswald','Noto Sans KR',system-ui,sans-serif}
+html[data-ff-theme] header{border-bottom:2px solid var(--fry)!important;padding-bottom:14px}
+html[data-ff-theme] .logo{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;letter-spacing:.04em}
+html[data-ff-theme] .snd{background:transparent!important;border:1px solid var(--fry)!important;border-radius:99px!important;color:var(--text)!important;box-shadow:none!important}
+html[data-ff-theme] .net{color:var(--text)}
+/* home: case card becomes the title block */
+html[data-ff-theme] .case{background:transparent!important;background-image:none!important;box-shadow:none!important;transform:none!important;text-align:left;max-width:none;margin:28px 0 8px;padding:0!important;color:var(--text);border-radius:0}
+html[data-ff-theme] .case::before,html[data-ff-theme] .case::after,html[data-ff-theme] .case .clip,html[data-ff-theme] .case .seal{display:none!important}
+html[data-ff-theme] .case .no{color:var(--fry)!important;letter-spacing:.2em;font-weight:600;font-family:'Oswald',sans-serif;text-transform:uppercase;border:0!important;margin-bottom:10px}
+html[data-ff-theme] .case h1{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;color:var(--text)!important;text-shadow:none!important;line-height:1.02;border-left:8px solid var(--fry);padding-left:20px;text-transform:uppercase;margin:0}
+html[data-ff-theme] .case h1::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:10px}
+html[data-ff-theme] .case .sub{color:var(--text)!important;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:500;margin-top:12px;font-size:17px;padding:0}
+html[data-ff-theme] .kr-note,html[data-ff-theme] .rule,html[data-ff-theme] .msg.info{color:var(--text)!important}
+/* cards */
+html[data-ff-theme] .desk,html[data-ff-theme] .mode,html[data-ff-theme] .stg,html[data-ff-theme] .paper,html[data-ff-theme] .wr,html[data-ff-theme] .hud div,html[data-ff-theme] .toast{background:var(--bg)!important;background-image:none!important;border:1px solid var(--fry)!important;box-shadow:none!important;border-radius:16px;color:var(--text)!important}
+html[data-ff-theme] .desk,html[data-ff-theme] .mode,html[data-ff-theme] .stg,html[data-ff-theme] .paper,html[data-ff-theme] .wr{border-left:8px solid var(--fry)!important;position:relative}
+html[data-ff-theme] .desk::after,html[data-ff-theme] .mode::after,html[data-ff-theme] .stg::after,html[data-ff-theme] .paper::after,html[data-ff-theme] .wr::after{content:'';position:absolute;left:16px;bottom:0;width:70px;height:3px;background:var(--fry);pointer-events:none;opacity:1}
+html[data-ff-theme] .mode::before,html[data-ff-theme] .opt::before,html[data-ff-theme] .paper::before,html[data-ff-theme] #sResult .desk::before{display:none!important}
+html[data-ff-theme] .mode:hover,html[data-ff-theme] .stg:hover{background:color-mix(in srgb,var(--fry) 10%,var(--bg))!important;transform:none;box-shadow:0 0 0 1px var(--fry)!important}
+html[data-ff-theme] .mode h3,html[data-ff-theme] .stg .t,html[data-ff-theme] .stg .no,html[data-ff-theme] .mode .ic{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;color:var(--fry)!important}
+html[data-ff-theme] .mode h3{font-size:26px}
+html[data-ff-theme] .mode p,html[data-ff-theme] .stg .d{color:var(--text)!important}
+html[data-ff-theme] .stg .m{color:var(--fry)!important}
+html[data-ff-theme] .lbl{font-family:'Oswald',sans-serif;color:var(--fry)!important;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .hud div{border-radius:99px;color:var(--fry)!important;letter-spacing:.1em}
+html[data-ff-theme] .hud b,html[data-ff-theme] .hud .low b{font-family:'Oswald',sans-serif;color:var(--text)!important}
+html[data-ff-theme] .hud .low b{color:var(--fry)!important}
+html[data-ff-theme] .prog{background:transparent!important;border:1px solid var(--fry)!important}
+html[data-ff-theme] .prog i{background:var(--fry)!important}
+/* inputs and buttons */
+html[data-ff-theme] input[type=text]{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;padding-left:18px}
+html[data-ff-theme] input[type=text]::placeholder{color:var(--dim)!important}
+html[data-ff-theme] .name-row button,html[data-ff-theme] .lnk button,html[data-ff-theme] .chips span,html[data-ff-theme] .seg button,html[data-ff-theme] .join .btn{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important}
+html[data-ff-theme] .chips span.me,html[data-ff-theme] .seg button.on{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .seg{background:transparent!important;border:0!important;gap:6px}
+html[data-ff-theme] .btn{background:var(--fry)!important;color:var(--bg)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;letter-spacing:.02em}
+html[data-ff-theme] .btn.ghost{background:transparent!important;color:var(--text)!important}
+html[data-ff-theme] .btn.ghost:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .btn:disabled{opacity:.5}
+html[data-ff-theme] .join .btn{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .code{border:2px solid var(--fry)!important;border-radius:16px;color:var(--fry)!important;text-shadow:none!important;font-family:'Oswald',sans-serif}
+html[data-ff-theme] .toast{border-radius:99px}
+/* question card and options */
+html[data-ff-theme] .paper .tag,html[data-ff-theme] .paper .hint,html[data-ff-theme] .exp .k{color:var(--fry)!important;letter-spacing:.2em;font-weight:600;font-family:'Oswald','Noto Sans KR',sans-serif}
+html[data-ff-theme] .paper .q{color:var(--text)!important;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600}
+html[data-ff-theme] .paper .q .bl{color:var(--fry)!important;border-color:var(--fry)!important;background:transparent!important}
+html[data-ff-theme] .paper .stamp,html[data-ff-theme] .paper .stamp.ok,html[data-ff-theme] .paper .stamp.no,html[data-ff-theme] .rstamp{color:var(--fry)!important;border-color:var(--fry)!important;background:transparent!important;mix-blend-mode:normal!important;filter:none!important;border-radius:99px}
+html[data-ff-theme] .paper .exp{background:transparent!important;color:var(--text)!important;border-left:3px solid var(--fry)!important;border-top:0}
+html[data-ff-theme] .paper .exp b,html[data-ff-theme] .paper .exp .bn{color:var(--fry)!important}
+html[data-ff-theme] .paper .exp .bn{background:transparent!important;border:0!important}
+html[data-ff-theme] .paper .exp .k,html[data-ff-theme] .wr .tg,html[data-ff-theme] .wr .k{background:transparent!important;border:1px solid var(--fry);color:var(--fry)!important;border-radius:99px}
+html[data-ff-theme] .opt{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important;font-family:'Oswald','Noto Sans KR',sans-serif}
+html[data-ff-theme] .opt:hover:not(:disabled){background:color-mix(in srgb,var(--fry) 14%,transparent)!important}
+html[data-ff-theme] .opt .n{background:var(--fry)!important;color:var(--bg)!important;box-shadow:none!important;font-family:'Oswald',sans-serif}
+html[data-ff-theme] .opt.right{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .opt.right .n{background:var(--bg)!important;color:var(--fry)!important}
+html[data-ff-theme] .opt.wrong{background:transparent!important;border-style:dashed!important;color:var(--dim)!important}
+html[data-ff-theme] .opt.wrong::after,html[data-ff-theme] .opt.right::after{color:inherit}
+html[data-ff-theme] .opt:disabled:not(.right):not(.wrong){opacity:.55}
+/* boards, results */
+html[data-ff-theme] .rrow{border-bottom:1px solid var(--fry)!important}
+html[data-ff-theme] .rrow .r,html[data-ff-theme] .rrow.r1 .r,html[data-ff-theme] .rrow.r1 .n,html[data-ff-theme] .rrow .s,html[data-ff-theme] #sResult .rrow .r{color:var(--fry)!important}
+html[data-ff-theme] .rrow.me,html[data-ff-theme] #sResult .rrow.me{background:color-mix(in srgb,var(--fry) 14%,transparent)!important}
+html[data-ff-theme] .tb{border-color:var(--fry)!important;color:var(--fry)!important}
+html[data-ff-theme] .big .sc,html[data-ff-theme] #sResult .big .sc{font-family:'Oswald',sans-serif!important;font-weight:600;color:var(--fry)!important;text-shadow:none!important}
+html[data-ff-theme] .big .sm,html[data-ff-theme] .big .nb,html[data-ff-theme] #sResult .big .sm,html[data-ff-theme] #sResult .big .nb{color:var(--text)!important;font-family:'Oswald','Noto Sans KR',sans-serif;border-color:var(--fry)!important;background:transparent!important}
+html[data-ff-theme] .big .nb,html[data-ff-theme] #sResult .big .nb{color:var(--fry)!important;border:1px solid var(--fry)!important;border-radius:99px!important;mix-blend-mode:normal!important;filter:none!important}
+html[data-ff-theme] .wr .wt{background:transparent!important;border:1px solid var(--fry);color:var(--fry)!important;border-radius:99px}
+html[data-ff-theme] .wr .ans{background:transparent!important}
+html[data-ff-theme] .stg .no{background:transparent!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important;transform:none!important}
+html[data-ff-theme] .wr b,html[data-ff-theme] .wr small,html[data-ff-theme] .wr .mine,html[data-ff-theme] .wr .ans{color:var(--text)!important}
+html[data-ff-theme] .wr .ans{color:var(--fry)!important}
+html[data-ff-theme] .cd{background:var(--bg)!important;opacity:.97}
+html[data-ff-theme] .cd b{color:var(--fry)!important;text-shadow:none!important;font-family:'Oswald',sans-serif}
+html[data-ff-theme] .gain{color:var(--fry)!important}
+html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
+@media(max-width:700px){html[data-ff-theme] .case h1{padding-left:14px}}
+</style>
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="ink" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -1.8 2.0" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in"/></filter></svg>

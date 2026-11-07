@@ -481,6 +481,99 @@
 <script src="../teacher.js" defer></script>
 <script src="https://frenchfries777.com/games/ff-lang.js"></script>
 <style>html,body{touch-action:manipulation;}</style>
+
+<style id="ff-rich-app">
+/* rich look: flat page, gold lines, left-barred Oswald titles, gold-bordered cards, pill buttons (colors only --bg --text --dim --fry --fry2) */
+html[data-ff-theme] body{background:var(--bg)!important;color:var(--text)!important}
+html[data-ff-theme] .ship{display:none!important}
+html[data-ff-theme] header{border-bottom:2px solid var(--fry);padding-bottom:14px!important}
+html[data-ff-theme] .logo .fry,html[data-ff-theme] .logo img.lg{box-shadow:none!important;filter:none!important}
+html[data-ff-theme] .logo b{color:var(--fry)!important}
+html[data-ff-theme] .title{font-weight:600;border-left:8px solid var(--fry);padding-left:20px;color:var(--text);text-shadow:none}
+html[data-ff-theme] .title span{background:none!important;-webkit-text-fill-color:var(--text)!important;color:var(--text)!important}
+html[data-ff-theme] .title::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:10px}
+html[data-ff-theme] .title.resTitle{display:block!important}
+html[data-ff-theme] .resTitle::before,html[data-ff-theme] .resTitle::after{flex:none}
+html[data-ff-theme] body.onResult #sResult .resTitle::before{display:none}
+html[data-ff-theme] .ticker{color:var(--text)}
+html[data-ff-theme] .ticker b{color:var(--fry)}
+/* cards */
+html[data-ff-theme] .panel,html[data-ff-theme] .stage,html[data-ff-theme] .stat,html[data-ff-theme] .codeBox,html[data-ff-theme] .tblWrap,html[data-ff-theme] #hostSet,html[data-ff-theme] .myRes,html[data-ff-theme] .hstats > div,html[data-ff-theme] .myStats .ms,html[data-ff-theme] .soloHero .hs,html[data-ff-theme] .toast{background:var(--bg)!important;border:1px solid var(--fry)!important;box-shadow:none!important;backdrop-filter:none;-webkit-backdrop-filter:none;border-radius:16px}
+html[data-ff-theme] .panel,html[data-ff-theme] .stage,html[data-ff-theme] .codeBox,html[data-ff-theme] .soloHero .hs{border-left:8px solid var(--fry)!important;position:relative}
+html[data-ff-theme] .panel::after,html[data-ff-theme] .stage::after,html[data-ff-theme] .codeBox::after,html[data-ff-theme] .soloHero .hs::after{content:'';position:absolute;left:16px;bottom:0;width:70px;height:3px;background:var(--fry);pointer-events:none}
+html[data-ff-theme] .stage::before,html[data-ff-theme] .soloHero .hs::before,html[data-ff-theme] .hstats > div::before{display:none}
+html[data-ff-theme] .stage.gold{box-shadow:0 0 0 2px var(--fry)!important}
+html[data-ff-theme] .stage.heat2,html[data-ff-theme] .stage.heat3{box-shadow:none}
+html[data-ff-theme] .panel.card h3,html[data-ff-theme] .card h3{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;font-size:24px}
+html[data-ff-theme] .stat b,html[data-ff-theme] .brow .sc,html[data-ff-theme] .pcount{font-family:'Oswald','Noto Sans KR',sans-serif}
+html[data-ff-theme] label.lb,html[data-ff-theme] .stat small,html[data-ff-theme] .codeBox small,html[data-ff-theme] .side h4,html[data-ff-theme] .soloHero small,html[data-ff-theme] .hstats small,html[data-ff-theme] .myStats small,html[data-ff-theme] .resTbl th{color:var(--fry)!important;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .stat.time b,html[data-ff-theme] .codeBox .cd,html[data-ff-theme] .soloHero .hs b,html[data-ff-theme] .countdown b,html[data-ff-theme] .myRes b,html[data-ff-theme] .pcount b{color:var(--fry)!important;text-shadow:none!important}
+html[data-ff-theme] .tbar{background:transparent!important;border:1px solid var(--fry)}
+html[data-ff-theme] .tbar::after{background:none!important}
+html[data-ff-theme] .tbar i{background:var(--fry)!important}
+html[data-ff-theme] .tbar.low i{background:var(--fry2)!important;box-shadow:none}
+/* inputs and buttons */
+html[data-ff-theme] .inp,html[data-ff-theme] .langSel{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px;padding-left:18px;padding-right:18px}
+html[data-ff-theme] .langSel{padding:6px 12px}
+html[data-ff-theme] .langSel option{background:var(--bg);color:var(--text)}
+html[data-ff-theme] .inp::placeholder{color:var(--dim)!important}
+html[data-ff-theme] .btn{border-radius:99px;box-shadow:none!important;letter-spacing:.02em}
+html[data-ff-theme] .btn.main,html[data-ff-theme] .pad .k-ok,html[data-ff-theme] .pad2 .k-ok{background:var(--fry)!important;color:var(--bg)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
+html[data-ff-theme] .btn.main[disabled]{background:transparent!important;color:var(--dim)!important;opacity:.6}
+html[data-ff-theme] .btn.ghost,html[data-ff-theme] .codeBox .lnk button{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important}
+html[data-ff-theme] .btn.ghost:hover,html[data-ff-theme] .btn.main:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .seg{background:transparent!important;border:1px solid var(--fry)!important;border-radius:99px}
+html[data-ff-theme] .seg button{color:var(--text)!important;background:transparent!important}
+html[data-ff-theme] .seg button.on{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .setRow > span,html[data-ff-theme] .soloLbl,html[data-ff-theme] .rule,html[data-ff-theme] .meRank,html[data-ff-theme] .skip{color:var(--text)!important}
+html[data-ff-theme] .chip{background:transparent!important;border:1px solid var(--fry)!important;color:var(--text)}
+html[data-ff-theme] .chip.me{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .chip::before{background:var(--fry);box-shadow:none}
+html[data-ff-theme] .chip.me::before{background:var(--bg)}
+html[data-ff-theme] .net.on i{box-shadow:none}
+/* game area */
+html[data-ff-theme] .bit .v{background:transparent!important;border:1px solid var(--fry)!important;color:var(--dim)!important;box-shadow:none!important;text-shadow:none!important}
+html[data-ff-theme] .bit .v.one{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .bit .v.tap{color:var(--text)!important}
+html[data-ff-theme] .bit .v.tap.one{color:var(--bg)!important}
+html[data-ff-theme] .bit .pv,html[data-ff-theme] .bit .pv.one{background:none!important;color:var(--dim)}
+html[data-ff-theme] .bit .pv.one{color:var(--fry)}
+html[data-ff-theme] .bits.ok .v{box-shadow:0 0 0 2px var(--fry)!important}
+html[data-ff-theme] .dec{text-shadow:none!important;color:var(--text)!important}
+html[data-ff-theme] .ans{background:transparent!important;box-shadow:none!important;border:2px solid var(--fry)!important;border-radius:99px;color:var(--text)}
+html[data-ff-theme] .ans.empty{color:var(--dim)}
+html[data-ff-theme] .pad button,html[data-ff-theme] .pad2 button{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px;box-shadow:none!important}
+html[data-ff-theme] .pad button:active,html[data-ff-theme] .pad2 button:active{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .pad .k-ok small,html[data-ff-theme] .pad2 .k-ok small{opacity:.8}
+html[data-ff-theme] .combo,html[data-ff-theme] .combo.gold,html[data-ff-theme] .combo.t2,html[data-ff-theme] .combo.t3{background:transparent!important;border:1px solid var(--fry)!important;color:var(--fry)!important;box-shadow:none!important;animation:none}
+html[data-ff-theme] .combo .pips i{background:transparent;border:1px solid var(--fry);height:6px}
+html[data-ff-theme] .combo .pips i.on{background:var(--fry);box-shadow:none}
+html[data-ff-theme] .lvBanner{background:var(--fry)!important;color:var(--bg)!important;box-shadow:none!important}
+html[data-ff-theme] .plus.big,html[data-ff-theme] .lvl b,html[data-ff-theme] .goalTxt,html[data-ff-theme] .clsLine,html[data-ff-theme] .myRes .win,html[data-ff-theme] .meRank b{color:var(--fry);text-shadow:none}
+html[data-ff-theme] .lvl::before{background:var(--fry);box-shadow:none}
+html[data-ff-theme] .pen,html[data-ff-theme] .countdown{background:var(--bg)!important;opacity:.96}
+html[data-ff-theme] .pen span{border-color:var(--fry);box-shadow:none;background:transparent}
+html[data-ff-theme] .pen .penAns{background:transparent!important;border:1px solid var(--fry)!important;color:var(--fry)!important}
+html[data-ff-theme] .cdRing{border-color:var(--fry);box-shadow:none}
+html[data-ff-theme] .cdRing::before{opacity:.9}
+/* boards, podium, results */
+html[data-ff-theme] .brow{background:transparent!important;border:1px solid var(--fry)!important}
+html[data-ff-theme] .brow .bar{background:var(--fry);opacity:.22}
+html[data-ff-theme] .brow.me{border-width:2px!important}
+html[data-ff-theme] .brow .rk,html[data-ff-theme] .brow.r1 .rk,html[data-ff-theme] .brow.r2 .rk,html[data-ff-theme] .brow.r3 .rk{color:var(--fry)!important}
+html[data-ff-theme] .pod .av{background:transparent!important;border:2px solid var(--fry)!important;box-shadow:none!important}
+html[data-ff-theme] .pod .crown{color:var(--fry);filter:none}
+html[data-ff-theme] .pod .blk,html[data-ff-theme] .pod.p1 .blk,html[data-ff-theme] .pod.p2 .blk,html[data-ff-theme] .pod.p3 .blk{background:transparent!important;border:1px solid var(--fry);border-bottom:0;color:var(--fry)!important;box-shadow:none!important;text-shadow:none!important}
+html[data-ff-theme] .pod.p1 .blk{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .pod.p1 .who{color:var(--fry)}
+html[data-ff-theme] .resTbl th,html[data-ff-theme] .resTbl td{border-bottom:1px solid var(--fry)}
+html[data-ff-theme] .resTbl tr.me td{background:transparent!important;color:var(--fry)}
+html[data-ff-theme] .resTbl tr.r1 .rkb,html[data-ff-theme] .resTbl tr.r2 .rkb,html[data-ff-theme] .resTbl tr.r3 .rkb{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .tbadge{border-color:var(--fry);color:var(--fry)}
+html[data-ff-theme] .toast{border-radius:99px;color:var(--text)}
+html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
+@media(max-width:680px){html[data-ff-theme] .title{padding-left:14px}}
+</style>
 </head>
 <body class="onHome">
 <div class="ship" aria-hidden="true">

@@ -495,6 +495,102 @@ if(G){ var ac=G.addColorStop; G.addColorStop=function(o,c){ return ac.call(this,
 </script>
 
 <style>html,body{touch-action:manipulation;}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap">
+<style id="ff-rich-app">
+/* rich look: flat page, gold lines, left-barred Oswald titles, gold-bordered cards, pill buttons (colors only --bg --text --dim --fry --fry2); the drawing canvas keeps its art */
+html[data-ff-theme][data-ff-theme]:root{--bp:var(--bg);--bp2:var(--bg);--bp3:var(--bg);--ink:var(--text);--ink2:var(--dim);--line:var(--fry);--bd:var(--fry);--amb:var(--fry);--ambf:var(--fry);--amb2:var(--fry2);--onamb:var(--bg);--sbg:var(--bg)}
+html[data-ff-theme],html[data-ff-theme] body{background:var(--bg)!important}
+html[data-ff-theme] body{background:var(--bg)!important;color:var(--text)!important;font-family:'Oswald','Nanum Gothic Coding','Noto Sans KR',sans-serif;font-size:16px}
+html[data-ff-theme] header{border-bottom:2px solid var(--fry)!important;padding-bottom:14px}
+html[data-ff-theme] .logo{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:.04em}
+html[data-ff-theme] select.lang{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;padding:6px 12px}
+html[data-ff-theme] select.lang option{background:var(--bg);color:var(--text)}
+/* sheets become cards */
+html[data-ff-theme] .sheet,html[data-ff-theme] .intro .sheet{background:var(--bg)!important;border:1px solid var(--fry)!important;border-left:8px solid var(--fry)!important;border-radius:16px!important;outline:0!important;box-shadow:none!important;color:var(--text)}
+html[data-ff-theme] .sheet::before{display:none!important}
+html[data-ff-theme] .sheet::after{content:'';position:absolute;left:16px;right:auto;top:auto;bottom:0;width:70px;height:3px;background:var(--fry);border:0!important;pointer-events:none}
+html[data-ff-theme] .tag{font-family:'Oswald',sans-serif;color:var(--fry)!important;letter-spacing:.2em;font-weight:600;font-size:12px}
+html[data-ff-theme] h3,html[data-ff-theme] .report h2,html[data-ff-theme] .intro h2,html[data-ff-theme] .report h3{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;text-shadow:none}
+/* home hero */
+html[data-ff-theme] .hero{border-right:1px solid var(--fry)!important}
+html[data-ff-theme] .hero h1{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;line-height:1.02;border-left:8px solid var(--fry);padding-left:20px;margin-top:10px}
+html[data-ff-theme] .hero h1::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:10px}
+html[data-ff-theme] .hero .en{font-family:'Oswald',sans-serif;color:var(--fry);letter-spacing:.2em;font-weight:600}
+html[data-ff-theme] .hero .lead,html[data-ff-theme] .legend,html[data-ff-theme] .hint,html[data-ff-theme] .msg.info,html[data-ff-theme] .meRank,html[data-ff-theme] .cap{color:var(--text)!important}
+html[data-ff-theme] .legend b{color:var(--fry)}
+html[data-ff-theme] .tblock th{color:var(--fry);letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .tblock th,html[data-ff-theme] .tblock td{border-color:var(--fry)!important}
+html[data-ff-theme] .nameRow input{border:1px solid var(--fry)!important;border-radius:99px;padding:6px 16px!important;color:var(--text)!important;font-family:'Oswald','Noto Sans KR',sans-serif}
+html[data-ff-theme] .nameRow input::placeholder,html[data-ff-theme] .code input::placeholder{color:var(--dim)!important}
+html[data-ff-theme] .sq,html[data-ff-theme] .pill,html[data-ff-theme] .code span,html[data-ff-theme] .link button,html[data-ff-theme] .crowd span{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important}
+html[data-ff-theme] .pill:hover,html[data-ff-theme] .code span:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .crowd span.me{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .code input,html[data-ff-theme] .rename input{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important}
+html[data-ff-theme] .bigCode{border:2px solid var(--fry);border-radius:16px;color:var(--fry);font-family:'Oswald',sans-serif}
+/* actions, stages */
+html[data-ff-theme] .acts{margin-top:4px}
+html[data-ff-theme] .act{border-bottom:1px solid var(--fry)!important;color:var(--text)!important}
+html[data-ff-theme] .act:hover{background:color-mix(in srgb,var(--fry) 14%,transparent)}
+html[data-ff-theme] .act.main,html[data-ff-theme] .act.main:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .act.main .no{border-color:var(--bg)!important;color:var(--bg)!important}
+html[data-ff-theme] .act .no,html[data-ff-theme] .stg .no{border:1px solid var(--fry)!important;border-radius:99px!important;font-family:'Oswald',sans-serif;color:var(--fry)!important}
+html[data-ff-theme] .act .t,html[data-ff-theme] .stg .t{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;font-size:20px}
+html[data-ff-theme] .act .d,html[data-ff-theme] .stg .d{color:inherit;opacity:.85}
+html[data-ff-theme] .stg{background:var(--bg)!important;border:1px solid var(--fry)!important;border-radius:16px!important;box-shadow:none!important;color:var(--text)!important;position:relative}
+html[data-ff-theme] .stg::after{content:'';position:absolute;left:16px;bottom:0;width:50px;height:3px;background:var(--fry)}
+html[data-ff-theme] .stg:hover{background:color-mix(in srgb,var(--fry) 12%,var(--bg))!important;transform:none;box-shadow:0 0 0 1px var(--fry)!important}
+html[data-ff-theme] .stg .m{color:var(--fry)!important}
+html[data-ff-theme] .seg{border:1px solid var(--fry)!important;border-radius:99px!important;background:transparent!important;overflow:hidden}
+html[data-ff-theme] .seg button{background:transparent!important;color:var(--text)!important;box-shadow:none!important;border-color:var(--fry)!important}
+html[data-ff-theme] .seg button.on{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .lbl,html[data-ff-theme] .tbar small,html[data-ff-theme] .anc small,html[data-ff-theme] .read small,html[data-ff-theme] .tbl th,html[data-ff-theme] .intro th{color:var(--fry)!important;letter-spacing:.2em;text-transform:uppercase;font-weight:600}
+/* primary buttons */
+html[data-ff-theme] .go,html[data-ff-theme] .fire,html[data-ff-theme] .fire:not(:disabled),html[data-ff-theme] .note .nx{background:var(--fry)!important;color:var(--bg)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;letter-spacing:.02em}
+html[data-ff-theme] .go.line{background:transparent!important;color:var(--text)!important}
+html[data-ff-theme] .go:disabled,html[data-ff-theme] .fire:disabled{background:transparent!important;color:var(--dim)!important;opacity:.6}
+html[data-ff-theme] .go.line:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .toast{background:var(--fry)!important;color:var(--bg)!important;border-radius:99px;box-shadow:none!important;font-family:'Oswald','Noto Sans KR',sans-serif}
+/* in-game */
+html[data-ff-theme] .tbar{border:1px solid var(--fry)!important;border-radius:16px;background:var(--bg)!important;overflow:hidden}
+html[data-ff-theme] .tbar > div{border-right:1px solid var(--fry)!important}
+html[data-ff-theme] .tbar b{font-family:'Oswald',sans-serif;color:var(--fry)}
+html[data-ff-theme] .tbar .pg{background:transparent!important}
+html[data-ff-theme] .tbar .pg i{background:var(--fry)!important}
+html[data-ff-theme] .frame{border:1px solid var(--fry)!important;border-left:8px solid var(--fry)!important;border-radius:16px!important;outline:0!important;overflow:hidden;box-shadow:none!important}
+html[data-ff-theme] .facts span{border-color:var(--fry)!important;border-radius:99px}
+html[data-ff-theme] .ctl{border:1px solid var(--fry)!important;border-radius:16px;background:var(--bg)!important}
+html[data-ff-theme] .anc button,html[data-ff-theme] .pad button{border:1px solid var(--fry)!important;background:transparent!important;color:var(--text)!important;border-radius:99px!important;box-shadow:none!important;margin-right:4px}
+html[data-ff-theme] .anc button.on,html[data-ff-theme] .pad button:active,html[data-ff-theme] .anc button:not(.on):hover,html[data-ff-theme] .pad button:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .read b{color:var(--fry)}
+html[data-ff-theme] .note{background:var(--bg)!important;border:1px solid var(--fry)!important;border-left:8px solid var(--fry)!important;border-radius:16px;color:var(--text)!important}
+html[data-ff-theme] .note.rv.no,html[data-ff-theme] .note.rv.ok,html[data-ff-theme] .note.rv.one{border-left-color:var(--fry)!important}
+html[data-ff-theme] .note .ans,html[data-ff-theme] .note .ans b,html[data-ff-theme] .note .ls,html[data-ff-theme] .note b{color:var(--text)}
+html[data-ff-theme] .note .chk .y,html[data-ff-theme] .note .chk .n{color:var(--fry)}
+html[data-ff-theme] .strip .c{border-color:var(--fry)!important;background:transparent!important}
+html[data-ff-theme] .rrow{border-bottom:1px solid var(--fry)!important}
+html[data-ff-theme] .rrow .r,html[data-ff-theme] .rrow.r1 .r,html[data-ff-theme] .rrow .s{color:var(--fry)!important}
+html[data-ff-theme] .rrow.me{background:color-mix(in srgb,var(--fry) 14%,transparent)!important}
+html[data-ff-theme] .shots i{background:var(--fry)!important;border-color:var(--fry)!important}
+html[data-ff-theme] .shots i.used{background:transparent!important}
+/* intro, countdown, report */
+html[data-ff-theme] .intro{background:color-mix(in srgb,var(--bg) 85%,transparent)!important}
+html[data-ff-theme] .intro .find{background:transparent!important;color:var(--fry)!important;border:1px solid var(--fry)!important;border-radius:99px!important;box-shadow:none!important}
+html[data-ff-theme] .intro table,html[data-ff-theme] .intro th,html[data-ff-theme] .intro td,html[data-ff-theme] .intro tr{border-color:var(--fry)!important;background:transparent!important}
+html[data-ff-theme] .ihead .ico{border-color:var(--fry)!important;border-radius:12px}
+html[data-ff-theme] .cd{background:var(--bg)!important;opacity:.97}
+html[data-ff-theme] .cd b{color:var(--fry)!important;font-family:'Oswald',sans-serif;text-shadow:none!important}
+html[data-ff-theme] .report .top{border-bottom:2px solid var(--fry)!important}
+html[data-ff-theme] .report .total,html[data-ff-theme] .report .best b,html[data-ff-theme] .rbest{color:var(--fry)!important;font-family:'Oswald',sans-serif;text-shadow:none!important}
+html[data-ff-theme] .report h2{font-size:40px;text-transform:uppercase;border-left:8px solid var(--fry);padding-left:16px}
+html[data-ff-theme] .tbl th,html[data-ff-theme] .tbl td{border-color:var(--fry)!important}
+html[data-ff-theme] .tbl tr.me td,html[data-ff-theme] .tbl tr.miss td{background:transparent!important}
+html[data-ff-theme] .tbl tr.me td{color:var(--fry)}
+html[data-ff-theme] .tblWrap{border:1px solid var(--fry)!important;border-radius:16px;overflow:auto}
+html[data-ff-theme] .bar .t{background:transparent!important;border:1px solid var(--fry)!important;border-radius:6px}
+html[data-ff-theme] .bar .t i{background:var(--fry)!important}
+html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
+@media(max-width:700px){html[data-ff-theme] .tblock th{letter-spacing:.08em;padding-left:8px;padding-right:8px;width:30%}html[data-ff-theme] .hero{border-right:0!important;border-bottom:1px solid var(--fry)}html[data-ff-theme] .hero h1{padding-left:14px}}
+</style>
 </head>
 <body>
 <div class="wrap">

@@ -427,6 +427,108 @@
 <script src="../teacher.js" defer></script>
 <script src="https://frenchfries777.com/games/ff-lang.js"></script>
 <style>html,body{touch-action:manipulation;}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap">
+<style id="ff-rich-app">
+/* rich look: flat page, gold lines, left-barred Oswald titles, gold-bordered cards, pill buttons (colors only --bg --text --dim --fry --fry2) */
+html[data-ff-theme][data-ff-theme]:root{--paper:var(--bg);--paper2:var(--bg);--card:var(--bg);--ink:var(--text);--ink2:var(--text);--mute:var(--dim);--rule:var(--fry);--wine:var(--fry);--wine2:var(--fry2);--winef:var(--fry);--onwine:var(--bg);--brass:var(--fry)}
+html[data-ff-theme] body{background:var(--bg)!important;color:var(--text)!important}
+html[data-ff-theme] body::before{display:none}
+html[data-ff-theme] body,html[data-ff-theme] .ev .tt,html[data-ff-theme] .tc .bx,html[data-ff-theme] .note .hd,html[data-ff-theme] .note .st,html[data-ff-theme] .pod .who,html[data-ff-theme] .chip,html[data-ff-theme] .brow .nm,html[data-ff-theme] .myRes,html[data-ff-theme] .pbx .tt,html[data-ff-theme] .hard .h .t,html[data-ff-theme] .clsLine,html[data-ff-theme] .soloRes .nb,html[data-ff-theme] .soloRes .why{font-family:'Oswald','Noto Sans KR','Nanum Myeongjo',sans-serif}
+html[data-ff-theme] header{border-bottom:2px solid var(--fry);padding-bottom:14px}
+html[data-ff-theme] .logo{font-family:'Oswald',sans-serif;letter-spacing:.04em}
+html[data-ff-theme] .logo img.lg{filter:none}
+html[data-ff-theme] .kicker{color:var(--fry);letter-spacing:.2em;font-weight:600}
+html[data-ff-theme] .title{font-family:'Oswald','Nanum Myeongjo',sans-serif;font-weight:600;text-transform:uppercase;line-height:1.02;letter-spacing:0;color:var(--text);border-left:8px solid var(--fry);padding-left:20px}
+html[data-ff-theme] .title em{font-family:inherit;font-style:normal;font-weight:600;color:var(--text)}
+html[data-ff-theme] .title::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:10px}
+html[data-ff-theme] .title.center{display:table;margin-left:auto;margin-right:auto}
+html[data-ff-theme] .subt{color:var(--text);font-family:'Oswald','Nanum Myeongjo',sans-serif;font-weight:500}
+/* cards */
+html[data-ff-theme] .desk,html[data-ff-theme] .book,html[data-ff-theme] .ticket,html[data-ff-theme] .ev,html[data-ff-theme] .tc .bx,html[data-ff-theme] .note,html[data-ff-theme] .pbx,html[data-ff-theme] .hard .h,html[data-ff-theme] .drag,html[data-ff-theme] .soloRes .trio{background:var(--bg)!important;border:1px solid var(--fry)!important;box-shadow:none!important;border-radius:16px;color:var(--text)}
+html[data-ff-theme] .desk,html[data-ff-theme] .book,html[data-ff-theme] .ticket,html[data-ff-theme] .note,html[data-ff-theme] .pbx{border-left:8px solid var(--fry)!important}
+html[data-ff-theme] .desk::before,html[data-ff-theme] .ev::before{display:none}
+html[data-ff-theme] .desk::after,html[data-ff-theme] .book::after,html[data-ff-theme] .ticket::after,html[data-ff-theme] .pbx::after{content:'';position:absolute;left:16px;bottom:0;width:70px;height:3px;background:var(--fry);pointer-events:none}
+html[data-ff-theme] .book{background-image:none!important;position:relative}
+html[data-ff-theme] .ticket{-webkit-mask:none;mask:none;position:relative}
+html[data-ff-theme] .ev{transform:none!important;overflow:visible}
+html[data-ff-theme] .ev::after{display:none}
+html[data-ff-theme] .ev:hover{transform:none!important}
+html[data-ff-theme] .ev .em,html[data-ff-theme] .pbx .em,html[data-ff-theme] .hard .h .e,html[data-ff-theme] .drag .em{background:transparent!important;border:1px solid var(--fry);box-shadow:none!important;text-shadow:none!important;border-radius:10px}
+html[data-ff-theme] .ev .yr{background:transparent;border:1px solid var(--fry);border-radius:99px}
+html[data-ff-theme] .ev.lift{outline:2px dashed var(--fry);background:transparent!important;border:0!important}
+html[data-ff-theme] .ev .tag,html[data-ff-theme] .ev .tag.k,html[data-ff-theme] .ev .tag.w,html[data-ff-theme] .ev .tag.s{background:var(--fry)!important;color:var(--bg)!important;border-radius:99px}
+html[data-ff-theme] .hard .h{transform:none!important}
+html[data-ff-theme] .hard .h .m{background:var(--fry);color:var(--bg)}
+html[data-ff-theme] .pbx .x{background:transparent;border:1px solid var(--fry);color:var(--text);box-shadow:none}
+html[data-ff-theme] .pop{background:color-mix(in srgb,var(--bg) 82%,transparent)}
+html[data-ff-theme] .countdown{background:var(--bg);opacity:.97}
+html[data-ff-theme] .ticket small,html[data-ff-theme] .ticket .cd,html[data-ff-theme] .ticket .lnk{color:var(--text)}
+html[data-ff-theme] .ticket .cd{color:var(--fry)}
+html[data-ff-theme] .ticket .lnk{border-top-color:var(--fry)}
+html[data-ff-theme] .ticket .lnk button{border-color:var(--fry);color:var(--text);border-radius:99px}
+html[data-ff-theme] .desk label,html[data-ff-theme] .stat small,html[data-ff-theme] .resTbl th,html[data-ff-theme] .soloRes .bl,html[data-ff-theme] .soloRes .trio small,html[data-ff-theme] .pbx .tg{color:var(--fry);letter-spacing:.2em;font-weight:600}
+html[data-ff-theme] .stat b,html[data-ff-theme] .secT,html[data-ff-theme] .pod .blkp,html[data-ff-theme] .soloRes .big,html[data-ff-theme] .soloRes .trio b,html[data-ff-theme] .myRes b,html[data-ff-theme] .brow .rk,html[data-ff-theme] .side .q,html[data-ff-theme] .countdown b{font-family:'Oswald',sans-serif;font-weight:600}
+html[data-ff-theme] .side .q{font-style:normal;color:var(--text)}
+html[data-ff-theme] .soloRes .big{text-shadow:none;color:var(--fry)}
+html[data-ff-theme] .hud{border-bottom:2px solid var(--fry)}
+html[data-ff-theme] .tbar{background:transparent;border:1px solid var(--fry);height:6px;border-radius:6px;margin-top:8px}
+html[data-ff-theme] .tbar i{background:var(--fry)}
+html[data-ff-theme] .secT{border-bottom:2px solid var(--fry);text-transform:uppercase}
+html[data-ff-theme] .secT small{color:var(--text);text-transform:none}
+/* inputs and buttons */
+html[data-ff-theme] .inp{border:1px solid var(--fry);border-radius:99px;padding:10px 18px;font-family:'Oswald','Nanum Myeongjo',sans-serif;font-size:20px;color:var(--text);background:transparent}
+html[data-ff-theme] .inp.code{width:170px;font-size:22px;padding:8px 10px}
+html[data-ff-theme] .inp::placeholder{color:var(--dim)!important}
+html[data-ff-theme] .dice,html[data-ff-theme] .langSel{border:1px solid var(--fry)!important;border-radius:99px!important;background:transparent!important;color:var(--text)!important}
+html[data-ff-theme] .langSel option{background:var(--bg);color:var(--text)}
+html[data-ff-theme] .btn{border-radius:99px;border:1px solid var(--fry)!important;background:transparent;color:var(--text);box-shadow:none!important;font-family:'Oswald','Nanum Myeongjo',sans-serif;font-weight:600;letter-spacing:.02em}
+html[data-ff-theme] .btn:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .btn.main{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .seg{border:1px solid var(--fry)!important;border-radius:99px;background:transparent}
+html[data-ff-theme] .seg button{color:var(--text)!important;border-right:0!important;font-family:'Oswald','Nanum Myeongjo',sans-serif}
+html[data-ff-theme] .seg button.on{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .setRow > span{color:var(--text)}
+html[data-ff-theme] .joinRow{border-top:1px solid var(--fry)}
+html[data-ff-theme] .toast{background:var(--bg);color:var(--text);border:1px solid var(--fry);border-radius:99px}
+html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
+/* timeline rail */
+html[data-ff-theme] .tl::before{background:var(--fry)!important;height:3px;margin-top:-1.5px}
+html[data-ff-theme] .tl::after{border-left-color:var(--fry)}
+html[data-ff-theme] .tc .dot{background:var(--fry);border-color:var(--bg);box-shadow:0 0 0 1px var(--fry)}
+html[data-ff-theme] .tc .y{text-shadow:none}
+html[data-ff-theme] .tc .bx::after{background:var(--fry)}
+html[data-ff-theme] .gap span{background:var(--bg)!important;border-color:var(--fry)!important;color:var(--fry)!important;box-shadow:none!important}
+html[data-ff-theme] .gap:hover span,html[data-ff-theme] .gap.hot span,html[data-ff-theme] .gap:focus-visible span{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .tc.new .bx{border:2px solid var(--fry)!important}
+html[data-ff-theme] .tc.new .dot{background:var(--fry);animation:none}
+html[data-ff-theme] .tc.ghost .bx{background:var(--bg)!important;color:var(--dim);border:2px dashed var(--fry)!important}
+html[data-ff-theme] .tc.ghost .dot{background:var(--bg);box-shadow:0 0 0 1px var(--fry);animation:none}
+html[data-ff-theme] .tc.ghost .y{color:var(--dim)}
+html[data-ff-theme] .exhibit::before{background:var(--fry)}
+html[data-ff-theme] .exItem .pin{background:var(--fry);border-color:var(--bg);box-shadow:0 0 0 1.5px var(--fry)}
+html[data-ff-theme] .exItem .lbl{color:var(--text);font-family:'Oswald','Nanum Myeongjo',sans-serif}
+html[data-ff-theme] .era::before{border-color:var(--fry)}
+/* feedback, boards, result */
+html[data-ff-theme] .note.bad{border-left-color:var(--fry)!important}
+html[data-ff-theme] .note .st,html[data-ff-theme] .note.bad .st,html[data-ff-theme] .soloRes .nb{background:var(--bg);color:var(--fry);border:1px solid var(--fry);border-radius:99px;box-shadow:none}
+html[data-ff-theme] .note .stk,html[data-ff-theme] .tBadge{border-color:var(--fry);color:var(--fry);border-radius:99px}
+html[data-ff-theme] .note .fx,html[data-ff-theme] .pbx .fx{border-top-color:var(--fry)}
+html[data-ff-theme] .fb.ok,html[data-ff-theme] .fb.bad,html[data-ff-theme] .note.bad .hd .yy{color:var(--fry)}
+html[data-ff-theme] .stat .hearts i{color:var(--dim)}
+html[data-ff-theme] .brow{border-bottom:1px solid var(--fry)}
+html[data-ff-theme] .brow .rk,html[data-ff-theme] .brow.r1 .rk{color:var(--fry)}
+html[data-ff-theme] .pod .blkp,html[data-ff-theme] .pod.p2 .blkp,html[data-ff-theme] .pod.p3 .blkp{background:transparent!important;border:1px solid var(--fry);border-bottom:0;color:var(--fry);box-shadow:none}
+html[data-ff-theme] .pod.p1 .blkp{background:var(--fry)!important;color:var(--bg)}
+html[data-ff-theme] .tblWrap{border:1px solid var(--fry);border-radius:16px}
+html[data-ff-theme] .resTbl th{border-bottom:1px solid var(--fry)}
+html[data-ff-theme] .resTbl td{border-bottom:1px solid var(--fry)}
+html[data-ff-theme] .resTbl tr.me td,html[data-ff-theme] .resTbl tbody tr:nth-child(even) td,html[data-ff-theme] .resTbl tbody tr.me:nth-child(even) td{background:transparent}
+html[data-ff-theme] .resTbl tr.me td{color:var(--fry)}
+html[data-ff-theme] .soloRes .trio{background:transparent!important;max-width:560px}
+html[data-ff-theme] .soloRes .trio > div:nth-child(2){border-color:var(--fry)}
+html[data-ff-theme] .soloRes p,html[data-ff-theme] .hint,html[data-ff-theme] .left,html[data-ff-theme] .net,html[data-ff-theme] .msg.info,html[data-ff-theme] .done,html[data-ff-theme] .soloRes .why,html[data-ff-theme] .hard .h .f{color:var(--text)}
+@media(max-width:700px){html[data-ff-theme] .stage{background:var(--bg)!important;border-bottom:1px solid var(--fry)}html[data-ff-theme] .title{padding-left:14px}html[data-ff-theme] .ev{border-radius:12px}}
+</style>
 </head>
 <body>
 <div class="wrap">

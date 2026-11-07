@@ -463,11 +463,8 @@ html:not([lang="ko"]):not([lang="gk"]) :is(h1, h2, h3, .btn.big, .menu-btn, .end
 
 /* ===== site design =====
    The site-wide skin (ff-lang.js) also sets --panel/--text/--dim, so the program's own space palette is restated with higher specificity. */
-html[data-ff-theme][data-ff-theme]:root { --panel: #0a0e2bd9; --text: #e9edff; --dim: #aab3e0; --signalf: var(--signal); --field: #050717; --modalbg: #0a0e2b; --veil: transparent; }
-html[data-ff-theme=light][data-ff-theme]:root {
-  --void: #ffffff; --panel: #ffffff; --panel-2: #f7f5ef; --hair: #0000001a; --hair-2: #00000029; --text: #161616; --dim: #333333; --faint: #555555;
-  --ice: #0b6384; --signal: #a67c00; --signalf: #d4a62a; --sea: #1d6fd1; --ok: #1a7f4b; --bad: #c62828; --field: #faf8f3; --modalbg: #ffffff; color-scheme: light;
-}
+html[data-ff-theme][data-ff-theme]:root { --signalf: var(--signal); }
+html[data-ff-theme=light][data-ff-theme]:root { --faint: #555555; --ice: #0b6384; --sea: #1d6fd1; --ok: #1a7f4b; --bad: #c62828; color-scheme: light; }
 html[data-ff-theme=light] body { background: #fff; background-image: radial-gradient(900px 600px at 85% -5%, #d4a62a14, transparent 70%); }
 html[data-ff-theme=light] canvas.stars { display: none; }
 html[data-ff-theme=light] .home-planet { opacity: .22; }
@@ -534,6 +531,104 @@ html[data-ff-theme=light] .modal .box.arc { background: #fff; }
 
 <script src="https://frenchfries777.com/games/ff-lang.js"></script>
 <style>html,body{touch-action:manipulation;}</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap">
+<style id="ff-rich-app">
+/* rich look: flat page, gold lines, left-barred Oswald titles, gold-bordered cards, pill buttons (colors only --bg --text --dim --fry --fry2); planet and scan canvases keep their art */
+html[data-ff-theme][data-ff-theme][data-ff-theme]:root{--void:var(--bg);--panel:var(--bg);--panel-2:var(--bg);--hair:var(--fry);--hair-2:var(--fry);--faint:var(--dim);--ice:var(--fry);--signal:var(--fry);--signalf:var(--fry);--field:var(--bg);--modalbg:var(--bg);--f-display:"Oswald","Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;--f-body:"Oswald","IBM Plex Sans KR","Noto Sans KR","Apple SD Gothic Neo",sans-serif}
+html[data-ff-theme],html[data-ff-theme] body{background:var(--bg)!important;background-image:none!important}
+html[data-ff-theme] body{color:var(--text)!important}
+html[data-ff-theme] canvas.stars{display:none!important}
+html[data-ff-theme] h1,html[data-ff-theme] h2,html[data-ff-theme] h3{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600}
+/* top bar */
+html[data-ff-theme] .hud{background:var(--bg)!important;border-bottom:2px solid var(--fry)!important;backdrop-filter:none!important;box-shadow:none!important}
+html[data-ff-theme] .hud b,html[data-ff-theme] .hud .inner b{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;color:var(--fry);letter-spacing:.06em}
+html[data-ff-theme] .stat{color:var(--fry);letter-spacing:.14em;text-transform:uppercase;font-weight:600;border-right:1px solid var(--fry)!important}
+html[data-ff-theme] .stat .v{color:var(--text)!important;font-family:'Oswald',sans-serif}
+html[data-ff-theme] .hudbar,html[data-ff-theme] .meter,html[data-ff-theme] .trail span,html[data-ff-theme] .ticks i{background:transparent!important;border:1px solid var(--fry);height:6px;border-radius:6px}
+html[data-ff-theme] .hudbar i,html[data-ff-theme] .meter i,html[data-ff-theme] .trail span.done,html[data-ff-theme] .trail span.now,html[data-ff-theme] .ticks i.past,html[data-ff-theme] .ticks i.now{background:var(--fry)!important}
+html[data-ff-theme] .hearts,html[data-ff-theme] .hearts .on{color:var(--fry)!important}
+html[data-ff-theme] .hearts .off{color:var(--dim)!important}
+/* titles */
+html[data-ff-theme] .kicker,html[data-ff-theme] .home-kicker,html[data-ff-theme] .label,html[data-ff-theme] .code,html[data-ff-theme] .sheet-head .label{color:var(--fry)!important;font-family:'Oswald',sans-serif;letter-spacing:.2em;font-weight:600}
+html[data-ff-theme] .mission h1{text-transform:uppercase;line-height:1.02;border-left:8px solid var(--fry);padding-left:20px;margin-top:10px;color:var(--text)!important;text-shadow:none!important}
+html[data-ff-theme] .mission h1::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:10px}
+html[data-ff-theme] .mission .code{color:var(--fry)}
+html[data-ff-theme] .home{display:flex!important;flex-direction:column;justify-content:center;align-items:flex-start!important;gap:34px;padding:0 max(24px,calc((100vw - 1180px)/2))!important}
+html[data-ff-theme] .home-menu{position:static!important;transform:none!important;left:auto!important;bottom:auto!important}
+html[data-ff-theme] .home-title h1{font-size:clamp(44px,9vw,120px)!important}
+html[data-ff-theme] .home-title{align-items:flex-start;text-align:left;gap:10px}
+html[data-ff-theme] .home-title h1{font-family:'Oswald','Noto Sans KR',sans-serif!important;font-weight:600!important;text-transform:uppercase;letter-spacing:0!important;word-spacing:0!important;line-height:1.02!important;color:var(--text)!important;text-shadow:none!important;border-left:8px solid var(--fry);padding-left:22px;font-size:clamp(52px,11vw,132px)!important}
+html[data-ff-theme] .home-title h1::after{content:'';display:block;width:120px;height:5px;background:var(--fry);margin-top:12px}
+html[data-ff-theme] .home-kicker{padding-left:0;letter-spacing:.3em;color:var(--fry)!important}
+html[data-ff-theme] .home-planet{opacity:.35!important}
+/* menu */
+html[data-ff-theme] .menu-btn{border:1px solid var(--fry)!important;border-radius:99px!important;padding:10px 26px!important;background:transparent!important;color:var(--text)!important;font-family:'Oswald','Noto Sans KR',sans-serif!important;font-weight:600;word-spacing:0!important;min-width:0}
+html[data-ff-theme] .menu-btn::before{display:none}
+html[data-ff-theme] .menu-btn:hover{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .menu-btn.primary{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .home-menu{gap:12px;align-items:flex-start}
+html[data-ff-theme] .menu-best,html[data-ff-theme] .ff-cr{color:var(--dim)!important}
+/* cards */
+html[data-ff-theme] .box,html[data-ff-theme] .modal .box,html[data-ff-theme] .item,html[data-ff-theme] .req,html[data-ff-theme] .rcard,html[data-ff-theme] .colcard,html[data-ff-theme] .screen,html[data-ff-theme] .formula{background:var(--bg)!important;background-image:none!important;border:1px solid var(--fry)!important;border-radius:16px!important;box-shadow:none!important;backdrop-filter:none!important}
+html[data-ff-theme] .box,html[data-ff-theme] .modal .box,html[data-ff-theme] .item,html[data-ff-theme] .colcard{border-left:8px solid var(--fry)!important;position:relative}
+html[data-ff-theme] .box::before,html[data-ff-theme] .box::after{display:none!important}
+html[data-ff-theme] .box::after,html[data-ff-theme] .item::after{content:'';display:block!important;position:absolute;left:16px;bottom:0;width:70px;height:3px;background:var(--fry);pointer-events:none;border:0!important;opacity:1!important;right:auto;top:auto}
+html[data-ff-theme] .box .box::after{display:none!important}
+html[data-ff-theme] .colcard{border-left-width:8px!important}
+html[data-ff-theme] .req.sel,html[data-ff-theme] .req:hover{background:color-mix(in srgb,var(--fry) 12%,var(--bg))!important}
+html[data-ff-theme] .req.done{opacity:.7}
+html[data-ff-theme] .modal{background:color-mix(in srgb,var(--bg) 82%,transparent)!important;backdrop-filter:none!important}
+html[data-ff-theme] .phead{border-bottom:1px solid var(--fry)!important}
+html[data-ff-theme] .chip{border:1px solid var(--fry)!important;border-radius:99px!important;color:var(--fry);letter-spacing:.08em;background:transparent!important}
+html[data-ff-theme] .chip.yes,html[data-ff-theme] .chip.ok-t{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .chip.no,html[data-ff-theme] .chip.warn-t,html[data-ff-theme] .chip.dim-t{color:var(--dim)!important}
+html[data-ff-theme] .stepper li{border-bottom:2px solid var(--fry)!important;opacity:.7;font-family:'Oswald','Noto Sans KR',sans-serif}
+html[data-ff-theme] .stepper li.now,html[data-ff-theme] .stepper li.done{opacity:1;color:var(--text)}
+html[data-ff-theme] .stepper li span{color:var(--fry)!important}
+html[data-ff-theme] .stepper li.now span,html[data-ff-theme] .stepper li.done span{background:transparent!important}
+html[data-ff-theme] .hint,html[data-ff-theme] .msg.info,html[data-ff-theme] .dim,html[data-ff-theme] .item p,html[data-ff-theme] .tbl-hint{color:var(--text)!important}
+html[data-ff-theme] .msg.ok{color:var(--fry)}
+html[data-ff-theme] .formula{border-radius:12px!important;color:var(--text)!important}
+html[data-ff-theme] .lessons > div{border-color:var(--fry)!important}
+/* buttons, inputs, tabs */
+html[data-ff-theme] .btn{border:1px solid var(--fry)!important;border-radius:99px!important;background:transparent!important;color:var(--text)!important;box-shadow:none!important;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;letter-spacing:.02em}
+html[data-ff-theme] .btn:hover:not([disabled]),html[data-ff-theme] .btn.on{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .btn.primary,html[data-ff-theme] .btn.primary:hover:not([disabled]){background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .btn.ghost{background:transparent!important}
+html[data-ff-theme] .btn.danger{color:var(--text)!important}
+html[data-ff-theme] .btn[disabled]{opacity:.45}
+html[data-ff-theme] .seg{border:1px solid var(--fry)!important;border-radius:99px!important;background:transparent!important}
+html[data-ff-theme] .seg .btn{border:0!important;border-radius:0!important}
+html[data-ff-theme] .num-in,html[data-ff-theme] .name-in,html[data-ff-theme] .filters input,html[data-ff-theme] .filters select,html[data-ff-theme] input[type=text],html[data-ff-theme] input[type=number]{background:transparent!important;color:var(--text)!important;border:1px solid var(--fry)!important;border-radius:99px!important;padding-left:18px}
+html[data-ff-theme] .filters select option{background:var(--bg);color:var(--text)}
+html[data-ff-theme] .num-in::placeholder,html[data-ff-theme] input::placeholder{color:var(--dim)!important}
+html[data-ff-theme] .num-in:focus{box-shadow:0 0 0 2px var(--fry)!important}
+html[data-ff-theme] .bulb .b{background:transparent!important;border:1px solid var(--fry)!important;border-radius:12px!important;color:var(--dim)!important;box-shadow:none!important}
+html[data-ff-theme] .bulb .b.lit{background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .bulb small{color:var(--dim)}
+html[data-ff-theme] button.b{border-color:var(--fry)!important}
+/* tables */
+html[data-ff-theme] .tbl-wrap{border:1px solid var(--fry)!important;border-radius:16px;overflow:auto}
+html[data-ff-theme] .pt th,html[data-ff-theme] .pt td{border-color:var(--fry)!important}
+html[data-ff-theme] .pt th,html[data-ff-theme] .pt thead th{background:var(--bg)!important;color:var(--fry)!important;letter-spacing:.14em;text-transform:uppercase;font-weight:600}
+html[data-ff-theme] .pt tbody tr:nth-child(even) td{background:transparent!important}
+html[data-ff-theme] .pt tr.pick td,html[data-ff-theme] .pt tr.pick:hover td{background:color-mix(in srgb,var(--fry) 16%,var(--bg))!important}
+html[data-ff-theme] .thumb,html[data-ff-theme] .mini{border-color:var(--fry)!important}
+/* scan device frame and result */
+html[data-ff-theme] .screen .tag,html[data-ff-theme] .legend small{color:var(--fry)!important}
+html[data-ff-theme] .scope::after{opacity:.6}
+html[data-ff-theme] .endscore .n,html[data-ff-theme] .colcard .big,html[data-ff-theme] .taxbox .big{font-family:'Oswald',sans-serif;color:var(--fry)!important;text-shadow:none!important}
+html[data-ff-theme] .item .price{color:var(--fry)!important}
+html[data-ff-theme] .item.owned{opacity:.7}
+html[data-ff-theme] .item .btn:not([disabled]){background:var(--fry)!important;color:var(--bg)!important}
+html[data-ff-theme] .item .btn[disabled]{background:transparent!important;color:var(--dim)!important}
+html[data-ff-theme] input[type=range]{accent-color:var(--fry)}
+html[data-ff-theme] .scanbtn{border-color:var(--fry)!important}
+html[data-ff-theme] .seal .r1,html[data-ff-theme] .seal .r2,html[data-ff-theme] .seal .tk{stroke:var(--fry)}
+html[data-ff-theme] .chart .grid,html[data-ff-theme] .chart .axis{stroke:var(--fry);stroke-opacity:.35}
+html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR,html[data-ff-theme] .ff-cr{border-radius:99px!important;padding:3px 10px!important;background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
+@media(max-width:700px){html[data-ff-theme] .home-title h1{padding-left:14px}html[data-ff-theme] .mission h1{padding-left:14px}}
+</style>
 </head>
 <body>
 <div id="app"></div>
