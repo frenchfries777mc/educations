@@ -641,7 +641,7 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
         <button class="btn main wide" id="joinBtn">참가</button>
       </div>
       <div class="full row panel soloPanel">
-        <div class="soloRow"><button class="btn ghost" id="soloBtn">혼자 연습</button><div class="seg" id="segSoloDir"><button data-v="0" class="on">2진수 → 10진수</button><button data-v="1">10진수 → 2진수</button><button data-v="2">섞기</button></div></div>
+        <div class="soloRow"><button class="btn ghost" id="soloBtn">혼자 연습</button><div class="seg" id="segSoloDir"><button data-v="0" class="on">2진수 → 10진수</button><button data-v="1">10진수 → 2진수</button><button data-v="2">섞기</button><button data-v="3">16진수</button></div></div>
         <div class="soloRow"><span class="soloLbl">시작 난이도</span><div class="seg" id="segSoloLv"><button data-v="3" class="on">3비트부터</button><button data-v="5">5비트부터</button><button data-v="7">7비트부터</button></div></div>
         <div class="msg" id="homeMsg"></div>
       </div>
@@ -663,7 +663,7 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
           <div class="setRow"><span>방식</span><div class="seg" id="segMode"><button data-v="0" class="on">시간 안에 많이</button><button data-v="1">문제 수 채우기</button></div></div>
           <div class="setRow hide" id="goalRow"><span>목표</span><div class="seg" id="segGoal"><button data-v="10">10문제</button><button data-v="20" class="on">20문제</button><button data-v="30">30문제</button></div></div>
           <div class="setRow"><span>수 범위</span><div class="seg" id="segNum"><button data-v="0" class="on">비트에 맞춤</button><button data-v="15">~15</button><button data-v="31">~31</button><button data-v="100">~100</button><button data-v="255">~255</button></div></div>
-          <div class="setRow"><span>문제 방향</span><div class="seg" id="segDir"><button data-v="0" class="on">2진수 → 10진수</button><button data-v="1">10진수 → 2진수</button><button data-v="2">섞기</button></div></div>
+          <div class="setRow"><span>문제 방향</span><div class="seg" id="segDir"><button data-v="0" class="on">2진수 → 10진수</button><button data-v="1">10진수 → 2진수</button><button data-v="2">섞기</button><button data-v="3">16진수 → 10진수</button></div></div>
           <div class="setRow"><span>자릿값 힌트</span><div class="seg" id="segHint"><button data-v="1" class="on">보이기</button><button data-v="0">숨기기</button></div></div>
           <div class="setRow"><span>방장</span><div class="seg" id="segHostPlay"><button data-v="0" class="on">순위판만 보기</button><button data-v="1">나도 참가</button></div></div>
           <div class="setRow hide" id="clsRow"><span>반 이름</span><input class="inp" id="clsIn" maxlength="12" placeholder="예: 3학년 2반" autocomplete="off" style="max-width:220px;font-size:16px;padding:11px 12px"></div>
@@ -887,7 +887,7 @@ var soloLv = +(lsGet('speedcode.soloLv')||3); if(soloLv!==5 && soloLv!==7) soloL
 function syncSoloLv(){ $('segSoloLv').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v===soloLv); }); }
 syncSoloLv();
 $('segSoloLv').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; soloLv=+b.dataset.v; lsSet('speedcode.soloLv', String(soloLv)); syncSoloLv(); });
-var soloDir = +(lsGet('speedcode.soloDir')||0); if(!(soloDir>=0 && soloDir<=2)) soloDir=0;
+var soloDir = +(lsGet('speedcode.soloDir')||0); if(!(soloDir>=0 && soloDir<=3)) soloDir=0;
 function syncSoloSeg(){ $('segSoloDir').querySelectorAll('button').forEach(function(b){ b.classList.toggle('on', +b.dataset.v===soloDir); }); }
 syncSoloSeg();
 $('segSoloDir').addEventListener('click', function(e){ var b=e.target.closest('button'); if(!b) return; soloDir=+b.dataset.v; lsSet('speedcode.soloDir', String(soloDir)); syncSoloSeg(); });
@@ -1021,7 +1021,7 @@ function enterLobby(){
   renderChips();
   show('sLobby');
 }
-var DIRS=['2진수 → 10진수','10진수 → 2진수','섞기'];
+var DIRS=['2진수 → 10진수','10진수 → 2진수','섞기','16진수 → 10진수'];
 function renderGuestSet(){ var s=S.settings; $('guestSet').textContent = tr(DIRS[s.dir|0])+' · '+tr('{0} · 최대 {1}비트 · 자릿값 힌트 {2}', fmt(s.time*1000), s.maxBits, tr(s.hint?'있음':'없음'))+((s.mode|0)===1?' · '+tr('{0}문제 빨리 풀기', s.goal|0):'')+(s.maxNum?' · ~'+(s.maxNum|0):''); }
 
 function bindSeg(id, key){
@@ -1199,9 +1199,12 @@ var dirtyScore=false;
 function effMaxBits(){ var cap=S.settings.maxNum|0; return cap ? Math.min(S.settings.maxBits, cap.toString(2).length) : S.settings.maxBits; }
 function countMode(){ return S.settings.mode===1 && S.role!=='solo'; }
 function renderGoal(){ var g=$('gGoal'); if(countMode()){ g.textContent='· 🎯 '+S.solved+' / '+S.settings.goal; g.classList.remove('hide'); } else g.classList.add('hide'); }
+function hexND(solved){ var nd=solved<3?1:solved<10?2:3; return Math.min(nd, Math.max(1,Math.ceil(effMaxBits()/4))); }
+function isHex(){ return (S.settings.dir|0)===3; }
 function nextQ(){
   S.bits = bitsFor(S.solved, effMaxBits());
   var lo = 1<<(S.bits-1), hi = (1<<S.bits)-1, v, cap = S.settings.maxNum|0;
+  if(isHex()){ var nd=hexND(S.solved); S.bits=nd*4; lo=nd===1?10:Math.pow(16,nd-1); hi=Math.pow(16,nd)-1; }
   if(cap && hi>cap) hi=cap;
   do { v = lo + Math.floor(Math.random()*(hi-lo+1)); } while(v===S.cur && hi>lo);
   S.gold = S.solved>=3 && !S.lastGold && Math.random()<0.12; S.lastGold = S.gold;
@@ -1210,15 +1213,15 @@ function nextQ(){
   var d = S.settings.dir|0;
   S.qd2b = d===1 || (d===2 && Math.random()<0.5);   // true: decimal shown, answer in bits
   $('gBits').textContent=S.bits;
-  $('gTask').textContent = tr(S.qd2b ? 'BIT · 이진수로 바꾸세요' : 'BIT · 십진수로 바꾸세요');
+  $('gTask').textContent = isHex() ? tr('HEX · 십진수로 바꾸세요') : tr(S.qd2b ? 'BIT · 이진수로 바꾸세요' : 'BIT · 십진수로 바꾸세요');
   $('gDec').classList.toggle('hide', !S.qd2b); $('gDec').textContent = v;
   $('gAns').classList.toggle('hide', S.qd2b); $('pad').classList.toggle('hide', S.qd2b); $('pad2').classList.toggle('hide', !S.qd2b);
   $('gBitsBox').className='bits';
   if(S.qd2b){ S.bitsIn = []; for(var j=0;j<S.bits;j++) S.bitsIn.push(0); S.cursor=0; renderBitsIn(true); }
   else {
-    var str=v.toString(2), h='';
+    var HX=isHex(), str=HX?v.toString(16).toUpperCase():v.toString(2), h='';
     for(var i=0;i<str.length;i++){
-      var one=str[i]==='1', pv=1<<(str.length-1-i);
+      var one=HX?str[i]!=='0':str[i]==='1', pv=Math.pow(HX?16:2,str.length-1-i);
       h += '<div class="bit"><div class="v'+(one?' one':'')+'" style="animation-delay:'+(i*30)+'ms">'+str[i]+'</div><div class="pv'+(one?' one':'')+'">'+(S.settings.hint?pv:'')+'</div></div>';
     }
     $('gBitsBox').innerHTML=h;
@@ -1282,7 +1285,7 @@ function check(){
     if(S.gold) timers.push(setTimeout(function(){ sfx(1180,1900,.3,'triangle'); }, 150));
     renderGoal();
     if(countMode() && S.solved>=S.settings.goal){ finishMine(); if(S.role==='host') boardDirty=true; return; }
-    var lvlUp = bitsFor(S.solved, effMaxBits()) > S.bits;
+    var lvlUp = isHex() ? hexND(S.solved)*4 > S.bits : bitsFor(S.solved, effMaxBits()) > S.bits;
     timers.push(setTimeout(function(){ if(S.phase==='play'){ nextQ(); if(lvlUp){ var lb=$('lvBanner'); lb.textContent=tr('{0}비트로 올라갔어요!', S.bits); lb.classList.remove('go'); void lb.offsetWidth; lb.classList.add('go'); var lv=document.querySelector('.lvl'); lv.classList.remove('up'); void lv.offsetWidth; lv.classList.add('up'); sfx(520,1040,.28,'triangle'); } } }, 260));
     if(S.role==='host') boardDirty=true;
   } else {
@@ -1313,7 +1316,7 @@ function penalize(){
   S.wrong++; if(S.miss) S.miss[S.bits]=(S.miss[S.bits]||0)+1; S.combo=0; dirtyScore=true; renderCombo(); flash('fBad');
   lockPad(true); S.penUntil=Date.now()+PEN_MS;
   // show the right answer while resting: binary = decimal
-  var pa=$('penAns'); pa.textContent=''; pa.appendChild(document.createTextNode(tr('정답')+'  '+S.cur.toString(2))); var eq=document.createElement('em'); eq.textContent='='; pa.appendChild(eq); pa.appendChild(document.createTextNode(S.cur));
+  var pa=$('penAns'); pa.textContent=''; pa.appendChild(document.createTextNode(tr('정답')+'  '+(isHex()?S.cur.toString(16).toUpperCase():S.cur.toString(2)))); var eq=document.createElement('em'); eq.textContent='='; pa.appendChild(eq); pa.appendChild(document.createTextNode(S.cur));
   var pb=$('penBarI'); pb.style.animation='none'; void pb.offsetWidth; pb.style.animation='';
   $('pen').classList.add('on'); updatePen();
   clearTimeout(penTimer); penTimer=setTimeout(endPenalty, PEN_MS);
