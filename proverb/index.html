@@ -425,7 +425,7 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
       <div class="big"><div class="sm" id="rTitle">수사 결과</div><div class="sc" id="rScore">0</div><div class="sm" id="rSub"></div></div>
       <div id="rRank"></div>
       <div class="lbl" style="margin-top:16px">오답 노트 <span id="wCnt"></span></div><div id="rWrong"></div>
-      <div style="display:flex; gap:10px; margin-top:18px; justify-content:space-between; flex-wrap:wrap"><button class="btn ghost" id="homeBtn">처음으로</button><button class="btn" id="againBtn">다시 수사</button></div>
+      <div style="display:flex; gap:10px; margin-top:18px; justify-content:space-between; flex-wrap:wrap"><button class="btn ghost" id="homeBtn">처음으로</button><button class="btn ghost hide" id="retryBtn">틀린 사건 다시 수사</button><button class="btn" id="againBtn">다시 수사</button></div>
     </div>
   </section>
 </div>
@@ -809,8 +809,9 @@ var STAGEDEF=[null,
  {n:'빈칸 단서',d:'속담에서 비어 있는 낱말을 채워요',cnt:10},
  {n:'관용구 수사',d:'뜻을 단서로 관용구의 빈칸을 채우고, 관용구의 뜻을 찾아요',cnt:10},
  {n:'종합 수사',d:'속담과 관용구 다섯 가지 유형이 뒤섞여 나와요',cnt:15},
+ {n:'뜻으로 속담 찾기',d:'뜻을 보고 알맞은 속담을 통째로 골라요',cnt:10},
  {n:'무한 수사',d:'목숨 3개로 시작해요. 틀리면 목숨이 하나씩 줄고, 다 잃을 때까지 사건이 끝없이 이어져요',cnt:300}];
-var NSTAGES=6, RSTAGES=5;
+var NSTAGES=7, RSTAGES=6;
 var PVG=[[1,2,46],[8,13,14],[17,18],[9,30,11],[3,44],[10,43],[34,39],[11,47]], IDG=[[7,24],[13,14],[4,20]];
 translateStatic();
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -866,7 +867,7 @@ function makeCases(seed,count,sid){
     return {tag:tag,q:q,hint:hint,opts:opts,ans:opts.indexOf(right),full:full,meaning:meaning};
   }
   var types;
-  if(sid===1) types=['A']; else if(sid===2) types=['B']; else if(sid===3) types=['C']; else if(sid===4) types=['D','E']; else types=['A','B','C','D','E']; // 5, 6
+  if(sid===1) types=['A']; else if(sid===2) types=['B']; else if(sid===3) types=['C']; else if(sid===4) types=['D','E']; else if(sid===6) types=['F']; else types=['A','B','C','D','E']; // 5, 7
   var seq=[]; for(var k=0;k<count;k++) seq.push(types[k%types.length]);
   if(sid>=5) seq=shuf(seq,r);
   seq.forEach(function(t){
@@ -877,6 +878,9 @@ function makeCases(seed,count,sid){
       out.push(mk(tr('뜻 풀이'),'“'+esc(full)+'”',tr('이 속담의 뜻은 무엇일까요?'),tmx(p[2]),pick3(PVs.map(function(x){ return x[2]; }),p[2],mateP).map(tmx),full,tmx(p[2]))); }
     else if(t==='C'){ p=nextP(); full=p[0]+J+p[1];
       out.push(mk(tr('빈칸 단서'),esc(full).replace(esc(p[3]),'<span class="bl">　　</span>'),tr('빈칸에 들어갈 낱말을 고르세요.'),p[3],p[4].slice(),full,tmx(p[2]))); }
+    else if(t==='F'){ p=nextP(); full=p[0]+J+p[1];
+      var ms=pick3(PVs.map(function(x){ return x[2]; }),p[2],mateP), fw=ms.map(function(m){ for(var q=0;q<PVs.length;q++) if(PVs[q][2]===m) return PVs[q][0]+J+PVs[q][1]; return m; });
+      out.push(mk(tr('뜻으로 속담 찾기'),'“'+esc(tmx(p[2]))+'”',tr('이 뜻에 알맞은 속담을 고르세요.'),full,fw,full,tmx(p[2]))); }
     else if(t==='D'){ id=nextI(); full=plain(id[0]); var ans=/\{(.+?)\}/.exec(id[0])[1];
       out.push(mk(tr('관용구 빈칸'),esc(id[0]).replace(/\{.+?\}/,'<span class="bl">　　</span>'),tr('뜻: {0}',tmx(id[1])),ans,id[2].slice(),full,tmx(id[1]))); }
     else { id=nextI(); full=plain(id[0]);
@@ -1124,13 +1128,14 @@ function handleGuestMsg(d){
 }
 
 // ---------- 혼자 ----------
+$('retryBtn').onclick=function(){ var w=S.wrongs.filter(function(x){ return x.c; }); if(!w.length||S.role!=='solo') return; S.retry=w.map(function(x){ return x.c; }); S.settings={cnt:S.retry.length,time:0,hostPlay:1,stage:1}; beginRound(0,0); };
 function startSolo(name,sid){ destroyPeer(); S.role='solo'; S.name=name; S.seed=(Math.random()*1e9)|0; S.settings={cnt:STAGEDEF[sid].cnt,time:0,hostPlay:1,stage:sid}; beginRound(0,0); }
-function bestGet(){ try{ return JSON.parse(lsGet('proverb.best')||'{}')||{}; }catch(e){ return {}; } }
+function bestGet(){ var b; try{ b=JSON.parse(lsGet('proverb.best')||'{}')||{}; }catch(e){ b={}; } if(!b.m2){ if(b[6]){ b[7]=b[6]; delete b[6]; } b.m2=1; lsSet('proverb.best',JSON.stringify(b)); } return b; }
 function bestSet(sid,sc){ var b=bestGet(); if(!(b[sid]>=sc)){ b[sid]=sc; lsSet('proverb.best',JSON.stringify(b)); } }
 function showStages(){
   var best=bestGet(),h='';
   for(var i=1;i<=NSTAGES;i++){ var d=STAGEDEF[i],bs=best[i]||0;
-    h+='<button class="stg" data-s="'+i+'"><span class="no">'+String(i).padStart(2,'0')+'</span><span><span class="t">'+esc(tr(d.n))+'</span><span class="d">'+esc(tr(d.d))+'</span><span class="m">'+esc(i===6?tr('혼자만 · 끝없이 · 최고 {0}점',bs):tr('사건 {0}건 · 최고 {1}점',d.cnt,bs))+'</span></span></button>'; }
+    h+='<button class="stg" data-s="'+i+'"><span class="no">'+String(i).padStart(2,'0')+'</span><span><span class="t">'+esc(tr(d.n))+'</span><span class="d">'+esc(tr(d.d))+'</span><span class="m">'+esc(i===7?tr('혼자만 · 끝없이 · 최고 {0}점',bs):tr('사건 {0}건 · 최고 {1}점',d.cnt,bs))+'</span></span></button>'; }
   $('stgList').innerHTML=h; show('sStages');
 }
 $('stgList').addEventListener('click',function(e){ var b=e.target.closest('.stg'); if(b) startSolo(S.name,+b.dataset.s); });
@@ -1141,11 +1146,11 @@ var timers=[],tickT=null,sendT=null,boardT=null,boardDirty=false,dirtyScore=fals
 function clearTimers(){ timers.forEach(clearTimeout); timers=[]; clearTimeout(advT); clearInterval(tickT); clearInterval(sendT); clearInterval(boardT); }
 function iPlay(){ return S.role!=='host'||!!S.settings.hostPlay; }
 function timed(){ return S.role!=='solo'; }
-function endless(){ return S.settings.stage===6; }
+function endless(){ return S.settings.stage===7; }
 function beginRound(cdMs,durMs,totalMs,resume){
   clearTimers(); var now=Date.now();
   S.endAt=timed()?now+cdMs+durMs:0; S.totalMs=totalMs||durMs;
-  S.cases=makeCases(S.seed,S.settings.cnt,S.settings.stage);
+  if(S.retry){ S.cases=S.retry; S.isRetry=true; S.retry=null; } else { S.cases=makeCases(S.seed,S.settings.cnt,S.settings.stage); S.isRetry=false; }
   S.lives=3; S.bonus=0; S.cur=0; S.score=0; S.right=0; S.wrongs=[]; S.done=false; S.doneAt=0; S.locked=false;
   if(resume){ S.cur=Math.min(resume.stage,S.cases.length); S.score=resume.score; S.done=!!resume.done; }
   S.phase=cdMs>0?'count':'play';
@@ -1193,7 +1198,7 @@ document.addEventListener('keydown',function(e){
 function pick(i){
   var c=S.cases[S.cur]; if(!c||S.locked||S.phase!=='play') return; S.locked=true;
   var ok=i===c.ans, sec=(Date.now()-S.t0)/1000, bonus=ok?(sec<=4?20:sec<=8?10:0):0, lost=false;
-  if(ok){ S.right++; S.score+=100+bonus; S.bonus+=bonus; } else S.wrongs.push({full:c.full,meaning:c.meaning,picked:c.opts[i],answer:c.opts[c.ans],tag:c.tag});
+  if(ok){ S.right++; S.score+=100+bonus; S.bonus+=bonus; } else S.wrongs.push({full:c.full,meaning:c.meaning,picked:c.opts[i],answer:c.opts[c.ans],tag:c.tag,c:c});
   var bs=$('opts').querySelectorAll('.opt'); bs.forEach(function(b,k){ b.disabled=true; if(k===c.ans) b.classList.add('right'); else if(k===i) b.classList.add('wrong'); });
   var bl=$('gQ').querySelector('.bl'); if(bl){ bl.textContent=c.opts[c.ans]; bl.classList.add('fill'); }
   $('stamp').textContent=tr(ok?'해결':'미제'); $('stamp').className='stamp '+(ok?'ok':'no');
@@ -1251,13 +1256,15 @@ function showResult(rk){
   if(S.bonus>0) sub+='\n'+tr('빠른 수사 보너스 {0}점',S.bonus);
   if(!endless()&&iPlay()&&solved<total) sub+='\n'+tr('시간이 끝나 {0}건은 풀지 못했어요',total-solved);
   countUp($('rScore'),S.score); $('rSub').textContent=sub; var oldNb=document.querySelector('#sResult .nb'); if(oldNb) oldNb.remove();
-  if(S.role==='solo'){ var prevBest=bestGet()[sid]||0; bestSet(sid,S.score); var b=bestGet()[sid]||0; $('rTitle').textContent=tr('{0} · 최고 {1}점',tr(STAGEDEF[sid].n),b); $('rRank').innerHTML='';
+  if(S.role==='solo'&&S.isRetry){ $('rTitle').textContent=tr('틀린 사건 다시 수사'); $('rRank').innerHTML=''; }
+  else if(S.role==='solo'){ var prevBest=bestGet()[sid]||0; bestSet(sid,S.score); var b=bestGet()[sid]||0; $('rTitle').textContent=tr('{0} · 최고 {1}점',tr(STAGEDEF[sid].n),b); $('rRank').innerHTML='';
     if(S.score>0&&S.score>prevBest){ var nb=document.createElement('div'); nb.className='nb'; nb.textContent=tr('새 최고 기록!'); $('rSub').insertAdjacentElement('afterend',nb); } }
   else{ T.rk=rk||[]; T.at=new Date(); T.sub=sub; paintRank(); }
   $('wCnt').textContent=S.wrongs.length?'('+S.wrongs.length+')':''; var old=document.querySelector('#sResult .rstamp'); if(old) old.remove(); var rs=document.createElement('div'); rs.className='rstamp'; rs.setAttribute('aria-hidden','true'); rs.textContent=tr('수사 완료'); $('sResult').firstElementChild.appendChild(rs);
   $('rWrong').innerHTML=S.wrongs.length?S.wrongs.map(function(w,wi){ return '<div class="wr" style="--d:'+Math.min(wi,10)+'"><span class="wt">'+esc(w.tag)+'</span><b>'+esc(w.full)+'</b><small>'+esc(tr('뜻: {0}',w.meaning))+'</small><small>'+esc(tr('내 답: {0} → 정답: {1}','\u0001'+w.picked+'\u0002','\u0003'+w.answer+'\u0004')).replace('\u0001','<span class="mine">').replace('\u0002','</span>').replace('\u0003','<span class="ans">').replace('\u0004','</span>')+'</small></div>'; }).join(''):'<div class="msg info">'+esc(tr('틀린 사건이 없어요. 완벽한 수사였어요!'))+'</div>';
   sfx('end');
   $('againBtn').classList.toggle('hide',S.role==='guest'); $('againBtn').textContent=tr(S.role==='host'?'사무소로 돌아가기':'다시 수사');
+  $('retryBtn').classList.toggle('hide',!(S.role==='solo'&&S.wrongs.length));
   paintCsvBtn(); show('sResult');
 }
 $('homeBtn').onclick=goHome;
