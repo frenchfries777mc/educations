@@ -688,6 +688,7 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
       <div><small>최고 콤보</small><b id="rCombo">0</b></div>
     </div>
     <div class="cats" id="rCats"></div>
+    <div id="rTeachCats" class="hide"></div>
     <div id="rRankBox"><h3>순위</h3><table class="rtab"><thead><tr><th>순위</th><th>이름</th><th>점수</th><th>처리</th><th>정확도</th></tr></thead><tbody id="rRank"></tbody></table></div>
     <h3 id="rMistH">다시 볼 문장</h3>
     <div class="mist" id="rMist"></div>
@@ -695,6 +696,7 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
   <p class="msg info" id="resWait" style="text-align:center"></p>
   <div class="resBtns">
     <button class="big grn" id="againBtn"><span class="k">↻</span><span><b>다시 하기</b></span></button>
+    <button class="big hide" id="retryBtn"><span class="k">↺</span><span><b>틀린 문장만 다시</b></span></button>
     <button class="big hide" id="csvBtn"><span class="k">⇩</span><span><b>결과 저장 (CSV)</b></span></button>
     <button class="big" id="homeBtn"><span class="k">⌂</span><span><b>처음으로</b></span></button>
   </div>
@@ -973,6 +975,7 @@ var ITEMS = [
 var MAX_PLAYERS = 40, PREFIX = 'ff-munjang-', CODE_CH = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', LIVES = 3;
 var $ = function(id){ return document.getElementById(id); };
 var qs = new URLSearchParams(location.search);
+function catSan(c){ var o={}; if(c&&typeof c==='object') ['S','W','H','P','N'].forEach(function(k){ var x=c[k]; if(x&&typeof x==='object'){ var a=x.all|0, ok=x.ok|0; if(a>0&&a<=3000&&ok>=0&&ok<=a) o[k]={ok:ok,all:a}; } }); return o; }
 var CATS = { S:'맞춤법', W:'띄어쓰기', H:'문장 호응', P:'높임법', N:'정상 문장' };
 
 // ---------- language: shared Frenchfries777 setting, else the browser language ----------
@@ -1192,7 +1195,7 @@ function handleHostMsg(conn, d){
   if(d.t==='score' && (S.phase==='play' || S.phase==='count')){
     var sc=d.score|0;
     if(sc>p2.score){ p2.score=Math.min(sc, p2.score+600); p2.last=Date.now(); }
-    p2.ok=Math.max(p2.ok, d.ok|0); p2.miss=Math.max(p2.miss, d.miss|0);
+    p2.ok=Math.max(p2.ok, d.ok|0); p2.miss=Math.max(p2.miss, d.miss|0); if(d.cat) p2.cat=catSan(d.cat);
     boardDirty=true;
   }
 }
@@ -1208,7 +1211,7 @@ function enterLobby(){
     $('lobbyLink').innerHTML=esc(url.replace(/^https?:\/\//,''))+'<button id="copyLnk">'+tr('복사')+'</button>';
     $('copyLnk').onclick=function(){ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){ toast(tr('링크를 복사했어요')); }, function(){ toast(url); }); };
     syncSegs();
-    for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else { p.score=0; p.ok=0; p.miss=0; p.last=0; } }
+    for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else { p.score=0; p.ok=0; p.miss=0; p.last=0; p.cat=null; } }
     broadcast(tchExtra({ t:'lobby', settings:S.settings }));
   } else { $('lobbyLink').textContent=''; renderGuestSet(); }
   teacherUi();
@@ -1242,7 +1245,7 @@ function renderChips(){
 $('startBtn').onclick=function(){
   if(S.role!=='host') return;
   var cd=3000; S.seed=(Math.random()*1e9)|0;
-  for(var t in S.players){ var p=S.players[t]; p.score=0; p.ok=0; p.miss=0; p.last=0; }
+  for(var t in S.players){ var p=S.players[t]; p.score=0; p.ok=0; p.miss=0; p.last=0; p.cat=null; }
   broadcast({ t:'start', cd:cd, dur:S.settings.time*1000, settings:S.settings, seed:S.seed });
   beginRound(cd, S.settings.time*1000);
 };
@@ -1315,6 +1318,7 @@ function handleGuestMsg(d){
 }
 
 // ---------- solo ----------
+$('retryBtn').onclick=function(){ if(S.role!=='solo') return; var idx=[], seen={}; S.log.forEach(function(x){ var i=POOL.indexOf(x.p); if(i>=0 && !seen[i]){ seen[i]=1; idx.push(i); } }); if(!idx.length) return; S.retryOrder=shuffle(idx, rng((Math.random()*1e9)|0)); beginRound(3000, 0); };
 function startSolo(name){ destroyPeer(); S.role='solo'; S.name=name; S.seed=(Math.random()*1e9)|0; beginRound(3000, 0); }
 
 // ---------- round ----------
@@ -1330,7 +1334,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
   if(!resume){ S.score=0; S.ok=0; S.miss=0; }
   S.combo=0; S.best=0; S.lives=LIVES; S.n=0; S.log=[]; S.cat={}; S.lastOk=0; hudPrev={ score:S.score, combo:0, lives:LIVES };
   // everyone in a room gets the same sentence order; error sentences outnumber clean ones about 3:1
-  S.order = shuffle(POOL.map(function(_,i){ return i; }), rng(S.seed));
+  if(S.retryOrder){ S.order=S.retryOrder; S.isRetry=true; S.retryOrder=null; } else { S.order = shuffle(POOL.map(function(_,i){ return i; }), rng(S.seed)); S.isRetry=false; }
   if(resume) S.n = S.ok + S.miss;
   S.phase = cdMs>0 ? 'count' : 'play';
   if(iPlay()){
@@ -1350,7 +1354,7 @@ function beginRound(cdMs, durMs, totalMs, resume){
     timers.push(setTimeout(function(){ $('cd').classList.remove('on'); S.phase='play'; }, cdMs));
   }
   tickT=setInterval(tick, 200); tick();
-  if(S.role==='guest') sendT=setInterval(function(){ if(dirtyScore){ dirtyScore=false; send(S.conn, { t:'score', score:S.score, ok:S.ok, miss:S.miss }); } }, 400);
+  if(S.role==='guest') sendT=setInterval(function(){ if(dirtyScore){ dirtyScore=false; send(S.conn, { t:'score', score:S.score, ok:S.ok, miss:S.miss, cat:S.cat }); } }, 400);
   if(S.role==='host'){ boardDirty=true; boardT=setInterval(function(){ if(boardDirty){ boardDirty=false; pushBoard(); } }, 700); }
 }
 function tick(){
@@ -1361,7 +1365,7 @@ function tick(){
   $('gThird').classList.toggle('low', left<=10000); $('wTimeBox').classList.toggle('low', left<=10000);
   if(left<=0 && S.phase==='play'){
     if(S.role==='host') finishRound();
-    else { S.phase='wait'; cur=null; clearTimeout(slipT); setTools(null); $('passBtn').disabled=true; send(S.conn, { t:'score', score:S.score, ok:S.ok, miss:S.miss }); toast(tr('작업 종료! 결과를 기다리는 중')); }
+    else { S.phase='wait'; cur=null; clearTimeout(slipT); setTools(null); $('passBtn').disabled=true; send(S.conn, { t:'score', score:S.score, ok:S.ok, miss:S.miss, cat:S.cat }); toast(tr('작업 종료! 결과를 기다리는 중')); }
   }
 }
 var hudPrev={ score:0, combo:0, lives:LIVES };
@@ -1389,7 +1393,7 @@ function slipTime(){ return timed() ? Math.max(8000, 13000 - S.n*120) : Math.max
 function nextSlip(){
   clearTimeout(memoT); $('memo').classList.add('hide');
   if(S.phase==='result' || S.phase==='wait' || S.phase==='idle') return;
-  if(S.role==='solo' && S.lives<=0){ finishRound(); return; }
+  if(S.role==='solo' && (S.lives<=0 || (S.isRetry && S.n>=S.order.length))){ finishRound(); return; }
   var p=POOL[S.order[S.n % S.order.length]];
   var dur=slipTime();
   cur={ p:p, t0:Date.now()+450, dur:dur, done:false, sel:false };
@@ -1555,6 +1559,22 @@ function countUp(el, to, suf){
   var t0=performance.now(), dur=Math.min(900, 300+to*4);
   (function f(t){ var k=Math.min(1,(t-t0)/dur); k=1-Math.pow(1-k,3); el.textContent=Math.round(to*k)+suf; if(k<1) requestAnimationFrame(f); })(t0);
 }
+function renderTeachCats(){
+  var box=$('rTeachCats'); if(!(S.role==='host' && S.teacher)){ box.classList.add('hide'); box.innerHTML=''; return; }
+  var keys=['S','W','H','P','N'], tot={}, rows=[];
+  function add(name, cat){
+    if(!cat) return; var worst=null;
+    keys.forEach(function(k){ var c=cat[k]; if(!c) return; var t=tot[k]||(tot[k]={ok:0,all:0}); t.ok+=c.ok; t.all+=c.all; if(c.all>=2 && k!=='N'){ var pc=c.ok/c.all; if(!worst||pc<worst.pc) worst={k:k,pc:pc,c:c}; } });
+    if(worst && worst.pc<1) rows.push({n:name, w:worst});
+  }
+  for(var t in S.players){ var p=S.players[t]; if(p.cat) add(p.name, p.cat); }
+  if(S.settings.hostPlay) add(S.name, S.cat);
+  var h='<h3>'+esc(tr('우리 반 유형별 정답률'))+'</h3><div class="cats">'+keys.filter(function(k){ return tot[k]; }).map(function(k){ var c=tot[k], pc=Math.round(c.ok/c.all*100); return '<div class="cat"><span>'+esc(tr(CATS[k]))+'</span><div class="t"><i class="'+(pc>=80?'hi':pc>=50?'mid':'lo')+'" style="--w:'+pc+'%;--d:0ms"></i></div><span class="v">'+c.ok+'/'+c.all+'</span></div>'; }).join('')+'</div>';
+  if(!Object.keys(tot).length){ box.classList.add('hide'); box.innerHTML=''; return; }
+  rows.sort(function(a,b){ return a.w.pc-b.w.pc; });
+  if(rows.length) h+='<h3>'+esc(tr('학생별 가장 약한 유형'))+'</h3><table class="rtab"><tbody>'+rows.slice(0,40).map(function(x){ return '<tr><td>'+esc(x.n)+'</td><td>'+esc(tr(CATS[x.w.k]))+'</td><td class="n">'+Math.round(x.w.pc*100)+'% ('+x.w.c.ok+'/'+x.w.c.all+')</td></tr>'; }).join('')+'</tbody></table>';
+  box.innerHTML=h; box.classList.remove('hide');
+}
 function showResult(r){
   clearTimers(); S.phase='result'; cur=null;
   var played = iPlay();
@@ -1578,12 +1598,14 @@ function showResult(r){
       return '<tr class="'+(me?'me ':'')+(e.r<=3?'r'+e.r:'')+'"><td class="n">'+e.r+'</td><td>'+esc(e.n)+bd+'</td><td class="n">'+e.s+'</td><td>'+a+'</td><td>'+(a?Math.round(e.ok/a*100)+'%':'-')+'</td></tr>';
     }).join('');
   }
+  renderTeachCats();
   var seen={}, list=S.log.filter(function(x){ if(seen[x.p.disp]) return false; seen[x.p.disp]=1; return true; });
   $('rMistH').classList.toggle('hide', !played);
   $('rMist').innerHTML = !played ? '' : list.length ? list.map(function(x){
     var p=x.p, s = p.err ? esc(p.disp.slice(0,p.a))+'<del>'+esc(p.wrong)+'</del> <ins>'+esc(p.right)+'</ins>'+esc(p.disp.slice(p.b)) : esc(p.disp)+' <ins>✓</ins>';
     return '<div><div class="s" data-kr><span class="mc">'+esc(tr(CATS[p.cat]))+'</span>'+s+'</div><div class="r" data-kr>'+esc(p.rule || tr('이 문장은 고칠 곳이 없었어요.'))+'</div>'+(p.tip?'<div class="r tp" data-kr data-lbl="'+esc(tr('기억하기'))+'">'+esc(p.tip)+'</div>':'')+'</div>';
   }).join('') : '<div style="border-color:#2c8a52">'+esc(tr('틀린 문장이 없어요. 완벽한 작업이에요!'))+'</div>';
+  $('retryBtn').classList.toggle('hide', !(S.role==='solo' && list.length));
   $('againBtn').classList.toggle('hide', S.role==='guest');
   $('resWait').textContent = S.role==='guest' ? tr('방장이 다시 시작하면 대기실로 이동해요.') : '';
   show('sResult');

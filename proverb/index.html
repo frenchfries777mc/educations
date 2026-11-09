@@ -424,6 +424,7 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
     <div class="desk" style="max-width:760px; margin:0 auto">
       <div class="big"><div class="sm" id="rTitle">수사 결과</div><div class="sc" id="rScore">0</div><div class="sm" id="rSub"></div></div>
       <div id="rRank"></div>
+      <div id="rTeachTypes" class="hide"></div>
       <div class="lbl" style="margin-top:16px">오답 노트 <span id="wCnt"></span></div><div id="rWrong"></div>
       <div style="display:flex; gap:10px; margin-top:18px; justify-content:space-between; flex-wrap:wrap"><button class="btn ghost" id="homeBtn">처음으로</button><button class="btn ghost hide" id="retryBtn">틀린 사건 다시 수사</button><button class="btn" id="againBtn">다시 수사</button></div>
     </div>
@@ -885,6 +886,7 @@ function makeCases(seed,count,sid){
       out.push(mk(tr('관용구 빈칸'),esc(id[0]).replace(/\{.+?\}/,'<span class="bl">　　</span>'),tr('뜻: {0}',tmx(id[1])),ans,id[2].slice(),full,tmx(id[1]))); }
     else { id=nextI(); full=plain(id[0]);
       out.push(mk(tr('관용구 뜻'),'“'+esc(full)+'”',tr('이 관용구의 뜻은 무엇일까요?'),tmx(id[1]),pick3(IDs.map(function(x){ return x[1]; }),id[1],mateI).map(tmx),full,tmx(id[1]))); }
+  out[out.length-1].k=t;
   });
   return out;
 }
@@ -941,6 +943,20 @@ function csvRows(rk){
   return rows;
 }
 function saveCsv(){ var E=EDU(); if(!E||!T.teacher||S.role!=='host'||!T.rk) return; E.csv(tr('속담탐정')+'-'+(T.cls||tr('결과'))+'-'+E.stamp()+'.csv',csvRows(T.rk)); }
+var TGK=['A','B','C','D','E','F'], TGN={A:'이어 붙이기',B:'뜻 풀이',C:'빈칸 단서',D:'관용구 빈칸',E:'관용구 뜻',F:'뜻으로 속담 찾기'};
+function tgSan(c){ var o={}; if(c&&typeof c==='object') TGK.forEach(function(k){ var x=c[k]; if(x&&typeof x==='object'){ var a=x.all|0, ok=x.ok|0; if(a>0&&a<=3000&&ok>=0&&ok<=a) o[k]={ok:ok,all:a}; } }); return o; }
+function renderTeachTypes(){
+  var box=$('rTeachTypes'); if(!(S.role==='host'&&T.teacher)){ box.classList.add('hide'); box.innerHTML=''; return; }
+  var tot={}, rows=[];
+  function add(name,tg){ if(!tg) return; var worst=null; TGK.forEach(function(k){ var c=tg[k]; if(!c) return; var t=tot[k]||(tot[k]={ok:0,all:0}); t.ok+=c.ok; t.all+=c.all; if(c.all>=2){ var pc=c.ok/c.all; if(!worst||pc<worst.pc) worst={k:k,pc:pc,c:c}; } }); if(worst&&worst.pc<1) rows.push({n:name,w:worst}); }
+  for(var t in S.players){ var p=S.players[t]; if(p.tg) add(p.name,p.tg); }
+  if(S.settings.hostPlay) add(S.name,S.tg);
+  if(!Object.keys(tot).length){ box.classList.add('hide'); box.innerHTML=''; return; }
+  var h='<div class="lbl" style="margin-top:16px">'+esc(tr('우리 반 유형별 정답률'))+'</div>'+TGK.filter(function(k){ return tot[k]; }).map(function(k){ var c=tot[k]; return '<div class="wr"><b>'+esc(tr(TGN[k]))+'</b> · '+Math.round(c.ok/c.all*100)+'% <small>('+c.ok+'/'+c.all+')</small></div>'; }).join('');
+  rows.sort(function(a,b){ return a.w.pc-b.w.pc; });
+  if(rows.length) h+='<div class="lbl" style="margin-top:16px">'+esc(tr('학생별 가장 약한 유형'))+'</div>'+rows.slice(0,40).map(function(x){ return '<div class="wr"><b>'+esc(x.n)+'</b> · '+esc(tr(TGN[x.w.k]))+' '+Math.round(x.w.pc*100)+'% <small>('+x.w.c.ok+'/'+x.w.c.all+')</small></div>'; }).join('');
+  box.innerHTML=h; box.classList.remove('hide');
+}
 function paintRank(){
   var rk=T.rk||[], me=null; rk.forEach(function(e){ if(e.t===token||(S.role!=='host'&&e.n===S.name)) me=e; });
   var c=clsNow(); $('rTitle').textContent=tr('수사 결과'); $('rSub').textContent=(c?c+'\n':'')+T.sub;
@@ -1025,7 +1041,7 @@ function handleHostMsg(conn,d){
   if(d.t==='rename'&&S.phase==='lobby'){ p2.name=uniqueName(cleanName(d.name),conn._tok); send(conn,{t:'named',name:p2.name}); renderChips(); return; }
   if(d.t==='score'&&(S.phase==='play'||S.phase==='count')){
     var st=Math.min(S.settings.cnt,Math.max(p2.stage,d.stage|0));
-    p2.score=Math.max(p2.score,Math.min(d.score|0,st*120)); p2.stage=st;
+    p2.score=Math.max(p2.score,Math.min(d.score|0,st*120)); p2.stage=st; if(d.tg) p2.tg=tgSan(d.tg);
     if(d.done&&!p2.done){ p2.done=true; p2.doneAt=Date.now(); }
     boardDirty=true; checkAllDone();
   }
@@ -1046,7 +1062,7 @@ function enterLobby(){
     $('lobbyLink').innerHTML=esc(url.replace(/^https?:\/\//,''))+'<button id="copyLnk">'+esc(tr('복사'))+'</button>';
     $('copyLnk').onclick=function(){ (navigator.clipboard?navigator.clipboard.writeText(url):Promise.reject()).then(function(){ toast(tr('링크를 복사했어요')); },function(){ toast(url); }); };
     syncSegs();
-    for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else{ p.score=0; p.stage=0; p.done=false; p.doneAt=0; } }
+    for(var t in S.players){ var p=S.players[t]; if(!p.online) delete S.players[t]; else{ p.score=0; p.stage=0; p.done=false; p.doneAt=0; p.tg=null; } }
     broadcast({t:'lobby',settings:S.settings});
   } else{ $('lobbyLink').textContent=''; renderGuestSet(); }
   $('renameIn').value=S.name; renderChips(); applyTeacherUI(); show('sLobby');
@@ -1072,7 +1088,7 @@ function renderChips(){
 $('startBtn').onclick=function(){
   if(S.role!=='host') return;
   var cd=3000; S.seed=(Math.random()*1e9)|0;
-  for(var t in S.players){ var p=S.players[t]; p.score=0; p.stage=0; p.done=false; p.doneAt=0; }
+  for(var t in S.players){ var p=S.players[t]; p.score=0; p.stage=0; p.done=false; p.doneAt=0; p.tg=null; }
   broadcast({t:'start',cd:cd,dur:S.settings.time*1000,settings:S.settings,seed:S.seed});
   beginRound(cd,S.settings.time*1000);
 };
@@ -1151,7 +1167,7 @@ function beginRound(cdMs,durMs,totalMs,resume){
   clearTimers(); var now=Date.now();
   S.endAt=timed()?now+cdMs+durMs:0; S.totalMs=totalMs||durMs;
   if(S.retry){ S.cases=S.retry; S.isRetry=true; S.retry=null; } else { S.cases=makeCases(S.seed,S.settings.cnt,S.settings.stage); S.isRetry=false; }
-  S.lives=3; S.bonus=0; S.cur=0; S.score=0; S.right=0; S.wrongs=[]; S.done=false; S.doneAt=0; S.locked=false;
+  S.tg={}; S.lives=3; S.bonus=0; S.cur=0; S.score=0; S.right=0; S.wrongs=[]; S.done=false; S.doneAt=0; S.locked=false;
   if(resume){ S.cur=Math.min(resume.stage,S.cases.length); S.score=resume.score; S.done=!!resume.done; }
   S.phase=cdMs>0?'count':'play';
   if(iPlay()){
@@ -1166,7 +1182,7 @@ function beginRound(cdMs,durMs,totalMs,resume){
   if(S.role==='guest') sendT=setInterval(function(){ if(dirtyScore){ dirtyScore=false; report(); } },400);
   if(S.role==='host'){ boardDirty=true; boardT=setInterval(function(){ if(boardDirty){ boardDirty=false; pushBoard(); } },700); }
 }
-function report(){ send(S.conn,{t:'score',score:S.score,stage:S.cur,done:S.done}); }
+function report(){ send(S.conn,{t:'score',score:S.score,stage:S.cur,done:S.done,tg:S.tg}); }
 function hud(){ var no=Math.max(1,Math.min(S.locked?S.cur:S.cur+1,S.cases.length)); $('gNo').textContent=endless()?tr('{0}번째',no):no+'/'+S.cases.length; $('gLives').textContent=endless()?new Array(Math.max(0,S.lives)+1).join('♥')+new Array(Math.max(0,3-S.lives)+1).join('♡'):''; $('gScore').textContent=S.score; var pg=$('prog'); pg.classList.toggle('hide',endless()); pg.firstChild.style.width=(S.cases.length?Math.min(100,S.cur/S.cases.length*100):0)+'%'; }
 function tick(){
   if(!timed()) return;
@@ -1197,7 +1213,7 @@ document.addEventListener('keydown',function(e){
 });
 function pick(i){
   var c=S.cases[S.cur]; if(!c||S.locked||S.phase!=='play') return; S.locked=true;
-  var ok=i===c.ans, sec=(Date.now()-S.t0)/1000, bonus=ok?(sec<=4?20:sec<=8?10:0):0, lost=false;
+  var ok=i===c.ans; if(c.k){ var tg=S.tg[c.k]||(S.tg[c.k]={ok:0,all:0}); tg.all++; if(ok) tg.ok++; } var sec=(Date.now()-S.t0)/1000, bonus=ok?(sec<=4?20:sec<=8?10:0):0, lost=false;
   if(ok){ S.right++; S.score+=100+bonus; S.bonus+=bonus; } else S.wrongs.push({full:c.full,meaning:c.meaning,picked:c.opts[i],answer:c.opts[c.ans],tag:c.tag,c:c});
   var bs=$('opts').querySelectorAll('.opt'); bs.forEach(function(b,k){ b.disabled=true; if(k===c.ans) b.classList.add('right'); else if(k===i) b.classList.add('wrong'); });
   var bl=$('gQ').querySelector('.bl'); if(bl){ bl.textContent=c.opts[c.ans]; bl.classList.add('fill'); }
@@ -1260,6 +1276,7 @@ function showResult(rk){
   else if(S.role==='solo'){ var prevBest=bestGet()[sid]||0; bestSet(sid,S.score); var b=bestGet()[sid]||0; $('rTitle').textContent=tr('{0} · 최고 {1}점',tr(STAGEDEF[sid].n),b); $('rRank').innerHTML='';
     if(S.score>0&&S.score>prevBest){ var nb=document.createElement('div'); nb.className='nb'; nb.textContent=tr('새 최고 기록!'); $('rSub').insertAdjacentElement('afterend',nb); } }
   else{ T.rk=rk||[]; T.at=new Date(); T.sub=sub; paintRank(); }
+  renderTeachTypes();
   $('wCnt').textContent=S.wrongs.length?'('+S.wrongs.length+')':''; var old=document.querySelector('#sResult .rstamp'); if(old) old.remove(); var rs=document.createElement('div'); rs.className='rstamp'; rs.setAttribute('aria-hidden','true'); rs.textContent=tr('수사 완료'); $('sResult').firstElementChild.appendChild(rs);
   $('rWrong').innerHTML=S.wrongs.length?S.wrongs.map(function(w,wi){ return '<div class="wr" style="--d:'+Math.min(wi,10)+'"><span class="wt">'+esc(w.tag)+'</span><b>'+esc(w.full)+'</b><small>'+esc(tr('뜻: {0}',w.meaning))+'</small><small>'+esc(tr('내 답: {0} → 정답: {1}','\u0001'+w.picked+'\u0002','\u0003'+w.answer+'\u0004')).replace('\u0001','<span class="mine">').replace('\u0002','</span>').replace('\u0003','<span class="ans">').replace('\u0004','</span>')+'</small></div>'; }).join(''):'<div class="msg info">'+esc(tr('틀린 사건이 없어요. 완벽한 수사였어요!'))+'</div>';
   sfx('end');
