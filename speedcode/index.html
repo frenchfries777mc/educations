@@ -824,7 +824,9 @@ function cleanName(n){ n=String(n||'').replace(/\s+/g,' ').trim().slice(0,16); r
 // ticker on home
 (function(){ var parts=[]; for(var i=0;i<14;i++){ var n=1+Math.floor(Math.random()*255); parts.push(n.toString(2).padStart(8,'0')+' = <b>'+n+'</b>'); } var h=parts.join(' &nbsp;·&nbsp; '); $('ticker').innerHTML='<span>'+h+' &nbsp;·&nbsp; </span><span aria-hidden="true">'+h+' &nbsp;·&nbsp; </span>'; })();
 
-$('nameIn').value = lsGet('speedcode.name') || '';
+// no account here: everyone is a guest, named "게스트" + 6 random digits until they type their own name
+function guestName(){ var d=''; for(var i=0;i<6;i++) d+=Math.floor(Math.random()*10); return '게스트'+d; }
+$('nameIn').value = lsGet('speedcode.name') || guestName();
 $('diceBtn').onclick=function(){ var L=RNAMES[lang], pick=function(a){ return a[Math.floor(Math.random()*a.length)]; }; var n; do { n=pick(L[0])+' '+pick(L[1]); } while(n.length>16); $('nameIn').value = n; };
 var VLABEL={ko:'가상 언어',en:'Fictional languages',es:'Idiomas ficticios',fr:'Langues fictives',de:'Fiktive Sprachen',ja:'架空の言語',zh:'虚构语言',pt:'Idiomas fictícios',ru:'Вымышленные языки',tr:'Kurgusal diller',it:'Lingue immaginarie',pl:'Języki fikcyjne',ar:'لغات خيالية',nw:'Unreal speaks',gk:"Fictional 언어들"};
 function auOn(){ try{ return !!(window.FFLang&&FFLang.script&&FFLang.script()); }catch(e){ return false; } }
@@ -870,7 +872,7 @@ function bitsFor(score, maxBits){
 // ---------- HOME ----------
 function needName(){
   var n = $('nameIn').value.trim();
-  if(!n){ $('homeMsg').textContent=tr('이름을 먼저 입력하세요.'); $('nameIn').focus(); return null; }
+  if(!n){ n=guestName(); $('nameIn').value=n; }
   n = cleanName(n); lsSet('speedcode.name', n); $('homeMsg').textContent=''; return n;
 }
 $('codeIn').addEventListener('input', function(){ this.value=this.value.toUpperCase().replace(/[^A-Z0-9]/g,''); });
