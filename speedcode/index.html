@@ -803,7 +803,7 @@ function translateStatic(){
 function peerOpts(){
   var o = { debug:0, config:{ iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}] } };
   var ps = qs.get('ps');
-  if(ps){ var m = ps.match(/^([^:\/]+)(?::(\d+))?(\/.*)?$/); if(m){ o.host=m[1]; o.port=+(m[2]||443); o.path=m[3]||'/'; o.secure = location.protocol==='https:'; } }
+  if(ps){ var m = ps.match(/^([^:\/]+)(?::(\d+))?(\/.*)?$/); if(m && /^(localhost|127\.0\.0\.1)$/.test(m[1])){ o.host=m[1]; o.port=+(m[2]||443); o.path=m[3]||'/'; o.secure = location.protocol==='https:'; } }
   return o;
 }
 
@@ -944,9 +944,9 @@ function uniqueName(name, tok){
 }
 
 function handleHostMsg(conn, d){
-  if(!d || typeof d!=='object') return;
+  if(!d||typeof d!=='object'||Array.isArray(d)) return; d=netClean(d,'',0); if(!d) return;
   if(d.t==='hello'){
-    var tok = String(d.token||'').slice(0,40) || conn.peer;
+    var tok = safeTok(String(d.token||'').slice(0,40) || conn.peer);
     var pl = S.players[tok];
     if(!pl){
       if(Object.keys(S.players).length >= MAX_PLAYERS && !pl){
@@ -1113,8 +1113,30 @@ function connectHost(p, tm){
     else if(S.phase==='lobby'){ toast(tr('방장과 연결이 끊겼어요')); goHome(); }
   });
 }
+// 다른 기기에서 온 메시지는 그대로 믿지 않아요: 글자는 이름 같은 칸에만 남기고 태그에 쓰이는 글자를 바꿔요. 그 밖의 칸에 온 글자는 숫자로 바꿔요.
+var NETSTR={t:1,name:1,n:1,names:1,cls:1,uid:1,u:1,phase:1,hn:1,deck:1,token:1};
+function netClean(v,k,dp){
+  var ty=typeof v; dp=dp||0;
+  if(ty==='number') return isFinite(v)?v:0;
+  if(ty==='boolean') return v;
+  if(ty==='string'){ if(!NETSTR[k]) return isFinite(+v)?+v:0; return v.slice(0,80).replace(/[<>"'`]/g,function(c){ return {'<':'‹','>':'›','"':'”',"'":'’','`':'‘'}[c]; }); }
+  if(!v||ty!=='object'||dp>6) return null;
+  if(Array.isArray(v)) return v.slice(0,400).map(function(x){ return netClean(x,k,dp+1); }).filter(function(x){ return x!==null; });
+  var o={},c=0; for(var key in v){ if(Object.prototype.hasOwnProperty.call(v,key)&&key!=='__proto__'&&++c<=80) o[key]=netClean(v[key],key,dp+1); } return o;
+}
+function netIn(d){
+  if(!d||typeof d!=='object'||Array.isArray(d)) return null;
+  d=netClean(d,'',0); if(!d||typeof d.t!=='string') return null;
+  ['ranking','top','names','hard'].forEach(function(k){ if(d[k]!==undefined&&d[k]!==null&&!Array.isArray(d[k])) d[k]=[]; });
+  ['ranking','top','hard'].forEach(function(k){ if(d[k]) d[k]=d[k].filter(function(x){ return x&&typeof x==='object'&&!Array.isArray(x); }); });
+  if((d.t==='welcome'||d.t==='lobby'||d.t==='start')&&(!d.settings||typeof d.settings!=='object'||Array.isArray(d.settings))) return null;
+  if((d.t==='welcome'||d.t==='named')&&typeof d.name!=='string') return null;
+  if(d.t==='end'&&!d.ranking) d.ranking=[];
+  return d;
+}
+function safeTok(s){ s=String(s||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,60)||'anon'; return (s in {})?'g-'+s:s; }
 function handleGuestMsg(d){
-  if(!d || typeof d!=='object') return;
+  d=netIn(d); if(!d) return;
   switch(d.t){
     case 'full':
       $('homeMsg').className='msg'; $('homeMsg').textContent=tr('방이 가득 찼어요 (최대 40명).'); busy(false); destroyPeer(); show('sHome'); break;
@@ -1206,7 +1228,7 @@ function isHex(){ return (S.settings.dir|0)===3; }
 function nextQ(){
   S.bits = bitsFor(S.solved, effMaxBits());
   var lo = 1<<(S.bits-1), hi = (1<<S.bits)-1, v, cap = S.settings.maxNum|0;
-  if(isHex()){ var nd=hexND(S.solved); S.bits=nd*4; lo=nd===1?10:Math.pow(16,nd-1); hi=Math.pow(16,nd)-1; }
+  if(isHex()){ var nd=hexND(S.solved), mb=effMaxBits(); S.hexNd=nd; S.bits=Math.min(nd*4, mb); lo=nd===1?10:Math.pow(16,nd-1); hi=Math.min(Math.pow(16,nd)-1, (1<<mb)-1); } // 16진수도 방장이 정한 최대 자릿수를 넘지 않아요
   if(cap && hi>cap) hi=cap;
   do { v = lo + Math.floor(Math.random()*(hi-lo+1)); } while(v===S.cur && hi>lo);
   S.gold = S.solved>=3 && !S.lastGold && Math.random()<0.12; S.lastGold = S.gold;
@@ -1287,7 +1309,7 @@ function check(){
     if(S.gold) timers.push(setTimeout(function(){ sfx(1180,1900,.3,'triangle'); }, 150));
     renderGoal();
     if(countMode() && S.solved>=S.settings.goal){ finishMine(); if(S.role==='host') boardDirty=true; return; }
-    var lvlUp = isHex() ? hexND(S.solved)*4 > S.bits : bitsFor(S.solved, effMaxBits()) > S.bits;
+    var lvlUp = isHex() ? hexND(S.solved) > (S.hexNd||1) : bitsFor(S.solved, effMaxBits()) > S.bits;
     timers.push(setTimeout(function(){ if(S.phase==='play'){ nextQ(); if(lvlUp){ var lb=$('lvBanner'); lb.textContent=tr('{0}비트로 올라갔어요!', S.bits); lb.classList.remove('go'); void lb.offsetWidth; lb.classList.add('go'); var lv=document.querySelector('.lvl'); lv.classList.remove('up'); void lv.offsetWidth; lv.classList.add('up'); sfx(520,1040,.28,'triangle'); } } }, 260));
     if(S.role==='host') boardDirty=true;
   } else {

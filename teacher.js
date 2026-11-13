@@ -34,7 +34,7 @@
   }
   /* 표를 CSV로 저장 (엑셀에서 한글이 안 깨지게 BOM을 붙여요). rows: 배열의 배열 */
   function csv(name,rows){
-    var t=rows.map(function(r){ return r.map(function(v){ v=String(v==null?'':v); if(/^[=+\-@]/.test(v)) v="'"+v; return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(','); }).join('\r\n');
+    var t=rows.map(function(r){ return r.map(function(v){ v=String(v==null?'':v); if(/^[=+\-@\t\r]/.test(v)) v="'"+v; return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v; }).join(','); }).join('\r\n');
     var b=new Blob(['﻿'+t],{type:'text/csv;charset=utf-8'}), a=document.createElement('a');
     a.href=URL.createObjectURL(b); a.download=name; document.body.appendChild(a); a.click();
     setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); },1000);

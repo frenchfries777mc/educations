@@ -767,7 +767,7 @@ var DECK_NAME={k:'한국사',w:'세계사',s:'과학·발명',a:'모두'};
 function deckIdx(d){ var out=[]; EV.forEach(function(e,i){ if(d==='a' || e[0]===d) out.push(i); }); return out; }
 function rng(seed){ var a=seed>>>0; return function(){ a=(a+0x6D2B79F5)|0; var t=Math.imul(a^(a>>>15),1|a); t=(t+Math.imul(t^(t>>>7),61|t))^t; return ((t^(t>>>14))>>>0)/4294967296; }; }
 function makeSeq(deck, seed){
-  var a=deckIdx(deck), r=rng(seed);
+  var a=deckIdx(deck), r=rng(seed); if(!a.length) a=deckIdx('a');
   for(var i=a.length-1;i>0;i--){ var j=Math.floor(r()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; }
   return a;
 }
@@ -785,7 +785,7 @@ function ptsFor(streak){ return 100 + Math.min(streak-1,5)*20; } // streak count
 function peerOpts(){
   var o = { debug:0, config:{ iceServers:[{urls:'stun:stun.l.google.com:19302'},{urls:'stun:global.stun.twilio.com:3478'}] } };
   var ps = qs.get('ps');
-  if(ps){ var m = ps.match(/^([^:\/]+)(?::(\d+))?(\/.*)?$/); if(m){ o.host=m[1]; o.port=+(m[2]||443); o.path=m[3]||'/'; o.secure = location.protocol==='https:'; } }
+  if(ps){ var m = ps.match(/^([^:\/]+)(?::(\d+))?(\/.*)?$/); if(m && /^(localhost|127\.0\.0\.1)$/.test(m[1])){ o.host=m[1]; o.port=+(m[2]||443); o.path=m[3]||'/'; o.secure = location.protocol==='https:'; } }
   return o;
 }
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
@@ -1085,9 +1085,9 @@ function uniqueName(name, tok){
 }
 function tallyAns(c, ok){ var t=S.tally[c]||(S.tally[c]={n:0,m:0}); t.n++; if(!ok) t.m++; }
 function handleHostMsg(conn, d){
-  if(!d || typeof d!=='object') return;
+  if(!d||typeof d!=='object'||Array.isArray(d)) return; d=netClean(d,'',0); if(!d) return;
   if(d.t==='hello'){
-    var tok = String(d.token||'').slice(0,40) || conn.peer;
+    var tok = safeTok(String(d.token||'').slice(0,40) || conn.peer);
     var pl = S.players[tok];
     if(!pl){
       if(Object.keys(S.players).length >= MAX_PLAYERS){
@@ -1198,8 +1198,30 @@ function connectHost(p, tm){
     else if(S.phase==='lobby'){ toast(tr('방장과 연결이 끊겼어요')); goHome(); }
   });
 }
+// 다른 기기에서 온 메시지는 그대로 믿지 않아요: 글자는 이름 같은 칸에만 남기고 태그에 쓰이는 글자를 바꿔요. 그 밖의 칸에 온 글자는 숫자로 바꿔요.
+var NETSTR={t:1,name:1,n:1,names:1,cls:1,uid:1,u:1,phase:1,hn:1,deck:1,token:1};
+function netClean(v,k,dp){
+  var ty=typeof v; dp=dp||0;
+  if(ty==='number') return isFinite(v)?v:0;
+  if(ty==='boolean') return v;
+  if(ty==='string'){ if(!NETSTR[k]) return isFinite(+v)?+v:0; return v.slice(0,80).replace(/[<>"'`]/g,function(c){ return {'<':'‹','>':'›','"':'”',"'":'’','`':'‘'}[c]; }); }
+  if(!v||ty!=='object'||dp>6) return null;
+  if(Array.isArray(v)) return v.slice(0,400).map(function(x){ return netClean(x,k,dp+1); }).filter(function(x){ return x!==null; });
+  var o={},c=0; for(var key in v){ if(Object.prototype.hasOwnProperty.call(v,key)&&key!=='__proto__'&&++c<=80) o[key]=netClean(v[key],key,dp+1); } return o;
+}
+function netIn(d){
+  if(!d||typeof d!=='object'||Array.isArray(d)) return null;
+  d=netClean(d,'',0); if(!d||typeof d.t!=='string') return null;
+  ['ranking','top','names','hard'].forEach(function(k){ if(d[k]!==undefined&&d[k]!==null&&!Array.isArray(d[k])) d[k]=[]; });
+  ['ranking','top','hard'].forEach(function(k){ if(d[k]) d[k]=d[k].filter(function(x){ return x&&typeof x==='object'&&!Array.isArray(x); }); });
+  if((d.t==='welcome'||d.t==='lobby'||d.t==='start')&&(!d.settings||typeof d.settings!=='object'||Array.isArray(d.settings))) return null;
+  if((d.t==='welcome'||d.t==='named')&&typeof d.name!=='string') return null;
+  if(d.t==='end'&&!d.ranking) d.ranking=[];
+  return d;
+}
+function safeTok(s){ s=String(s||'').replace(/[^A-Za-z0-9_-]/g,'').slice(0,60)||'anon'; return (s in {})?'g-'+s:s; }
 function handleGuestMsg(d){
-  if(!d || typeof d!=='object') return;
+  d=netIn(d); if(!d) return;
   switch(d.t){
     case 'full': $('homeMsg').className='msg'; $('homeMsg').textContent=tr('방이 가득 찼어요 (최대 40명).'); busy(false); destroyPeer(); show('sHome'); break;
     case 'welcome':
