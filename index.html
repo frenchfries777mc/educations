@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head><style id="ffTap">html,body{touch-action:manipulation}.logo i.lg{width:36px;height:36px;display:grid;place-items:center;flex:0 0 auto;border-radius:9px;background:linear-gradient(135deg,#d9b45f,#b8923a);font-style:normal;font-size:20px;line-height:1;filter:drop-shadow(0 6px 14px rgba(255,160,60,.25));}
+  .mkq{display:inline-flex; align-items:center; gap:8px; margin-top:18px; padding:12px 20px; border-radius:12px; background:linear-gradient(90deg,#d9b45f,#b8923a); color:#1c1405; font-weight:800; font-size:16.5px; text-decoration:none; box-shadow:0 6px 18px rgba(217,180,95,.25); transition:filter .12s, transform .12s;} .mkq:hover{filter:brightness(1.08); transform:translateY(-1px);} .mkq svg{width:18px; height:18px;}
   .pn{margin-top:40px;} .pn summary{cursor:pointer; font-weight:700; font-size:16px; padding:10px 0; color:var(--text);}
   .pn .pnList{display:grid; gap:12px; margin-top:8px;} .pn article{padding:14px 16px; border-radius:14px; border:1px solid var(--line); background:var(--panel,#10131b);}
   .pn h3{margin:0 0 8px; font-size:14.5px; color:var(--fry,#ffc93c);} .pn ul{margin:0; padding-left:18px; color:var(--dim); font-size:14px; line-height:1.6;}
@@ -329,6 +330,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <span class="eyebrow">Learning Games</span>
     <h1>Frenchfries777<br><span>Educations</span></h1>
     <p>수업에서 바로 쓰는 교육용 게임 모음이에요. 링크를 열면 설치 없이 시작해요.</p>
+    <a class="mkq" href="make/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>문제 직접 만들기</a>
     <div class="onl" id="onlineBar"></div>
     </div>
   </section>
@@ -467,6 +469,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
     <details>
       <summary>패치 노트</summary>
       <div class="pnList">
+        <article><h3>2026-11-13 · 문제 직접 만들기</h3><ul><li>사이트 위쪽에 "문제 직접 만들기" 버튼이 생겼어요. 4지선다, O·X, 단답형 문제를 내가 직접 만들 수 있어요.</li><li>만든 퀴즈는 링크로 보내면 받은 사람이 바로 풀어요. 파일로 저장해서 보낼 수도 있어요.</li><li>방을 열면 여럿이 코드로 들어와 같이 풀고, 문제마다 실시간 순위와 정답 분포가 나와요. 빨리 맞히거나 연속으로 맞히면 점수를 더 받아요.</li><li>여러 문제를 한꺼번에 붙여넣어 만들 수 있고, 끝나면 틀린 문제와 해설을 다시 볼 수 있어요. 방장은 결과를 CSV로 저장해요.</li></ul></article>
         <article><h3>2026-11-13 · 방에서 함께 하는 게임 5개</h3><ul><li>방에 들어온 다른 기기가 보낸 내용을 그대로 믿지 않게 고쳤어요. 이상한 내용을 보내도 방이 멈추거나 화면이 바뀌지 않아요. (SpeedCode, 속담 탐정, 문장 수리공, 타임라인 배틀, 평형 설계실)</li><li>SpeedCode: 16진수 문제가 방장이 정한 최대 자릿수를 넘지 않아요.</li></ul></article>
         <article><h3>2026-11-09 · 문장 수리공 · 속담 탐정 (선생님 기능)</h3><ul><li>문장 수리공: 혼자 작업이 끝나면 "틀린 문장만 다시" 버튼으로 틀린 문장만 다시 풀 수 있어요.</li><li>선생님이 방을 열면 결과 화면에 "우리 반 유형별 정답률"과 "학생별 가장 약한 유형"이 나와요. 문장 수리공과 속담 탐정 모두 같아요.</li></ul></article>
         <article><h3>2026-11-09 · SpeedCode</h3><ul><li>16진수 → 10진수 문제 방향이 생겼어요. 혼자 연습과 방 만들기 설정에서 고를 수 있어요. A~F 글자가 나오는 1자리부터 시작해 3자리까지 어려워져요.</li></ul></article>
