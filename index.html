@@ -83,409 +83,77 @@ window.SI18N={lang:lang, T:T, F:F, pick:function(o){ return (lang!=='ko' && o &&
 if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start); else start();
 })();
 </script>
-<style>
-  :root{ --bg:#0e0e0e; --panel:#171717; --line:#2e2b25; --text:#ece6d8; --dim:#a39c8c; --fry:#d9b45f; --fry2:#b8923a; }
-  *{box-sizing:border-box;}
-  html,body{margin:0; padding:0; background:var(--bg); color:var(--text);}
-  body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:16px; line-height:1.6; min-height:100vh;
-    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
-    background:none;}
-  html{background-image:radial-gradient(ellipse 900px 520px at 10% -10%, rgba(217,180,95,.10), transparent 60%), radial-gradient(ellipse 800px 600px at 110% 30%, rgba(255,77,94,.08), transparent 60%), radial-gradient(ellipse 800px 600px at -10% 90%, rgba(31,74,165,.12), transparent 60%);
-  background-attachment:fixed;}
-  .wrap{max-width:1120px; margin:0 auto; padding:0 22px;}
-  header{display:flex; align-items:center; justify-content:space-between; padding:26px 0 0;}
-  .logo{display:flex; align-items:center; gap:10px; font-family:'Oswald',sans-serif; font-weight:600; font-size:20px; letter-spacing:.04em; color:var(--text); text-decoration:none;}
-  .logo .fry{width:34px; height:34px; border-radius:9px; display:grid; place-items:center; font-size:20px; background:linear-gradient(135deg,var(--fry),var(--fry2)); box-shadow:0 6px 18px rgba(255,160,60,.25);}
-  .logo img.lg{width:34px; height:34px; display:block; flex:0 0 auto; border-radius:9px; filter:drop-shadow(0 6px 14px rgba(255,160,60,.25));}
-  .logo b{color:var(--fry); font-weight:700;}
-  header nav a{color:var(--dim); text-decoration:none; font-size:15px; margin-left:18px;}
-  header nav a:hover{color:var(--text);}
-  header .right{display:flex; align-items:center;}
-  .tb{display:inline-flex; align-items:center; gap:2px; margin-left:16px; padding:3px; background:var(--panel); border:1px solid var(--line); border-radius:12px; vertical-align:middle;}
-  .tb [data-ff-account] .ffa-wrap{margin-left:0; display:inline-flex; align-items:center; gap:2px;}
-  .tb .ffa-set,.tb .ffa-bell,.tb .ffa-vote,.tb .ffa-chip{background:transparent!important; border:0!important; margin:0!important; border-radius:9px!important; padding:6px 10px!important;}
-  .tb .ffa-set:hover,.tb .ffa-bell:hover,.tb .ffa-vote:hover,.tb .ffa-chip:hover{background:rgba(217,180,95,.12)!important;}
-  .tb .ffa-btn{margin-left:2px; border-radius:9px;}
-  @media(max-width:520px){ .tb{margin-left:8px;} .tb .ffa-set,.tb .ffa-bell,.tb .ffa-vote,.tb .ffa-chip{padding:6px 7px!important;} }
-  .langSel{background:var(--panel); color:var(--dim); border:1px solid var(--line); border-radius:8px; padding:6px 9px; font:inherit; font-size:14px; cursor:pointer; margin-left:16px;}
-  .langSel:hover{color:var(--text); border-color:var(--fry);}
-  .swr{margin:0 auto 0 20px; display:flex; align-items:center; gap:8px;}
-  .sw{display:inline-flex; padding:3px; border-radius:99px; border:1px solid var(--line); background:var(--panel);}
-  .sw a{font-family:'Oswald',sans-serif; font-weight:600; font-size:13.5px; letter-spacing:.06em; text-transform:uppercase; color:var(--dim); text-decoration:none; padding:4px 13px; border-radius:99px; transition:color .15s,background .15s;}
-  .sw a:hover{color:var(--text);}
-  .sw a.on{background:linear-gradient(90deg,var(--fry),var(--fry2)); color:#1c1405;}
-  @media(max-width:520px){ header{flex-wrap:wrap;} .swr{order:3; flex:1 0 100%; margin:14px 0 0; min-width:0;} .sw{min-width:0;} .sw a{padding:4px 9px;} }
-  .hero{padding:58px 0 34px;}
-  .hero .eyebrow{display:inline-block; font-size:13px; font-weight:700; letter-spacing:.14em; color:var(--fry); text-transform:uppercase;}
-  .hero h1{font-family:'Oswald','Noto Sans KR',sans-serif; font-weight:700; font-size:clamp(40px,7vw,76px); line-height:1.02; margin:10px 0 0; text-transform:uppercase; letter-spacing:.01em;}
-  .hero h1 span{background:linear-gradient(90deg,var(--fry),var(--fry2)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .hero p{color:var(--dim); font-size:18px; margin:16px 0 0; max-width:46ch;}
-  /* 🔍 검색 (games 허브와 같은 모양) */
-  .srx-btn{background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:99px; width:38px; height:38px; display:inline-grid; place-items:center; cursor:pointer; font-size:15px; flex:0 0 auto; padding:0;}
-  .srx-btn:hover{border-color:var(--fry);}
-  .hn-bg{position:fixed; inset:0; z-index:2147482300; background:rgba(5,6,10,.72); display:none; align-items:center; justify-content:center; padding:16px;}
-  .hn-b{width:100%; max-width:560px; max-height:calc(100vh - 32px); overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:18px 20px; box-sizing:border-box; overscroll-behavior:contain;}
-  .hn-h{display:flex; justify-content:space-between; align-items:center; font-size:19px; margin-bottom:6px;} .hn-x{background:none; border:0; color:var(--dim); font-size:24px; cursor:pointer; line-height:1;}
-  .srx .hn-b{max-width:640px; align-self:flex-start; margin-top:8vh;}
-  .srx input{width:100%; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font:inherit; font-size:17px;}
-  .srx input:focus{outline:none; border-color:var(--fry);}
-  .srx .sg{margin-top:14px;} .srx .sg h4{margin:0 0 6px; font-size:12.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--dim);}
-  .srx .sr{display:block; text-decoration:none; color:var(--text); background:var(--bg); border:1px solid var(--line); border-radius:11px; padding:9px 12px; margin-bottom:6px; cursor:pointer; text-align:left; width:100%; font:inherit;}
-  .srx .sr:hover,.srx .sr.sel{border-color:var(--fry);} .srx .sr b{font-weight:700;} .srx .sr small{display:block; color:var(--dim); font-size:13px; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
-  .srx .g1{color:#3ee0c4;} .srx .g2{color:#e8c25a;} .srx .g3{color:#ffae5a;} .srx .g5{color:#9be564;}
-  .srx mark{background:rgba(217,180,95,.35); color:inherit; border-radius:3px;}
-  .srx .se{color:var(--dim); font-size:14px; padding:14px 2px 4px;}
-  html[data-ff-theme=light] .srx input, html[data-ff-theme=light] .srx .sr{background:#faf8f3;} html[data-ff-theme=light] .srx .g5{color:#3f7d12;} html[data-ff-theme=light] .srx .g1{color:#0f8a77;} html[data-ff-theme=light] .srx .g2{color:#8a6c14;} html[data-ff-theme=light] .srx .g3{color:#a0600c;}
-  /* 로고: games 사이트와 같은 크기와 위치 */
-  .logo img.lg{width:36px; height:36px; border-radius:10px;}
-  .hero{display:flex; align-items:center; justify-content:space-between; gap:28px;}
-  .hero .hero-t{min-width:0;}
-  /* 첫 화면 배경: 이 사이트 도구·게임 장면이 번갈아 천천히 나타나요 (오른쪽에서 왼쪽으로 사라지게 깔려서 글자는 그대로 읽혀요) */
-  .hero{position:relative;}
-  body{overflow-x:clip;}
-  .hero-bg{position:absolute; z-index:-1; left:50%; width:100vw; margin-left:-50vw; top:-130px; bottom:-30px; pointer-events:none; overflow:hidden; -webkit-mask-image:linear-gradient(180deg,#000 0,#000 66%,transparent 100%); mask-image:linear-gradient(180deg,#000 0,#000 66%,transparent 100%);}
-  .hero-bg i{position:absolute; inset:0; opacity:0; animation:hbFade 32s linear infinite;}
-  .hero-bg i:nth-child(1){animation-delay:-2s;} .hero-bg i:nth-child(2){animation-delay:6s;} .hero-bg i:nth-child(3){animation-delay:14s;} .hero-bg i:nth-child(4){animation-delay:22s;}
-  .hero-bg img,.hero-bg video{position:absolute; top:0; right:0; width:72%; height:100%; object-fit:cover; opacity:.8; -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 48%); mask-image:linear-gradient(90deg,transparent 0,#000 48%); animation:hbKen 32s ease-in-out infinite alternate;}
-  .hero-bg i::after{content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 80% at 82% 55%, color-mix(in srgb,var(--c) 38%,transparent), transparent 70%), radial-gradient(ellipse 50% 60% at 8% 30%, color-mix(in srgb,var(--c) 14%,transparent), transparent 70%);}
-  .hero-bg::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 90%,transparent) 0,color-mix(in srgb,var(--bg) 55%,transparent) 14%,transparent 34%);}
-  .hero-bg.six i{animation-name:hbFade6; animation-duration:42s;}
-  .hero-bg.six i:nth-child(1){animation-delay:-1s;} .hero-bg.six i:nth-child(2){animation-delay:6s;} .hero-bg.six i:nth-child(3){animation-delay:13s;} .hero-bg.six i:nth-child(4){animation-delay:20s;} .hero-bg.six i:nth-child(5){animation-delay:27s;} .hero-bg.six i:nth-child(6){animation-delay:34s;}
-  @keyframes hbFade6{0%{opacity:0;} 3.5%{opacity:1;} 15.5%{opacity:1;} 19%{opacity:0;} 100%{opacity:0;}}
-  @keyframes hbFade{0%{opacity:0;} 5%{opacity:1;} 25%{opacity:1;} 31%{opacity:0;} 100%{opacity:0;}}
-  @keyframes hbKen{from{transform:scale(1.03) translate3d(0,0,0);} to{transform:scale(1.14) translate3d(-2%,-2%,0);}}
-  @keyframes hbRise{from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:none;}}
-  .hero-t>*:not(.ffs){animation:hbRise .6s cubic-bezier(.2,.7,.2,1) both;} .hero-t>:nth-child(2){animation-delay:.07s;} .hero-t>:nth-child(3){animation-delay:.14s;} .hero-t>:nth-child(4){animation-delay:.21s;} .hero-t>:nth-child(5){animation-delay:.28s;}
-  @media(max-width:640px){ .hero-bg img,.hero-bg video{width:100%; -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 30%); mask-image:linear-gradient(90deg,transparent 0,#000 30%); opacity:.55;} }
-  @media(prefers-reduced-motion:reduce){ .hero-bg i{animation:none;} .hero-bg i:first-child{opacity:1;} .hero-bg img,.hero-bg video,.hero-t>*:not(.ffs){animation:none;} }
-  /* 숫자로 보는 줄 */
-  .hstats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:0 0 18px; padding:18px 8px; border:1px solid var(--line); border-radius:18px; background:color-mix(in srgb,var(--panel) 80%,transparent); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);}
-  .hstats div{text-align:center; padding:2px 6px; border-left:1px solid var(--line);} .hstats div:first-child{border-left:0;}
-  .hstats b{display:block; font-family:'Oswald','Noto Sans KR',sans-serif; font-weight:700; font-size:clamp(26px,4.2vw,42px); line-height:1.1; background:linear-gradient(90deg,var(--fry),var(--fry2)); -webkit-background-clip:text; background-clip:text; color:transparent; font-variant-numeric:tabular-nums;}
-  .hstats span{display:block; margin-top:4px; font-size:13px; color:var(--dim);}
-  @media(max-width:640px){ .hstats{gap:4px; padding:14px 4px;} .hstats div{padding:2px 2px;} .hstats span{font-size:12px;} }
-  /* 게임 카드: 스크롤하면 차례로 나타나고, 올리면 장면이 커지며 대표색 빛이 번져요 */
-  .game.ps{--gc:106,168,255;}
-  .game.sc{--gc:255,122,90;}
-  .game.tl{--gc:160,120,255;}
-  .game.mj{--gc:90,200,120;}
-  .game.bl{--gc:90,200,120;}
-  .game.pv{--gc:232,194,90;}
-  .game{--rx:0deg; --ry:0deg; --mx:50%; --my:30%;}
-  .game.rv{opacity:0; transform:translateY(34px);}
-  .game.rv.in{opacity:1; transform:none; transition:opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1);}
-  .game.in.tilt:hover{transform:perspective(1000px) translateY(-6px) rotateX(var(--rx)) rotateY(var(--ry)); transition:transform .12s ease-out, box-shadow .2s, border-color .2s;}
-  .game:hover{border-color:rgba(var(--gc),.55); box-shadow:0 24px 54px -16px rgba(var(--gc),.42);}
-  .game::after{content:''; position:absolute; inset:0; z-index:2; pointer-events:none; opacity:0; transition:opacity .25s; background:radial-gradient(420px circle at var(--mx) var(--my), rgba(var(--gc),.16), transparent 62%);}
-  .game:hover::after{opacity:1;}
-  .game:hover .shot img{transform:scale(1.09);}
-  @media(prefers-reduced-motion:reduce){ .game.rv{opacity:1; transform:none;} .game.in.tilt:hover{transform:translateY(-4px);} }
-  .hero-lg{order:2; flex:0 0 auto; width:clamp(150px,21vw,230px); height:auto; filter:drop-shadow(0 18px 50px rgba(255,150,40,.28)); transform:rotate(4deg);}
-  @media(max-width:640px){ .hero{flex-direction:column; align-items:flex-start; gap:12px;} .hero-lg{order:0; width:92px; transform:none;} }
-  .games{display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:22px; padding-bottom:20px;}
-  .game{position:relative; border-radius:18px; overflow:hidden; display:flex; flex-direction:column; border:1px solid var(--line); background:var(--panel); transition:transform .18s ease, box-shadow .18s ease, border-color .18s;}
-  .game:hover{transform:translateY(-4px);}
-  .shot{position:relative; aspect-ratio:16/9; overflow:hidden; display:block;}
-  .shot img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .5s ease;}
-  .game:hover .shot img{transform:scale(1.045);}
-  .shot::after{content:''; position:absolute; inset:0; background:linear-gradient(180deg,transparent 45%,var(--card) 100%);}
-  .badge{position:absolute; top:14px; left:14px; z-index:1; font-size:12.5px; font-weight:700; padding:4px 11px; border-radius:99px; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);}
-  .body{padding:4px 26px 26px; margin-top:-34px; position:relative; z-index:1; display:flex; flex-direction:column; flex:1;}
-  .game h2{margin:0; line-height:1.05;}
-  .game h2:has(.gl){display:flex; align-items:center; gap:.3em;}
-  .sc h2:has(.gl){font-size:35px;}
-@media (max-width:480px){.game h2:has(.gl),.sc h2:has(.gl){font-size:27px;}}
-  .gl{width:1.3em; height:1.3em; flex:0 0 auto;} .gt{min-width:0;}
-  .tags{display:flex; flex-wrap:wrap; gap:6px; margin:12px 0 0;}
-  .tags span{font-size:13px; font-weight:500; padding:3px 10px; border-radius:99px;}
-  .desc{margin:14px 0 0; font-size:15.5px; flex:1;}
-  .desc ul{margin:10px 0 0; padding-left:18px;} .desc li{margin:3px 0;}
-  .acts{display:flex; flex-wrap:wrap; gap:10px; margin-top:22px;}
-  .play{display:inline-flex; align-items:center; gap:10px; padding:14px 24px; border-radius:10px; font-weight:700; font-size:17px; text-decoration:none; transition:filter .12s, transform .12s;}
-  .play:hover{filter:brightness(1.1);} .play:active{transform:scale(.98);}
-  .play svg{width:18px; height:18px;}
-  .sub{display:inline-flex; align-items:center; padding:14px 16px; border-radius:10px; font-weight:600; font-size:15.5px; text-decoration:none; border:1px solid; transition:background .12s;}
 
-  .acct{display:grid; grid-template-columns:auto 1fr auto; gap:18px; align-items:center; margin:0 0 26px; padding:18px 22px; border-radius:16px; border:1px solid rgba(217,180,95,.35); background:linear-gradient(100deg,rgba(217,180,95,.13),rgba(255,140,40,.05) 60%,var(--panel));}
-  .acct .ai{font-size:34px; width:58px; height:58px; display:grid; place-items:center; border-radius:14px; background:rgba(217,180,95,.14); border:1px solid rgba(217,180,95,.3);}
-  .acct h3{margin:0; font-size:19px;} .acct p{margin:4px 0 0; color:var(--dim); font-size:15px;}
-  .acct .ag{display:flex; flex-wrap:wrap; gap:6px; justify-content:flex-end;}
-  .acct .ag span{font-size:13px; font-weight:700; padding:4px 11px; border-radius:99px; white-space:nowrap;}
-  .acct .ag span::before{content:'✓ ';}
-  .acct .g1{background:rgba(63,224,197,.12); color:#3fe0c5; border:1px solid rgba(63,224,197,.3);}
-  .acct .g2{background:rgba(212,175,79,.12); color:#f2dc94; border:1px solid rgba(212,175,79,.35);}
-  .acct .g3{background:rgba(242,199,90,.10); color:#f3e4b0; border:1px solid rgba(242,199,90,.3);}
-  .game .tags span.acc{background:rgba(217,180,95,.12); color:#ffd36b; border:1px solid rgba(217,180,95,.35); font-weight:700;}
-  .tags span.acc i{font-style:normal; margin-right:4px;}
-  @media(max-width:860px){ .acct{grid-template-columns:auto 1fr;} .acct .ag{grid-column:1 / -1; justify-content:flex-start;} }
-  @media(max-width:520px){ .acct{padding:16px; gap:12px;} .acct .ai{width:46px; height:46px; font-size:26px;} .acct h3{font-size:17px;} }
-  .why{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:40px 0 0;}
-  .why > div{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px;}
-  .why .ic{font-size:24px;} .why h3{margin:6px 0 4px; font-size:16.5px;} .why p{margin:0; color:var(--dim); font-size:14.5px;}
-  .tc-ov{position:fixed; inset:0; z-index:9000; background:rgba(5,6,10,.72); display:none; align-items:center; justify-content:center; padding:16px;}
-  .tc-ov.on{display:flex;}
-  .tc-b{width:100%; max-width:440px; max-height:calc(100vh - 32px); overflow-y:auto; background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:22px 22px 20px; box-sizing:border-box; position:relative;}
-  .tc-b h2{margin:0 0 6px; font-size:20px;}
-  .tc-b p{margin:0 0 14px; color:var(--dim); font-size:14px; line-height:1.6;}
-  .tc-b input{width:100%; box-sizing:border-box; background:var(--bg); color:var(--text); border:1px solid var(--line); border-radius:12px; padding:12px 14px; font:inherit; font-size:16px; margin-bottom:10px;}
-  .tc-b input.code{text-align:center; letter-spacing:.35em; font-size:22px;}
-  .tc-b button.go{width:100%; border:0; border-radius:12px; padding:12px; font:inherit; font-weight:700; font-size:16px; color:#1a1300; background:linear-gradient(90deg,var(--fry),var(--fry2)); cursor:pointer;}
-  .tc-b button.go:disabled{opacity:.5; cursor:default;}
-  .tc-x{position:absolute; top:10px; right:12px; background:none; border:0; color:var(--dim); font-size:22px; cursor:pointer; line-height:1;}
-  .tc-msg{min-height:20px; margin:10px 0 0; font-size:14px; color:var(--dim);}
-  .tc-msg.err{color:#ff8a8a;}
-  .tc-ok{font-size:42px; text-align:center; margin:6px 0;}
-  .tc-lnk{background:none; border:0; color:var(--dim); text-decoration:underline; font:inherit; font-size:13px; cursor:pointer; padding:8px 0 0;}
-  footer{margin:56px 0 40px; padding-top:20px; border-top:1px solid var(--line); color:var(--dim); font-size:14px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;}
-  footer a{color:var(--dim);}
-  /* 행성 탐사: probe console, deep space with ice blue, amber only for the main button */
-  .ps{--card:#070b18; background:#070b18; border-color:#1f2a44;}
-  .ps:hover{border-color:#9fd4ff; box-shadow:0 18px 50px rgba(159,212,255,.16);}
-  .ps .badge{background:rgba(159,212,255,.9); color:#06101f;}
-  .ps h2{font-family:'Orbit','Noto Sans KR',sans-serif; font-weight:400; font-size:40px; letter-spacing:.06em; color:#eef4ff;}
-  .ps .motto{display:flex; align-items:center; gap:10px; color:#9fd4ff; font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; letter-spacing:.32em; margin-top:6px; white-space:nowrap;}
-  .ps .motto i{flex:0 0 26px; height:1px; background:#9fd4ff; opacity:.6;}
-  .ps .tags span{background:rgba(159,212,255,.08); color:#cfe6ff; border:1px solid rgba(159,212,255,.28);}
-  .ps .desc{color:#a6b2c9;} .ps .desc li::marker{color:#9fd4ff;}
-  .ps .play{background:#ffb547; color:#1d1203;}
-  /* SpeedCode: the hub's own fry yellow and orange, terminal digits */
-  .sc{--card:#171717; background:#171717; border-color:#2a2f3d;}
-  .sc:hover{border-color:var(--fry); box-shadow:0 18px 50px rgba(217,180,95,.14);}
-  .sc .badge{background:rgba(217,180,95,.92); color:#1c1405;}
-  .sc h2{font-family:'Oswald',sans-serif; font-weight:700; font-size:40px; letter-spacing:.02em; color:#ece6d8;}
-  .sc h2 b{background:linear-gradient(90deg,var(--fry),var(--fry2)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .sc .motto{display:flex; align-items:center; gap:10px; color:var(--fry); font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:500; letter-spacing:.24em; margin-top:6px; white-space:nowrap;}
-  .sc .motto i{flex:0 0 26px; height:1px; background:var(--fry); opacity:.6;}
-  .sc .tags span{background:rgba(217,180,95,.08); color:#ffe2a0; border:1px solid rgba(217,180,95,.28);}
-  .sc .desc{color:#a3acbd;} .sc .desc li::marker{color:var(--fry);}
-  .sc .play{background:linear-gradient(90deg,var(--fry),var(--fry2)); color:#1c1405;}
-  /* Timeline Battle: museum exhibit, dark ink with brass and old paper */
-  .tl{--card:#1f1711; background:#1f1711; border-color:#4a3826;}
-  .tl:hover{border-color:#d4a64a; box-shadow:0 18px 50px rgba(212,166,74,.16);}
-  .tl .badge{background:rgba(140,47,57,.94); color:#f7f0e2;}
-  .tl h2{font-family:'Oswald',sans-serif; font-weight:700; font-size:40px; letter-spacing:.02em; color:#efe4cf;}
-  .tl h2 b{color:#d4a64a;}
-  .tl .motto{display:flex; align-items:center; gap:10px; color:#d4a64a; font-size:12px; font-weight:700; letter-spacing:.2em; margin-top:6px; white-space:nowrap;}
-  .tl .motto i{flex:0 0 26px; height:1px; background:#d4a64a; opacity:.6;}
-  .tl .tags span{background:rgba(239,228,207,.07); color:#efe4cf; border:1px solid rgba(212,166,74,.32);}
-  .tl .desc{color:#b8a890;} .tl .desc li::marker{color:#c4515c;}
-  .tl .play{background:#efe4cf; color:#2a1f17;}
-  /* 문장 수리공: factory floor, charcoal steel with hazard yellow and kraft paper */
-  .mj{--card:#1b1916; background:#1b1916; border-color:#47403a;}
-  .mj:hover{border-color:#f5c518; box-shadow:0 18px 50px rgba(245,197,24,.16);}
-  .mj .badge{background:#f5c518; color:#1b1916;}
-  .mj h2{font-family:'Do Hyeon','Noto Sans KR',sans-serif; font-weight:400; font-size:42px; color:#f5c518; letter-spacing:.02em;}
-  .mj .motto{display:flex; align-items:center; gap:10px; color:#d9c3a0; font-family:'Do Hyeon',sans-serif; font-size:13px; letter-spacing:.3em; margin-top:4px; white-space:nowrap;}
-  .mj .motto i{flex:0 0 26px; height:6px; background:repeating-linear-gradient(-45deg,#f5c518 0 4px,#1b1916 4px 8px);}
-  .mj .tags span{background:rgba(241,228,200,.08); color:#f1e4c8; border:1px solid rgba(245,197,24,.3);}
-  .mj .desc{color:#b5aa98;} .mj .desc li::marker{color:#f5c518;}
-  .mj .play{background:#f5c518; color:#1b1916;}
-  /* 평형 설계실: blueprint sheet, drafting blue with white lines and amber */
-  .bl{--card:#0b3263; background:#0b3263; border-color:#3f6aa3; background-image:linear-gradient(rgba(255,255,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.06) 1px,transparent 1px); background-size:22px 22px;}
-  .bl:hover{border-color:#ffb547; box-shadow:0 18px 50px rgba(255,181,71,.16);}
-  .bl .badge{background:#ffb547; color:#0b3263; border-radius:0;}
-  .bl h2{font-family:'Do Hyeon','Noto Sans KR',sans-serif; font-weight:400; font-size:42px; color:#eaf3ff; letter-spacing:.01em;}
-  .bl .motto{display:flex; align-items:center; gap:10px; color:#ffb547; font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.28em; margin-top:6px; white-space:nowrap;}
-  .bl .motto i{flex:0 0 26px; height:0; border-top:2px dashed #ffb547; opacity:.8;}
-  .bl .tags span{background:transparent; color:#eaf3ff; border:1px solid rgba(234,243,255,.5); border-radius:0;}
-  .bl .desc{color:#b9cde8;} .bl .desc li::marker{color:#ffb547;}
-  .bl .play{background:#ffb547; color:#0b3263; border-radius:0; box-shadow:3px 3px 0 #c9832a;}
-  /* 속담 탐정: 탐정 사무소 책상, 짙은 갈색 나무와 누런 종이, 놋쇠색 */
-  .pv{--card:#221a14; background:#221a14; border-color:#5a4632; background-image:repeating-linear-gradient(90deg,rgba(255,255,255,.02) 0 2px,transparent 2px 9px);}
-  .pv:hover{border-color:#d4a94a; box-shadow:0 18px 50px rgba(212,169,74,.16);}
-  .pv .badge{background:#d4a94a; color:#1d1608;}
-  .pv h2{font-family:'Black Han Sans','Noto Sans KR',sans-serif; font-weight:400; font-size:42px; color:#f2e8d0; letter-spacing:.01em;}
-  .pv .motto{display:flex; align-items:center; gap:10px; color:#d4a94a; font-family:'Noto Serif KR','Nanum Myeongjo',serif; font-size:13px; letter-spacing:.2em; margin-top:6px; white-space:nowrap;}
-  .pv .motto i{flex:0 0 26px; height:0; border-top:2px solid #d4a94a; opacity:.7;}
-  .pv .tags span{background:rgba(212,169,74,.1); color:#f2e8d0; border:1px solid rgba(212,169,74,.4);}
-  .pv .desc{color:#cdbb9c;} .pv .desc li::marker{color:#d4a94a;}
-  .pv .play{background:#d4a94a; color:#1d1608; box-shadow:0 4px 0 #a98529;}
-  .games{grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));}
-  html[data-ff-theme=light] body{background-image:radial-gradient(ellipse 900px 520px at 10% -10%, rgba(217,180,95,.22), transparent 60%), radial-gradient(ellipse 800px 600px at 110% 30%, rgba(255,77,94,.10), transparent 60%);}
-  html[data-ff-theme=light] .langSel{background:#fff;} html[data-ff-theme=light] .ffa-set,html[data-ff-theme=light] .ffa-bell{background:#fff; color:#1f1b14; border-color:#d9d2c3;}
-  html[data-ff-theme=light] .hero-bg{opacity:.3;}
-  html[data-ff-theme=light] .hero-lg{filter:drop-shadow(0 12px 28px rgba(166,124,0,.25));}
-  @media(max-width:860px){ .why{grid-template-columns:1fr;} }
-  @media(max-width:380px){ .games{grid-template-columns:1fr;} }
-  @media(max-width:520px){
-    .wrap{padding:0 16px;} header nav{display:none;} header{gap:8px;} .logo{font-size:16px; gap:8px; min-width:0; flex:1 1 auto;} .logo span:last-child{min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;} header .right{flex:0 0 auto;} .logo .fry{width:30px; height:30px; font-size:17px;} .langSel{margin-left:0; padding:6px 6px;} .ffa-wrap{margin-left:8px !important;} .ffa-chip{max-width:118px !important;} .ffa-btn{padding:7px 10px !important;} .hero{padding:38px 0 24px;} .hero p{font-size:16.5px;}
-    .body{padding:4px 18px 20px;} .ps h2{font-size:34px;}
-    .play{flex:1; justify-content:center;} .sub{flex:1; justify-content:center;}
+
+<style id="ffx">
+:root{--bg:#0e0e0e;--panel:#171717;--line:#2e2b25;--text:#ece6d8;--dim:#a39c8c;--fry:#d9b45f;--fry2:#b8923a;--hb-panel:rgba(14,14,14,.6);--hb-line:#3a3530}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0e0e0e;color:#ece6d8}
+body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif}
+a{color:inherit;text-decoration:none}
+button{font:inherit}
+[hidden]{display:none!important}
+img{max-width:100%}
+#ffTop{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-end;gap:14px;padding:20px 0;height:84px;box-sizing:border-box}
+#onlineBar{display:flex;align-items:center;flex-wrap:nowrap;white-space:nowrap;overflow:hidden;max-width:62vw;gap:8px 12px;height:44px;box-sizing:border-box;padding:0 16px;border-radius:10px;background:rgba(14,14,14,.6);border:1px solid #3a3530;font-size:14px;color:#ece6d8}
+#onlineBar:empty{display:none}
+#ffTop .tb{margin:0}
+.ffx-nav a:hover{background:#1c1a16}
+@media(max-width:860px){
+  .ffx-root{flex-direction:column!important;flex-wrap:nowrap!important}
+  .ffx-root>aside{flex:0 0 auto!important;width:100%!important;flex-direction:row!important;align-items:center;overflow-x:auto;padding:8px 10px!important;border-right:0!important;border-bottom:1px solid #2e2b25}
+  .ffx-root>aside>a:first-child{padding:0 10px 0 4px!important;font-size:18px!important}
+  .ffx-root>aside>a{white-space:nowrap;padding:8px 11px!important}
+  .ffx-root>aside>div{display:none!important}
+  .ffx-root>main>div{padding-left:18px!important;padding-right:18px!important}
+}
 </style>
-<style>html,body{touch-action:manipulation;}</style>
-<link rel="stylesheet" href="https://frenchfries777.com/games/ff-rich.css?v=10">
-<link rel="stylesheet" href="/ff-shell.css?v=6">
-<script src="/ff-shell.js?v=6" defer></script>
 </head>
-<body>
-<div class="wrap">
-  <header>
-    <a class="logo" href="./"><i class="lg" aria-hidden="true">🍟</i><span>FRENCHFRIES<b>777</b></span></a>
-    <div class="swr"><span class="sw" data-notr><a href="https://frenchfries777.com/">Hub</a><a href="https://frenchfries777.com/games/">Games</a><a class="on" href="./" aria-current="page">Educations</a><a href="https://frenchfries777.com/tools/">Tools</a></span><button type="button" class="srx-btn" id="srxBtn" aria-label="검색" title="검색" data-notr>🔍</button></div>
-    <div class="right"><nav><a href="https://frenchfries777.com/wiki/#educations">위키</a><a href="https://frenchfries777.com/community/">커뮤니티</a><a href="https://frenchfries777.com/lounge/">라운지</a><a href="https://frenchfries777.com/settings/">설정</a></nav><div class="tb"><span data-ff-account data-ff-nohub></span></div></div>
-  </header>
+<body><div hidden data-ffstub><a id="srxBtn" href="#"></a></div>
+<div class="ffx-root" style="background:#0e0e0e;color:#ece6d8;min-height:1700px;display:flex;flex-wrap:wrap;align-items:stretch">
+<aside style="flex:0 0 232px;box-sizing:border-box;background:#141414;border-right:1px solid #2e2b25;padding:24px 16px;display:flex;flex-direction:column;gap:6px;min-width:0">
+<a href="/" style="display:block;padding:4px 10px 22px;font-family:'Oswald',sans-serif;font-size:21px;line-height:1;letter-spacing:.03em;white-space:nowrap"><span style="font-weight:500">FRENCH</span><span style="font-weight:700">FRIES</span><span style="font-weight:700;color:#d9b45f">777</span></a>
 
-  <section class="hero">
-    <div class="hero-bg six" aria-hidden="true"><i style="--c:#6aa8ff"><img src="planetsearch.webp" alt=""></i><i style="--c:#5ac878"><img src="balance.webp" alt=""></i><i style="--c:#e8c25a"><img src="proverb.webp" alt=""></i><i style="--c:#ff7a5a"><img src="speedcode.webp" alt=""></i><i style="--c:#c9a36b"><img src="timeline.webp" alt=""></i><i style="--c:#e0a030"><img src="munjang.webp" alt=""></i></div>
-    <img class="hero-lg" src="logo.svg" alt="" width="230" height="230">
-    <div class="hero-t">
-    <span class="eyebrow">Learning Games</span>
-    <h1>Frenchfries777<br><span>Educations</span></h1>
-    <p>수업에서 바로 쓰는 교육용 게임 모음이에요. 링크를 열면 설치 없이 시작해요.</p>
-    <a class="mkq" href="make/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>문제 직접 만들기</a>
-    <div class="onl" id="onlineBar"></div>
-    </div>
-  </section>
+<a href="/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:transparent;color:#c9c2b0"><span style="width:8px;height:8px;border-radius:2px;background:#4a463d"></span>Hub</a>
 
-  <section class="hstats" id="heroStats" aria-label="숫자로 보기">
-    <div><b data-n="6" id="hsCount">6</b><span>교육 게임</span></div>
-    <div><b data-n="4" id="hsSubj">4</b><span>과목</span></div>
-    <div><b data-n="330">330</b><span>수록 문제</span></div>
-    <div><b data-n="18">18</b><span>언어</span></div>
-  </section>
+<a href="/games/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:transparent;color:#c9c2b0"><span style="width:8px;height:8px;border-radius:2px;background:#4a463d"></span>Games</a>
 
-  <section class="games" id="games">
-    <article class="game ps" data-subj="정보">
-      <a class="shot" href="planetsearch/" aria-label="행성 탐사 플레이"><span class="badge">데이터 탐험</span><img src="planetsearch.webp" alt="행성 탐사 첫 화면" loading="lazy"></a>
-      <div class="body">
-        <h2><img class="gl" src="logos/planetsearch.svg" alt="" aria-hidden="true"><span class="gt">행성 탐사</span></h2>
-        <div class="motto"><i></i>PLANET SEARCH<i></i></div>
-        <div class="tags"><span>중1 정보 · 데이터</span><span>혼자 · 반 코드</span><span>로그인 없이</span></div>
-        <div class="desc">
-          여러 행성을 여행해 정보를 수집하고, 집이 절실한 외계인들을 알맞은 행성에 옮겨주세요!
-          <ul>
-            <li>2진 신호를 풀어 온도, 중력, 산소, 방사선 읽기</li>
-            <li>저장 용량 안에서 사진 화질과 크기 고르기</li>
-            <li>모은 데이터를 표, 막대그래프, 산점도, 벤 다이어그램으로 보기</li>
-          </ul>
-        </div>
-        <div class="acts">
-          <a class="play" href="planetsearch/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
-        </div>
-      </div>
-    </article>
-    <article class="game sc" data-subj="정보">
-      <a class="shot" href="speedcode/" aria-label="SpeedCode 플레이"><span class="badge">실시간 대결</span><img src="speedcode.webp" alt="SpeedCode 첫 화면" loading="lazy"></a>
-      <div class="body">
-        <h2><img class="gl" src="logos/speedcode.svg" alt="" aria-hidden="true"><span class="gt">SPEED<b>CODE</b></span></h2>
-        <div class="motto" data-notr><i></i>BINARY → DECIMAL<i></i></div>
-        <div class="tags"><span>최대 40명</span><span>방 코드로 참가</span><span>로그인 없이</span></div>
-        <div class="desc">
-          이진수를 얼마나 잘 아시나요? 누구보다 빠르게 이진수 암호를 해독하세요!
-          <ul>
-            <li>3비트에서 시작해 6, 8, 10비트까지 점점 커지는 숫자</li>
-            <li>제한 시간 동안 실시간으로 바뀌는 순위판</li>
-            <li>혼자 연습 모드, 18개 언어 지원</li>
-          </ul>
-        </div>
-        <div class="acts">
-          <a class="play" href="speedcode/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
-        </div>
-      </div>
-    </article>
-    <article class="game tl" data-subj="역사 과학">
-      <a class="shot" href="timeline/" aria-label="Timeline Battle 플레이"><span class="badge">역사 퀴즈 대결</span><img src="timeline.webp" alt="Timeline Battle 게임 화면" loading="lazy"></a>
-      <div class="body">
-        <h2><img class="gl" src="logos/timeline.svg" alt="" aria-hidden="true"><span class="gt">Timeline <b>Battle</b></span></h2>
-        <div class="motto"><i></i>역사 타임라인 배틀<i></i></div>
-        <div class="tags"><span>역사 · 과학사</span><span>사건 카드 121장</span><span>혼자 · 반 코드로 최대 40명</span><span>로그인 없이</span></div>
-        <div class="desc">
-          역사에서 가장 끔찍한 "세계사와 한국사 합치기"를 체험해 보세요! 수원화성이 지어질 때 로베스피에르는 목이 잘렸습니다!
-          <ul>
-            <li>카드를 끌어다 연표에 끼우고, 사건마다 한 줄 설명으로 배워요</li>
-            <li>한국사, 세계사, 과학 카드 121장이 늘 한꺼번에 섞여 나와요</li>
-            <li>혼자 목숨 3개로 연속 기록 도전, 반 코드로 같은 카드 대결</li>
-          </ul>
-        </div>
-        <div class="acts">
-          <a class="play" href="timeline/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
-        </div>
-      </div>
-    </article>
-    <article class="game mj" data-subj="국어">
-      <a class="shot" href="munjang/" aria-label="문장 수리공 플레이"><span class="badge">맞춤법 · 띄어쓰기</span><img src="munjang.webp" alt="문장 수리공 게임 화면" loading="lazy"></a>
-      <div class="body">
-        <h2><img class="gl" src="logos/munjang.svg" alt="" aria-hidden="true"><span class="gt">문장 수리공</span></h2>
-        <div class="motto"><i></i>SENTENCE REPAIR WORKS<i></i></div>
-        <div class="tags"><span>국어 · 맞춤법</span><span>문장 131개</span><span>혼자 · 방 코드로 최대 40명</span><span>로그인 없이</span></div>
-        <div class="desc">
-          컨베이어 벨트로 쏟아져 오는 문장을 고치세요! 이 정도면 월급은 올려줘야 합니다!
-          <ul>
-            <li>맞춤법, 띄어쓰기, 문장 호응, 높임법을 한꺼번에</li>
-            <li>혼자 목숨 3개, 갈수록 빨라지는 벨트</li>
-            <li>끝나면 틀린 문장만 모아 보는 작업 일지</li>
-          </ul>
-        </div>
-        <div class="acts">
-          <a class="play" href="munjang/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
-        </div>
-      </div>
-    </article>
-    <article class="game bl" data-subj="과학">
-      <a class="shot" href="balance/" aria-label="평형 설계실 플레이"><span class="badge">중1 과학 · 힘의 평형</span><img src="balance.webp" alt="평형 설계실 게임 화면" loading="lazy"></a>
-      <div class="body">
-        <h2><img class="gl" src="logos/balance.svg" alt="" aria-hidden="true"><span class="gt">평형 설계실</span></h2>
-        <div class="motto"><i></i>BALANCE BLUEPRINT<i></i></div>
-        <div class="tags"><span>과학 · 힘의 평형</span><span>도면 6종류</span><span>혼자 · 방 코드로 최대 40명</span><span>로그인 없이</span></div>
-        <div class="desc">
-          힘끼리 평형을 이루게 하세요! 하지만 밤 늦게 이걸 한다면 엄마가 뚜껑 열리는 힘의 평형을 맞추는데 67,000N은 필요할 겁니다!
-          <ul>
-            <li>크기가 같고, 방향이 반대고, 같은 작용선 위에 있어야 평형</li>
-            <li>스테이지 5개: 기초 평형부터 질량·용수철 상수로 힘을 계산하는 종합 설계까지</li>
-            <li>혼자 도면 10장, 방 코드로 최대 40명 대결, 목숨 3개로 끝없이 도전하는 무한 설계</li>
-          </ul>
-        </div>
-        <div class="acts">
-          <a class="play" href="balance/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
-        </div>
-      </div>
-    </article>
-    <article class="game pv" data-subj="국어">
-      <a class="shot" href="proverb/" aria-label="속담 탐정 플레이"><span class="badge">속담 · 관용구</span><img src="proverb.webp" alt="속담 탐정 게임 화면" loading="lazy"></a>
-      <div class="body">
-        <h2><img class="gl" src="logos/proverb.svg" alt="" aria-hidden="true"><span class="gt">속담 탐정</span></h2>
-        <div class="motto"><i></i>사건 기록 제0001호<i></i></div>
-        <div class="tags"><span>국어 · 속담과 관용구</span><span>사건 유형 5가지</span><span>혼자 · 방 코드로 최대 40명</span><span>로그인 없이</span></div>
-        <div class="desc">
-          흠, 이 속담이 수상하군! 의심 많은 사람이 탈도 많다더니 이 게임은 안 하는 걸로 하겠습니다.
-          <ul>
-            <li>속담 64개와 관용구 38개를 4지선다로 수사</li>
-            <li>빨리 풀수록 점수가 올라가요. 혼자 하면 목숨 3개로 끝없이 이어지는 무한 수사도 있어요</li>
-            <li>혼자 사건 10건, 방 코드로 반 전체가 같은 사건을 대결</li>
-          </ul>
-        </div>
-        <div class="acts">
-          <a class="play" href="proverb/"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12.5-7.5a1 1 0 0 0 0-1.72L8.5 3.64A1 1 0 0 0 7 4.5z"/></svg>플레이</a>
-        </div>
-      </div>
-    </article>
-  </section>
+<a href="/educations/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:#26221a;color:#f0cf7e"><span style="width:8px;height:8px;border-radius:2px;background:#d9b45f"></span>Educations</a>
 
-  <section class="why">
-    <div><div class="ic">⚡</div><h3>바로 시작</h3><p>다운로드 없이 브라우저에서 열면 끝. PC와 태블릿, 휴대폰 모두 돼요.</p></div>
-    <div><div class="ic">🏫</div><h3>반 코드로 함께</h3><p>같은 반 코드를 넣으면 모두 같은 문제로 시작해서 결과를 비교할 수 있어요.</p></div>
-    <div><div class="ic">📊</div><h3>놀면서 배우기</h3><p>문제를 푸는 대신 게임 속에서 직접 데이터를 모으고 정리해요.</p></div>
-  </section>
+<a href="/tools/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:transparent;color:#c9c2b0"><span style="width:8px;height:8px;border-radius:2px;background:#4a463d"></span>Tools</a>
 
-  <section class="pn" id="patchNotes" aria-label="패치 노트">
-    <details>
-      <summary>패치 노트</summary>
-      <div class="pnList">
-        <article><h3>2026-11-13 · 문제 직접 만들기</h3><ul><li>사이트 위쪽에 "문제 직접 만들기" 버튼이 생겼어요. 4지선다, O·X, 단답형 문제를 내가 직접 만들 수 있어요.</li><li>만든 퀴즈는 링크로 보내면 받은 사람이 바로 풀어요. 파일로 저장해서 보낼 수도 있어요.</li><li>방을 열면 여럿이 코드로 들어와 같이 풀고, 문제마다 실시간 순위와 정답 분포가 나와요. 빨리 맞히거나 연속으로 맞히면 점수를 더 받아요.</li><li>여러 문제를 한꺼번에 붙여넣어 만들 수 있고, 끝나면 틀린 문제와 해설을 다시 볼 수 있어요. 방장은 결과를 CSV로 저장해요.</li></ul></article>
-        <article><h3>2026-11-13 · 방에서 함께 하는 게임 5개</h3><ul><li>방에 들어온 다른 기기가 보낸 내용을 그대로 믿지 않게 고쳤어요. 이상한 내용을 보내도 방이 멈추거나 화면이 바뀌지 않아요. (SpeedCode, 속담 탐정, 문장 수리공, 타임라인 배틀, 평형 설계실)</li><li>SpeedCode: 16진수 문제가 방장이 정한 최대 자릿수를 넘지 않아요.</li></ul></article>
-        <article><h3>2026-11-09 · 문장 수리공 · 속담 탐정 (선생님 기능)</h3><ul><li>문장 수리공: 혼자 작업이 끝나면 "틀린 문장만 다시" 버튼으로 틀린 문장만 다시 풀 수 있어요.</li><li>선생님이 방을 열면 결과 화면에 "우리 반 유형별 정답률"과 "학생별 가장 약한 유형"이 나와요. 문장 수리공과 속담 탐정 모두 같아요.</li></ul></article>
-        <article><h3>2026-11-09 · SpeedCode</h3><ul><li>16진수 → 10진수 문제 방향이 생겼어요. 혼자 연습과 방 만들기 설정에서 고를 수 있어요. A~F 글자가 나오는 1자리부터 시작해 3자리까지 어려워져요.</li></ul></article>
-        <article><h3>2026-11-09 · 속담 탐정</h3><ul><li>새 사건 유형 "뜻으로 속담 찾기"가 생겼어요. 뜻을 보고 알맞은 속담을 통째로 골라요.</li><li>혼자 수사가 끝나면 "틀린 사건 다시 수사" 버튼으로 틀린 문제만 다시 풀 수 있어요.</li></ul></article>
-        <article><h3>2026-11-08 · 속담 탐정</h3><ul><li>새 속담 15개와 관용구 9개가 추가됐어요. 이제 속담 64개, 관용구 38개를 수사해요.</li></ul></article>
-        <article><h3>2026-11-08 · 패치 노트 추가</h3><ul><li>허브 아래에 패치 노트를 보여 주기 시작했어요. 앞으로 업데이트마다 맨 위에 쌓여요.</li></ul></article>
-        <article><h3>2026-11-07 · 평형 설계실</h3><ul><li>폰 화면에서 이름 칸 라벨이 두 줄로 깨지던 것을 고쳤어요.</li></ul></article>
-        <article><h3>2026-11-04 · SpeedCode · 문장 수리공</h3><ul><li>SpeedCode: 결과 화면에 평균 풀이 시간, 가장 많이 틀린 자릿수, 개인 최고기록이 나와요.</li><li>SpeedCode: 콤보 6·12에서 색과 효과음이 단계별로 바뀌어요.</li><li>SpeedCode: 혼자 연습에서 시작 난이도(3·5·7비트)를 고를 수 있어요.</li><li>문장 수리공: "N연속" 표시, 콤보가 쌓일수록 빨라지는 벨트, 6콤보부터 강해지는 게이지 연출이 생겼어요.</li></ul></article>
-        <article><h3>2026-11-03 · 전체</h3><ul><li>작은 로고를 주황 타일 🍟 아이콘으로 통일했어요.</li></ul></article>
-      </div>
-    </details>
-  </section>
+<a href="/wiki/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:transparent;color:#c9c2b0"><span style="width:8px;height:8px;border-radius:2px;background:#4a463d"></span>위키</a>
 
-  <footer><span>Made by Frenchfries777 with Claude AI</span> <span data-notr>Created by Frenchfries777</span> · <span class="ff-copy">© 2026 Frenchfries777 · <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener">CC BY-NC-ND 4.0</a></span><a href="#teacher" id="tcOpen">선생님 인증</a><a href="https://frenchfries777.com/settings/">설정</a><a href="https://github.com/frenchfries777mc" target="_blank" rel="noopener">github.com/frenchfries777mc</a></footer>
+<a href="/community/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:transparent;color:#c9c2b0"><span style="width:8px;height:8px;border-radius:2px;background:#4a463d"></span>커뮤니티</a>
+
+<a href="/lounge/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:transparent;color:#c9c2b0"><span style="width:8px;height:8px;border-radius:2px;background:#4a463d"></span>라운지</a>
+
+<a href="/settings/" style="display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;font-size:15px;font-weight:500;background:transparent;color:#c9c2b0"><span style="width:8px;height:8px;border-radius:2px;background:#4a463d"></span>설정</a>
+
+<div style="margin-top:auto;padding:14px 12px;border-top:1px solid #2e2b25;display:flex;flex-direction:column;gap:3px;font-size:12px;color:#8d877a"><span>Made by Frenchfries777 with Claude AI</span><span>© 2026 Frenchfries777 · CC BY-NC-ND 4.0</span></div>
+</aside>
+<main style="position:relative;overflow:hidden;flex:1 1 640px;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;background:#0e0e0e">
+<img src="/img/pixel-bg.png" alt="도트 풍경" style="position:absolute;left:0;top:0;width:100%;height:auto;display:block;image-rendering:pixelated">
+<div style="position:absolute;left:0;top:0;width:100%;height:100%;background:linear-gradient(180deg,rgba(14,14,14,.1) 0,rgba(14,14,14,.1) 120px,rgba(14,14,14,.8) 430px,rgba(14,14,14,.78) 100%)"></div>
+<div style="position:relative;padding:0 40px;display:flex;flex-direction:column">
+<div id="ffTop"><div id="onlineBar"></div><div class="tb"><span data-ff-account data-ff-nohub></span></div></div>
+<div style="padding:70px 0 34px;display:flex;flex-direction:column;gap:16px">
+<span style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;letter-spacing:.2em;color:#f0cf7e">EDUCATIONS · 6개</span>
+<h1 style="margin:0;font-family:'Oswald',sans-serif;font-weight:700;font-size:clamp(48px,7vw,96px);line-height:.95;letter-spacing:.01em">Educations</h1>
+<p style="margin:0;max-width:640px;min-height:61px;font-size:18px;line-height:1.7;color:#ece4d0">놀면서 배우는 교육 게임이에요. 혼자 풀어도 되고, 선생님이 방을 열어 반 전체가 같이 풀 수도 있어요.</p>
+<div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:6px"><span style="padding:8px 16px;border-radius:999px;border:1px solid #d9b45f;background:#26221a;color:#f0cf7e;font-size:14px;font-weight:500">전체</span><span style="padding:8px 16px;border-radius:999px;border:1px solid #3a3530;background:rgba(14,14,14,.55);color:#c9c2b0;font-size:14px;font-weight:500">국어</span><span style="padding:8px 16px;border-radius:999px;border:1px solid #3a3530;background:rgba(14,14,14,.55);color:#c9c2b0;font-size:14px;font-weight:500">과학</span><span style="padding:8px 16px;border-radius:999px;border:1px solid #3a3530;background:rgba(14,14,14,.55);color:#c9c2b0;font-size:14px;font-weight:500">코딩</span><span style="padding:8px 16px;border-radius:999px;border:1px solid #3a3530;background:rgba(14,14,14,.55);color:#c9c2b0;font-size:14px;font-weight:500">역사</span></div>
+<div style="padding-top:8px"><a href="/educations/make/" style="display:inline-block;padding:14px 26px;border-radius:10px;background:#d9b45f;color:#0e0e0e;font-weight:700;font-size:16px">문제 직접 만들기</a></div>
+</div>
+<section style="padding:28px 0 24px;display:flex;flex-direction:column;gap:22px">
+<h2 style="margin:0;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;font-size:28px;letter-spacing:.04em">교육 게임</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px"><a href="/educations/proverb/" style="display:block;border-radius:14px;overflow:hidden;border:1px solid #2e2b25;min-width:0"><img src="/educations/og/proverb.jpg" alt="속담 탐정" style="width:100%;aspect-ratio:1200/630;object-fit:cover;display:block"></a><a href="/educations/munjang/" style="display:block;border-radius:14px;overflow:hidden;border:1px solid #2e2b25;min-width:0"><img src="/educations/og/munjang.jpg" alt="문장 수리공" style="width:100%;aspect-ratio:1200/630;object-fit:cover;display:block"></a><a href="/educations/planetsearch/" style="display:block;border-radius:14px;overflow:hidden;border:1px solid #2e2b25;min-width:0"><img src="/educations/og/planetsearch.jpg" alt="행성 탐사" style="width:100%;aspect-ratio:1200/630;object-fit:cover;display:block"></a><a href="/educations/balance/" style="display:block;border-radius:14px;overflow:hidden;border:1px solid #2e2b25;min-width:0"><img src="/educations/og/balance.jpg" alt="평형 설계실" style="width:100%;aspect-ratio:1200/630;object-fit:cover;display:block"></a><a href="/educations/speedcode/" style="display:block;border-radius:14px;overflow:hidden;border:1px solid #2e2b25;min-width:0"><img src="/educations/og/speedcode.jpg" alt="SpeedCode" style="width:100%;aspect-ratio:1200/630;object-fit:cover;display:block"></a><a href="/educations/timeline/" style="display:block;border-radius:14px;overflow:hidden;border:1px solid #2e2b25;min-width:0"><img src="/educations/og/timeline.jpg" alt="Timeline Battle" style="width:100%;aspect-ratio:1200/630;object-fit:cover;display:block"></a><div style="visibility:hidden;aspect-ratio:1200/630"></div><div style="visibility:hidden;aspect-ratio:1200/630"></div><div style="visibility:hidden;aspect-ratio:1200/630"></div></div>
+</section>
+<section style="padding:28px 0 72px;display:flex;flex-direction:column;gap:22px">
+<h2 style="margin:0;font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;font-size:28px;letter-spacing:.04em">이런 점이 좋아요</h2>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px"><div style="padding:22px;border-radius:14px;background:rgba(23,23,23,.88);border:1px solid #2e2b25;display:flex;flex-direction:column;gap:8px"><b style="font-size:17px">무료, 광고 없음</b><span style="font-size:14px;line-height:1.65;color:#a39c8c">돈도 광고도 없이 바로 써요.</span></div><div style="padding:22px;border-radius:14px;background:rgba(23,23,23,.88);border:1px solid #2e2b25;display:flex;flex-direction:column;gap:8px"><b style="font-size:17px">계정 만들기가 쉬워요</b><span style="font-size:14px;line-height:1.65;color:#a39c8c">계정 하나로 모든 곳에 로그인돼요.</span></div><div style="padding:22px;border-radius:14px;background:rgba(23,23,23,.88);border:1px solid #2e2b25;display:flex;flex-direction:column;gap:8px"><b style="font-size:17px">설치 필요 없음</b><span style="font-size:14px;line-height:1.65;color:#a39c8c">브라우저에서 열면 바로 풀어요.</span></div><div style="padding:22px;border-radius:14px;background:rgba(23,23,23,.88);border:1px solid #2e2b25;display:flex;flex-direction:column;gap:8px"><b style="font-size:17px">같이 풀기</b><span style="font-size:14px;line-height:1.65;color:#a39c8c">방을 열면 여러 명이 같이 풀어요.</span></div></div>
+</section>
+</div>
+</main>
 </div>
 <script src="https://frenchfries777.com/games/ff-auth.js?v=20261107h"></script>
 <script src="https://frenchfries777.com/games/ff-online.js?v=20261114a"></script>
@@ -576,7 +244,6 @@ document.addEventListener('keydown',function(e){ var t=e.target, typing=t&&(t.ta
   document.addEventListener('visibilitychange',function(){ tab=!document.hidden; upd(); });
 })();
 </script>
-<div class="tc-ov" id="tcOv" role="dialog" aria-modal="true" aria-labelledby="tcT"><div class="tc-b" id="tcB"></div></div>
 <script>
 /* 선생님 인증: 오너에게 받은 초대 코드를 한 번 넣으면 계정에 인증 표시가 붙어요. */
 (function(){
