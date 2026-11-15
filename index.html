@@ -192,12 +192,17 @@ function box(){ var el=document.getElementById('srxBox'); if(el) return el;
   return el; }
 function open(){ var el=box(); el.style.display='flex'; var i=el.querySelector('input'); i.focus(); i.select(); if(i.value) run(i.value); }
 function close(){ var el=document.getElementById('srxBox'); if(el&&el.style.display!=='none'){ el.style.display='none'; el.querySelector('input').blur(); } }
-function run(v){ var R=box().querySelector('.srs'), q=String(v||'').trim(), ql=q.toLowerCase(); sel=-1; if(!q){ R.innerHTML=''; return; }
+var SXA=null;
+function sxaLoad(done){ if(SXA) return; SXA=[]; try{ fetch('https://apps.frenchfries777.com/apps.json').then(function(r){ return r.ok?r.json():{apps:[]}; }).then(function(a){ SXA=((a&&a.apps)||[]).map(function(x){ return {name:String(x.name||''),url:String(x.url||''),tag:String(x.tagline||''),txt:(x.name+' '+(x.tagline||'')+' '+(x.tags||[]).join(' ')).toLowerCase()}; }); done(); }).catch(function(){}); }catch(e){} }
+function sxaHtml(ql,q,have){ var m=(SXA||[]).filter(function(x){ return x.url&&x.txt.indexOf(ql)>=0&&x.url.indexOf('/educations/')<0&&x.url.indexOf('/games/')<0&&have.indexOf(x.url)<0; }).slice(0,8); if(!m.length) return '';
+  return '<div class="sg"><h4>'+esc(T('사이트 전체 · 프로그램과 앱'))+'</h4>'+m.map(function(x){ return '<a class="sr" href="'+esc(x.url)+'"><b>'+mark(x.name,q)+'</b><small>'+mark(x.tag,q)+'</small></a>'; }).join('')+'</div>'; }
+function run(v){ var R=box().querySelector('.srs'), q=String(v||'').trim(), ql=q.toLowerCase(); sel=-1; sxaLoad(function(){ var i=document.querySelector('#srxBox input'); if(i&&i.value) run(i.value); }); if(!q){ R.innerHTML=''; return; }
   function hit(g){ return (g[0]+' '+g[3]+' '+g[4]+' '+T(g[0])+' '+T(g[3])).toLowerCase().indexOf(ql)>=0; }
   function rows(a){ return a.map(function(g){ return '<a class="sr" href="'+g[1]+'"><b class="'+g[2]+'">'+mark(T(g[0]),q)+'</b><small>'+esc(T(g[3]))+'</small></a>'; }).join(''); }
   var ps=P.filter(hit), gs=G.filter(hit), h='';
   if(ps.length) h+='<div class="sg"><h4>'+esc(T('교육 게임'))+'</h4>'+rows(ps)+'</div>';
   if(gs.length) h+='<div class="sg"><h4>'+esc(T('게임'))+'</h4>'+rows(gs)+'</div>';
+  h+=sxaHtml(ql,q,h);
   R.innerHTML=h||'<div class="se">'+esc(T('검색 결과가 없어요.'))+' <a href="https://frenchfries777.com/games/" style="color:var(--fry)">'+esc(T('허브에서 위키와 게시판도 검색해 보세요'))+'</a></div>'; }
 var sb=document.getElementById('srxBtn'); sb.onclick=open; sb.title=T('검색'); sb.setAttribute('aria-label',T('검색'));
 document.addEventListener('keydown',function(e){ var t=e.target, typing=t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable);
