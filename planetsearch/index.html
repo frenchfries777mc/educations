@@ -630,6 +630,20 @@ html[data-ff-theme] .chart .grid,html[data-ff-theme] .chart .axis{stroke:var(--f
 html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR,html[data-ff-theme] .ff-cr{border-radius:99px!important;padding:3px 10px!important;background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
 @media(max-width:700px){html[data-ff-theme] .home-title h1{padding-left:14px}html[data-ff-theme] .mission h1{padding-left:14px}}
 </style>
+<style id="fitPhone">
+/* 탐사 기록 창이 넓은 표 때문에 화면 밖으로 밀리지 않게: 표만 옆으로 밀어서 봐요 */
+html,body{overflow-x:clip;} /* 돌아가는 레이더와 신호 줄 장식이 화면 밖으로 살짝 나가 휴대폰에서 화면이 옆으로 밀리던 것 막기 */
+.modal{grid-template-columns:minmax(0,1fr);} .modal .box{min-width:0;}
+@media(max-width:420px){ .sig .bulbs{flex-wrap:nowrap;} .sig .bulb{flex:1 1 0; min-width:0;} .sig .bulb .b{width:100%;} }
+@media(orientation:landscape) and (max-height:500px){ .modal{padding:8px;} .modal .box.arc{height:100%;}
+  /* 휴대폰 가로: 위 막대를 한 줄로, 탐사 과제는 왼쪽, 레이더는 오른쪽 */
+  .hud .inner{flex-wrap:nowrap; padding-block:3px;} .hud b{display:none;} .hudbar{width:50px;} .hud .btn.sm.hud-arc{min-height:32px; padding:2px 10px;}
+  .wrap{padding-top:6px; gap:8px;}
+  .mission{gap:4px 16px; align-items:center;} .mission>div:first-child>div{display:flex; align-items:baseline; gap:10px;} .mission h1{font-size:24px;} .mission .code{margin-bottom:0;} .mission .trail{display:none !important;} .stepper li{padding:4px 10px 4px 0; margin-right:8px; font-size:12px;}
+  .explore{grid-template-columns:minmax(0,1fr) minmax(0,230px); gap:12px;} .explore > :first-child{order:2;}
+  .box{padding:10px 12px; gap:8px;} .stage{min-height:0; gap:8px;} .sig{gap:8px;} .bulbs{gap:5px; --g:5px;} .bulb{gap:2px;} .bulb .b{width:40px; height:40px;} .bulb small{font-size:10px;} .stage .phead{padding-bottom:6px;} .stage .phead h3{font-size:18px;}
+}
+</style>
 </head>
 <body>
 <div id="app"></div>
@@ -2000,6 +2014,7 @@ home();
 #ffBack .ffb-i{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:18px;background:linear-gradient(135deg,#ffc93c,#ff8a3d)}
 #ffBack:hover{border-color:#ffb23f}
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:8px;bottom:8px;opacity:.6;border-radius:12px}#ffBack .ffb-i{width:30px;height:30px;font-size:16px}#ffBack:active,#ffBack:focus-visible{opacity:1}}
+@media(orientation:landscape) and (max-height:500px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:6px;bottom:6px;opacity:.55;border-radius:12px}#ffBack .ffb-i{width:28px;height:28px;font-size:15px}#ffBack:active,#ffBack:focus-visible{opacity:1}#ffCR{font-size:9px!important;padding:1px 6px!important;bottom:2px!important;right:4px!important;opacity:.45!important}}
 </style>
 <script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기',zh:"返回 Educations",pt:"Voltar ao Educations",ru:"Назад в Educations",tr:"Educations'a dön",it:"Torna a Educations",pl:"Wróć do Educations",ar:"العودة إلى Educations",nw:"Ungo to Educations",gk:"Educations로 뒤쪽"};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script><script src="../ping.js" defer></script></body>
 </html>
