@@ -604,6 +604,22 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
   .pad button, .pad2 button{height:clamp(40px,6.4vh,50px);}
   .skip{margin-top:4px;}
 }
+/* 휴대폰 가로: 문제는 왼쪽, 숫자판은 오른쪽에 두어 한 화면에 다 보이게 */
+@media(orientation:landscape) and (max-height:500px){
+  .wrap:has(#sGame.on)>header, .wrap:has(#sWatch.on)>header{display:none;}
+  #sGame.screen, #sWatch.screen{padding-top:6px;}
+  .hud .stat{padding:3px 10px; min-width:76px;} .hud .stat b{font-size:21px;}
+  .tbar{margin-top:5px;}
+  .play{margin-top:6px; gap:8px;}
+  .play:not(.solo){grid-template-columns:minmax(0,1fr) 180px;} .play:not(.solo) .side{order:0; padding:6px 8px;} .play:not(.solo) .side h4{margin:0 0 4px;}
+  .stage{display:grid; grid-template-columns:minmax(0,1fr) minmax(220px,280px); column-gap:16px; align-items:center; align-content:center; padding:8px 12px;}
+  .stage .pad, .stage .pad2{grid-column:2; grid-row:1 / span 9; margin:0; gap:6px; width:100%; max-width:none; align-self:center;}
+  .pad button, .pad2 button{height:clamp(34px,12.5vh,46px); font-size:21px;}
+  .comboRow{height:24px; margin-top:2px;}
+  .bits{margin-top:4px; gap:6px;} .bit .v{height:clamp(32px,11vh,46px); width:clamp(26px,4.4vw,44px); font-size:clamp(20px,7.5vh,32px);}
+  .ans{height:42px; margin:6px auto 0; width:100%;}
+  .skip{margin:2px auto 0; min-height:32px; justify-self:center;}
+}
 </style>
 </head>
 <body class="onHome">
@@ -1518,6 +1534,7 @@ $('homeBtn').onclick = goHome;
 #ffBack .ffb-i{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:18px;background:linear-gradient(135deg,#ffc93c,#ff8a3d)}
 #ffBack:hover{border-color:#ffb23f}
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:8px;bottom:8px;opacity:.6;border-radius:12px}#ffBack .ffb-i{width:30px;height:30px;font-size:16px}#ffBack:active,#ffBack:focus-visible{opacity:1}}
+@media(orientation:landscape) and (max-height:500px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:6px;bottom:6px;opacity:.55;border-radius:12px}#ffBack .ffb-i{width:28px;height:28px;font-size:15px}#ffBack:active,#ffBack:focus-visible{opacity:1}#ffCR{font-size:9px!important;padding:1px 6px!important;bottom:2px!important;right:4px!important;opacity:.45!important}}
 </style>
 <script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기',zh:"返回 Educations",pt:"Voltar ao Educations",ru:"Назад в Educations",tr:"Educations'a dön",it:"Torna a Educations",pl:"Wróć do Educations",ar:"العودة إلى Educations",nw:"Ungo to Educations",gk:"Educations로 뒤쪽"};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
 <a id="ffCR" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener" style="position:fixed;right:10px;bottom:6px;z-index:40;font:11px/1.2 system-ui,sans-serif;color:#fff;opacity:.7;background:rgba(10,12,18,.6);padding:3px 9px;border-radius:99px;text-decoration:none;pointer-events:auto">© 2026 Frenchfries777 · CC BY-NC-ND 4.0</a>

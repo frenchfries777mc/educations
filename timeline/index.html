@@ -530,6 +530,24 @@ html[data-ff-theme] .soloRes .trio > div:nth-child(2){border-color:var(--fry)}
 html[data-ff-theme] .soloRes p,html[data-ff-theme] .hint,html[data-ff-theme] .left,html[data-ff-theme] .net,html[data-ff-theme] .msg.info,html[data-ff-theme] .done,html[data-ff-theme] .soloRes .why,html[data-ff-theme] .hard .h .f{color:var(--text)}
 @media(max-width:700px){html[data-ff-theme] .stage{background:var(--bg)!important;border-bottom:1px solid var(--fry)}html[data-ff-theme] .title{padding-left:14px}html[data-ff-theme] .ev{border-radius:12px}}
 </style>
+<style id="landPhone">
+/* 휴대폰 가로: 카드와 질문은 왼쪽, 연표는 오른쪽에 두어 한 화면에 다 보이게 */
+@media(orientation:landscape) and (max-height:500px){
+  .wrap:has(#sGame.on)>header, .wrap:has(#sWatch.on)>header{display:none;}
+  #sGame.screen.on{display:grid; grid-template-columns:minmax(190px,240px) minmax(0,1fr); column-gap:14px; align-items:start; padding-top:6px;}
+  #sGame>.hud, #sGame>.tbar, #sGame>.strip{grid-column:1/-1;}
+  #sGame .hud{padding-bottom:4px; gap:12px; flex-wrap:nowrap;} #sGame .stat b{font-size:22px;} #sGame .stat .hearts{font-size:18px;} #sGame .hud .btn.sm{min-height:36px; padding:6px 10px;}
+  #sGame .stage{grid-template-columns:1fr; gap:8px; margin-top:8px; position:static; padding:0; border:0; background:none;}
+  #sGame .ev{width:auto; display:grid; grid-template-columns:60px minmax(0,1fr); gap:10px; align-items:center; text-align:left; padding:8px; transform:none;}
+  #sGame .ev::after{display:none;} #sGame .ev .em{height:60px; font-size:34px; margin:0;} #sGame .ev .tt{margin:0; font-size:16px;} #sGame .ev .yr{display:none;} #sGame .ev .tag{top:4px; left:4px; font-size:9px; padding:1px 5px;}
+  #sGame .side .q{display:block; font-size:20px;} #sGame .hint{display:block; font-size:12.5px;}
+  #sGame .tlWrap{margin-top:6px; padding:0 0 6px; max-height:calc(100dvh - 70px); overflow-y:auto;}
+  .wrap{padding-bottom:12px;}
+}
+@media(orientation:landscape) and (max-height:500px) and (min-width:701px){
+  #sGame .tl{height:calc(100dvh - 84px); min-height:220px; max-height:330px;}
+}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -1400,6 +1418,7 @@ $('homeBtn').onclick = goHome;
 #ffBack .ffb-i{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:18px;background:linear-gradient(135deg,#ffc93c,#ff8a3d)}
 #ffBack:hover{border-color:#ffb23f}
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:8px;bottom:8px;opacity:.6;border-radius:12px}#ffBack .ffb-i{width:30px;height:30px;font-size:16px}#ffBack:active,#ffBack:focus-visible{opacity:1}}
+@media(orientation:landscape) and (max-height:500px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:6px;bottom:6px;opacity:.55;border-radius:12px}#ffBack .ffb-i{width:28px;height:28px;font-size:15px}#ffBack:active,#ffBack:focus-visible{opacity:1}#ffCR{font-size:9px!important;padding:1px 6px!important;bottom:2px!important;right:4px!important;opacity:.45!important}}
 </style>
 <script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기',zh:"返回 Educations",pt:"Voltar ao Educations",ru:"Назад в Educations",tr:"Educations'a dön",it:"Torna a Educations",pl:"Wróć do Educations",ar:"العودة إلى Educations",nw:"Ungo to Educations",gk:"Educations로 뒤쪽"};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
 <a id="ffCR" href="https://creativecommons.org/licenses/by-nc-nd/4.0/deed.ko" target="_blank" rel="noopener" style="position:fixed;right:10px;bottom:6px;z-index:40;font:11px/1.2 system-ui,sans-serif;color:#fff;opacity:.7;background:rgba(10,12,18,.6);padding:3px 9px;border-radius:99px;text-decoration:none;pointer-events:auto">© 2026 Frenchfries777 · CC BY-NC-ND 4.0</a>

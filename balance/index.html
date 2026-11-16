@@ -592,6 +592,39 @@ html[data-ff-theme] .bar .t i{background:var(--fry)!important}
 html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!important;color:var(--text)!important;border:1px solid var(--fry)!important;box-shadow:none!important}
 @media(max-width:700px){html[data-ff-theme] .tblock th{letter-spacing:.08em;padding-left:8px;padding-right:8px;width:30%}html[data-ff-theme] .hero{border-right:0!important;border-bottom:1px solid var(--fry)}html[data-ff-theme] .hero h1{padding-left:14px}}
 </style>
+<style id="landPhone">
+/* 휴대폰 가로: 도면은 왼쪽, 조작판은 오른쪽에 두어 한 화면에 다 보이게 */
+.intro{overflow-y:auto; place-items:initial;} .intro .sheet{margin:auto;}
+@media(max-width:600px) and (max-height:760px) and (orientation:portrait){
+  /* 작은 휴대폰 세로: 게임 중에는 맨 위 제목 줄을 숨기고 도면을 조금 줄여 "검토 요청"까지 한 화면에 */
+  .wrap:has(#sGame.on)>header{display:none;}
+  #sGame.screen{padding-top:6px;}
+  #sGame .tbar{margin-bottom:6px;} #sGame .tbar>div{padding:2px 10px; min-width:80px;} #sGame .tbar b{font-size:16px;}
+  #sGame .frame canvas{max-height:36vh; min-height:180px;}
+  #sGame .ctl{margin-top:8px; gap:8px; padding:6px 8px;} #sGame .ctl .fire{padding:8px 12px; font-size:21px;}
+  #sGame .anc button{width:40px; height:40px;} #sGame .pad{grid-template-columns:repeat(3,40px); grid-template-rows:repeat(3,40px);}
+}
+@media(orientation:landscape) and (max-height:500px){
+  .intro{padding:8px;}
+  .intro .sheet{width:min(720px,100%); display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); column-gap:18px; align-items:start; padding:14px;}
+  .intro .ihead{grid-column:1/-1; grid-row:1;} .intro #iFind{grid-column:1; grid-row:2; justify-self:start;} .intro #iTab{grid-column:1; grid-row:3 / span 2;}
+  .intro #iGoal{grid-column:2; grid-row:2; margin-top:0;} .intro .hint{grid-column:2; grid-row:3;} .intro #iGo{grid-column:2; grid-row:4; justify-self:start;}
+  .wrap:has(#sGame.on)>header, .wrap:has(#sWatch.on)>header{display:none;}
+  #sGame.screen{padding-top:6px;}
+  #sGame .tbar{margin-bottom:6px;} #sGame .tbar>div{padding:2px 10px; min-width:80px;} #sGame .tbar b{font-size:16px;} #sGame .tbar small{font-size:9.5px;}
+  #sGame .row{grid-template-columns:minmax(0,1fr) 160px; gap:10px;} #sGame .row.solo{grid-template-columns:minmax(0,1fr);}
+  #gRow>div:first-child{display:grid; grid-template-columns:minmax(0,1fr) 236px; column-gap:10px; align-items:start;}
+  #sGame .frame{grid-column:1; grid-row:1 / span 2; display:block;}
+  #sGame .frame canvas{aspect-ratio:auto; height:max(200px, calc(100dvh - 66px)); max-height:none; min-height:0;}
+  #sGame .facts{position:absolute; max-width:75%; background:none; padding:0; border:0;}
+  #sGame .ctl{grid-column:2; grid-row:1; margin-top:0; grid-template-columns:auto minmax(0,1fr); gap:8px; padding:8px; align-items:center;}
+  #sGame .ctl .anc{grid-column:1/-1;} #sGame .ctl .fire{grid-column:1/-1; width:100%; padding:9px 12px; font-size:21px;}
+  #sGame .anc button{width:38px; height:38px;} #sGame .pad{grid-template-columns:repeat(3,38px); grid-template-rows:repeat(3,38px);}
+  #sGame .read b{font-size:17px;}
+  #sGame .note{grid-column:2; grid-row:2; margin-top:6px; font-size:13px; padding:6px 10px;}
+  .wrap{padding-bottom:10px;}
+}
+</style>
 </head>
 <body>
 <div class="wrap">
@@ -2202,6 +2235,7 @@ $('homeBtn').onclick=goHome;
 #ffBack .ffb-i{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;font-size:18px;background:linear-gradient(135deg,#ffc93c,#ff8a3d)}
 #ffBack:hover{border-color:#ffb23f}
 @media(max-width:520px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:8px;bottom:8px;opacity:.6;border-radius:12px}#ffBack .ffb-i{width:30px;height:30px;font-size:16px}#ffBack:active,#ffBack:focus-visible{opacity:1}}
+@media(orientation:landscape) and (max-height:500px){#ffBack .ffb-t{display:none}#ffBack{padding:3px;left:6px;bottom:6px;opacity:.55;border-radius:12px}#ffBack .ffb-i{width:28px;height:28px;font-size:15px}#ffBack:active,#ffBack:focus-visible{opacity:1}#ffCR{font-size:9px!important;padding:1px 6px!important;bottom:2px!important;right:4px!important;opacity:.45!important}}
 html[data-ff-theme=light] #ffBack{background:rgba(255,255,255,.94);color:#161616;border-color:#e4dfd2;box-shadow:0 6px 18px rgba(0,0,0,.1)}html[data-ff-theme=light] #ffCR{color:#333 !important;background:rgba(255,255,255,.88) !important;opacity:1 !important}
 </style>
 <script>(function(){try{var m={en:'Back to Educations',fr:'Retour à Educations',de:'Zurück zu Educations',es:'Volver a Educations',ja:'Educationsに戻る',ko:'Educations로 돌아가기',zh:"返回 Educations",pt:"Voltar ao Educations",ru:"Назад в Educations",tr:"Educations'a dön",it:"Torna a Educations",pl:"Wróć do Educations",ar:"العودة إلى Educations",nw:"Ungo to Educations",gk:"Educations로 뒤쪽"};var l=localStorage.getItem('arenaClashLang')||'ko';var a=document.getElementById('ffBack');var t=m[l]||m.ko;a.title=t;a.setAttribute('aria-label',t)}catch(e){}})();</script>
