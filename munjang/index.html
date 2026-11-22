@@ -575,7 +575,29 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
   #sGame .tools .hint{padding:8px; font-size:12.5px;} #sGame .opt{padding:7px 8px 7px 34px; min-height:38px; font-size:16px;}
   #sGame .passRow{grid-column:2; grid-row:4; padding:0 8px 8px;} #sGame .passBtn{padding:8px; font-size:19px;}
   .wrap{padding-bottom:10px;}
+  /* 화면 맞춤: 작업 지시서 번호가 어절과 겹치지 않게, 게임 화면 아래 빈 여백으로 스크롤이 생기지 않게 */
+  #sGame .slip{padding-bottom:18px;}
+  #sGame.screen{padding-bottom:0;} .wrap:has(#sGame.on){padding-bottom:0;}
 }
+@media(orientation:landscape) and (max-height:500px) and (max-width:720px){
+  /* 좁은 가로 화면(방장/참가자): 생산 현황과 부품 칸을 줄여 문장 벨트 폭 확보 */
+  #sGame .gameRow{grid-template-columns:minmax(0,1fr) 146px; gap:8px;}
+  #sGame .floor{grid-template-columns:minmax(0,1fr) minmax(150px,180px);}
+  #sGame .side .plate{padding:10px 8px;}
+  #sGame .side .rrow{grid-template-columns:16px minmax(0,1fr) auto; gap:4px; padding:5px 6px;}
+  #endNow2{white-space:nowrap; padding-left:6px; padding-right:6px;}
+}
+@media(orientation:landscape) and (max-height:500px){
+  /* 가로 화면: 생산 현황은 칸 안에서 스크롤, 마지막 줄이 저작권 표시에 가리지 않게 */
+  #sGame .side .plate{max-height:calc(100dvh - 96px); overflow-y:auto;}
+  #sGame .memo{margin-bottom:22px;}
+}
+/* 화면 맞춤 공통 */
+.tools .hint{word-break:keep-all;}
+.mist .s{word-break:keep-all;} .mist .s del,.mist .s ins{white-space:nowrap;}
+.rtab th{white-space:nowrap;}
+@media(max-width:560px){ .rtab th{letter-spacing:.04em!important;} .rtab th,.rtab td{padding-left:4px; padding-right:4px;} }
+@media(max-width:420px){ select.lang{max-width:118px;} }
 </style>
 </head>
 <body>
