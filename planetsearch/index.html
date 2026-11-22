@@ -1118,7 +1118,7 @@ function videoPlayer(kind, fps, res) {
 
 /* ---------- world generation ---------- */
 // planet names come only from this list [Korean, Latin letters for other languages]; the Korean name still decides uniqueness, so a class code gives everyone the same planets
-const PLANET_NAMES = [["트렌터", "Trantor"], ["터미너스", "Terminus"], ["로셈", "Rossem"], ["타젠더", "Tazenda"], ["아나크레온", "Anacreon"], ["산태니", "Santanni"], ["스미르노", "Smyrno"], ["칼간", "Kalgan"], ["네오트렌터", "Neotrantor"], ["가이아", "Gaia"], ["지구", "Earth"], ["콤포렐론", "Comporellon"], ["코렐", "Korell"], ["사이웨나", "Siwenna"], ["시리우스", "Sirius"], ["알파", "Alpha"], ["솔라리아", "Solaria"]];
+const PLANET_NAMES = [["트렌터", "Trantor"], ["터미너스", "Terminus"], ["로셈", "Rossem"], ["타젠더", "Tazenda"], ["아나크레온", "Anacreon"], ["산태니", "Santanni"], ["스미르노", "Smyrno"], ["칼간", "Kalgan"], ["네오트렌터", "Neotrantor"], ["가이아", "Gaia"], ["지구", "Earth"], ["콤포렐론", "Comporellon"], ["코렐", "Korell"], ["사이웨나", "Siwenna"], ["시리우스", "Sirius"], ["알파", "Alpha"], ["솔라리아", "Solaria"], ["헬리콘", "Helicon"]];
 const ROMAN = lang !== "ko" && lang !== "gk";
 // a name not used yet; once all 17 are taken (many colonies), the list starts again with " 2", " 3"...
 function planetName(used) { for (let k = 1; ; k++) { const free = PLANET_NAMES.filter(([ko]) => !used.has(k > 1 ? ko + " " + k : ko)); if (!free.length) continue; const [ko, la] = pick(free), sx = k > 1 ? " " + k : ""; used.add(ko + sx); return [ko + sx, (ROMAN ? la : ko) + sx]; } }
