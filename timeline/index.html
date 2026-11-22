@@ -547,6 +547,39 @@ html[data-ff-theme] .soloRes p,html[data-ff-theme] .hint,html[data-ff-theme] .le
 @media(orientation:landscape) and (max-height:500px) and (min-width:701px){
   #sGame .tl{height:calc(100dvh - 84px); min-height:220px; max-height:330px;}
 }
+/* fit pass: no wrapped labels, no overflow, play screen fits one screen */
+.joinRow > div{min-width:0;} .joinRow .inp.code{max-width:100%;} .joinRow .btn{white-space:nowrap; flex:none;}
+.pod{min-width:0;}
+.resTbl th, .resTbl td.n{white-space:nowrap;}
+.pbx{max-height:calc(100dvh - 40px); overflow-y:auto; overscroll-behavior:contain;}
+@media(max-width:400px){ .langSel{max-width:118px;} }
+@media(max-width:700px){
+  .hud{flex-wrap:wrap; row-gap:8px;}
+  .strip{flex-wrap:nowrap; overflow-x:auto; gap:14px; scrollbar-width:none;} .strip .brow{flex:none; padding:4px 2px;}
+  .resTbl th, .resTbl td{padding:8px 6px;} .resTbl td:nth-child(2){max-width:44vw; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+}
+@media(max-height:500px){ .pop{padding:10px;} .pbx{max-height:calc(100dvh - 20px);} .pbx .em{height:84px; font-size:50px;} }
+@media(orientation:landscape) and (max-height:500px){
+  .wrap:has(#sGame.on){padding-bottom:0;}
+  #sGame.screen.on{height:100vh; height:100dvh; padding-bottom:6px; grid-template-rows:auto auto auto minmax(0,1fr);}
+  #sGame>.stage, #sGame>.tlWrap{grid-row:4; min-height:0; max-height:none; overflow-y:auto; overscroll-behavior:contain;}
+  #sGame>.stage, #sGame>.tlWrap{align-self:stretch;} #sGame>.stage{align-content:start;}
+  #sGame .note{padding-top:16px;} #sGame .note .hd{padding-right:0;}
+  #sGame .strip{flex-wrap:nowrap; overflow-x:auto; gap:14px; margin-top:4px; scrollbar-width:none;} #sGame .strip .brow{flex:none; padding:2px;}
+}
+@media(orientation:landscape) and (max-height:500px) and (min-width:701px){
+  #sGame .tl{height:100%; min-height:200px; max-height:330px;}
+}
+@media(min-width:701px) and (min-height:501px) and (max-height:880px){
+  #sGame.screen{padding-top:14px; padding-bottom:46px;}
+  #sGame .stage{margin-top:12px;}
+  #sGame .ev .em{height:96px; font-size:56px;}
+  #sGame .ev .tt{margin-top:8px;}
+  #sGame .tlWrap{margin-top:8px; padding-bottom:6px;}
+  #sGame .tl{height:290px;}
+}
+@media(min-width:701px) and (min-height:501px) and (max-height:800px){ .wrap:has(#sGame.on)>header{display:none;} #sGame .ev .yr{display:none;} #sGame .side .q{font-size:30px;} }
+@media(min-width:701px) and (min-height:501px) and (max-height:940px){ #sGame.screen:has(#gStrip:not(.hide)){padding-top:14px;} #sGame .strip{margin-top:6px;} #sGame .strip .brow{padding:3px 2px;} }
 </style>
 </head>
 <body>

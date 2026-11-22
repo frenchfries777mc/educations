@@ -371,6 +371,33 @@ html[data-ff-theme] #ffBack,html[data-ff-theme] #ffCR{background:var(--bg)!impor
   #sGame .opt{padding-top:8px; padding-bottom:8px; min-height:46px;}
   #sGame .next{grid-column:2; grid-row:2;}
   .wrap{padding-bottom:10px;}
+  /* 화면 맞춤: 답을 고른 뒤 "다음 사건" 버튼까지 한 화면에 */
+  #sGame .prog{margin-bottom:8px;}
+  #sGame .opt{padding-top:6px; padding-bottom:6px; min-height:42px; line-height:1.25; font-size:15px;}
+  #sGame .next{margin-top:8px;}
+  #nextBtn{scroll-margin-bottom:20px;}
+  #sGame.screen{padding-bottom:20px;}
+  #sGame .paper .tag{margin-right:72px; letter-spacing:.06em; font-size:12px;}
+  #sGame .paper .stamp{font-size:17px; right:10px; top:10px; padding:0 8px;} #sGame .paper .q{margin-top:14px;}
+}
+@media(orientation:landscape) and (max-height:500px){
+  /* 가로 화면 방장 참여: 수사 현황은 칸 안에서 스크롤, 맨 아랫줄이 화면 밖으로 나가지 않게 */
+  #gSide .board{max-height:calc(100dvh - 176px);}
+  #gSide .rrow .p{display:none;} #gSide .rrow{gap:4px; padding:7px 2px;} #gSide .rrow .r{width:16px;} #gSide .rrow .s{min-width:30px;}
+}
+@media(orientation:landscape) and (max-height:500px) and (max-width:720px){
+  #sGame .grow:not(.solo) .paper .tag{margin-right:62px; letter-spacing:0;}
+}
+/* 화면 맞춤 공통 */
+@media(max-width:820px){ .grow{grid-template-columns:minmax(0,1fr);} .grow>*{min-width:0;} }
+.wr small{word-break:keep-all;}
+@media(min-width:821px) and (max-height:860px) and (orientation:landscape){
+  /* 노트북 화면(1280x720, 1366x768): 답을 고른 뒤에도 "다음 사건" 버튼이 화면 안에 */
+  #sGame.screen{padding-top:12px;}
+  #sGame .hud{margin-bottom:8px;} #sGame .prog{margin-bottom:8px;}
+  #sGame .paper{padding-top:18px; padding-bottom:16px;} #sGame .paper .q{margin-top:10px;} #sGame .paper .exp{margin-top:10px;}
+  #sGame .opts{gap:8px; margin-top:12px;} #sGame .opt{padding-top:11px; padding-bottom:11px;}
+  #sGame .next{margin-top:8px;} #nextBtn{scroll-margin-bottom:30px;}
 }
 </style>
 </head>
