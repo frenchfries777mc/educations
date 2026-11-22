@@ -130,6 +130,22 @@
   .opt:disabled{cursor:default;}
   .ox .opt{justify-content:center; font-size:42px; min-height:110px;} .ox .opt .lt{display:none;}
   .sa{display:flex; gap:10px; margin-top:14px;} .sa .in{font-size:20px; min-height:56px;}
+  .opt.sel{border-color:var(--fry); background:rgba(217,180,95,.13);}
+  .opt .nb{flex:0 0 32px; height:32px; border-radius:50%; display:grid; place-items:center; font-weight:900; font-size:16px; background:var(--fry); color:#1c1405;}
+  .opt .nb.no{background:var(--panel2); color:var(--dim); border:2px dashed var(--line);}
+  .subm{display:flex; justify-content:flex-end; margin-top:12px;}
+  .ogrid.lay1{grid-template-columns:1fr;}
+  .ogrid.lay2{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));}
+  .ogrid.big .opt{min-height:96px; font-size:22px;}
+  @media(min-width:901px){
+    .gmain.qside:has(> #gSide[style*="none"]){grid-template-columns:minmax(0,1fr);}
+    .gmain.qside>div:first-child{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.15fr); column-gap:16px; align-items:start;}
+    .gmain.qside #qBox{grid-column:1; grid-row:1;} .gmain.qside #qBody{grid-column:2; grid-row:1 / span 3;} .gmain.qside .ogrid{margin-top:0;}
+  }
+  .lay{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-top:4px;}
+  .lay label{display:flex; flex-direction:column; gap:6px; font-size:13px; font-weight:700; color:var(--dim);}
+  .lay select{min-height:40px; border-radius:9px; border:1px solid var(--line); background:var(--bg); padding:0 8px; font-size:15px;}
+  .oin .no{flex:0 0 34px; height:34px; border-radius:50%; display:grid; place-items:center; font-weight:900; background:var(--fry); color:#1c1405;}
   .info{margin-top:14px; min-height:28px;}
   .res{display:flex; flex-wrap:wrap; align-items:center; gap:10px 16px; padding:16px 18px; border-radius:16px; border:1px solid var(--line); background:var(--panel);}
   .res .big{font-family:Oswald,'Noto Sans KR',sans-serif; font-size:30px; font-weight:700;}
@@ -253,12 +269,20 @@
       <input class="in" id="edDesc" maxlength="120" placeholder="예: 시험 전에 같이 풀어 봐요">
       <label class="f">만든 사람</label>
       <input class="in" id="edAuthor" maxlength="16">
+      <label class="f">화면 구성</label>
+      <div class="lay">
+        <label>보기 배치<select id="edLayG"><option value="0">2칸씩</option><option value="1">한 줄에 하나씩</option><option value="2">가로로 나란히</option></select></label>
+        <label>문제 위치<select id="edLayP"><option value="0">보기 위</option><option value="1">보기 왼쪽</option></select></label>
+        <label>보기 크기<select id="edLayB"><option value="0">보통</option><option value="1">크게</option></select></label>
+      </div>
     </div>
     <div id="edList"></div>
     <div class="add">
-      <button class="btn" data-add="c">+ 4지선다</button>
+      <button class="btn" data-add="c">+ 객관식</button>
+      <button class="btn" data-add="m">+ 복수 정답</button>
       <button class="btn" data-add="o">+ O·X</button>
-      <button class="btn" data-add="s">+ 단답형</button>
+      <button class="btn" data-add="s">+ 주관식</button>
+      <button class="btn" data-add="r">+ 순서 맞추기</button>
     </div>
     <details class="bulk card">
       <summary>여러 문제 한꺼번에 붙여넣기</summary>
@@ -266,7 +290,7 @@
       <pre class="ex">대한민국의 수도는? | 서울 | 부산 | 대구 | 광주
 물은 100도에서 끓는다 | O
 2 × 8 = ? | 16</pre>
-      <p class="note">칸이 3개 이상이면 4지선다, 정답이 O나 X면 O·X, 정답만 있으면 단답형이 돼요. 단답형은 정답을 / 로 여러 개 적을 수 있어요.</p>
+      <p class="note">칸이 3개 이상이면 객관식, 정답이 O나 X면 O·X, 정답만 있으면 주관식이 돼요. 주관식은 정답을 / 로 여러 개 적을 수 있어요.</p>
       <textarea class="in" id="bulkIn" rows="6"></textarea>
       <div class="row2" style="margin-top:10px"><button class="btn" id="bulkBtn">문제로 바꾸기</button></div>
       <div class="msg info" id="bulkMsg"></div>
@@ -418,7 +442,12 @@ function armBtn(btn, label, fn){ /* 지우기처럼 되돌릴 수 없는 일은 
   var t=null; btn.onclick=function(){ if(btn.classList.contains('arm')){ clearTimeout(t); fn(); return; } btn.classList.add('arm'); var o=btn.textContent; btn.textContent=label; t=setTimeout(function(){ btn.classList.remove('arm'); btn.textContent=o; }, 3000); };
 }
 var LT=['A','B','C','D'], LC=['var(--c0)','var(--c1)','var(--c2)','var(--c3)'];
-var TIMES=[5,10,15,20,30,45,60,90,120], MAXQ=50, TYPE={c:'4지선다',o:'O·X',s:'단답형'};
+var TIMES=[5,10,15,20,30,45,60,90,120], MAXQ=50, TYPE={c:'객관식',m:'복수 정답',o:'O·X',s:'주관식',r:'순서 맞추기'}, YS=['c','m','o','s','r'];
+function hasOpts(y){ return y==='c'||y==='m'||y==='r'; }
+/* "0,2" 처럼 보기 번호를 쉼표로 이은 답 (복수 정답, 순서 맞추기) */
+function idxList(v,n){ if(typeof v!=='string'||!/^[0-3](,[0-3]){0,3}$/.test(v)) return null; var a=v.split(',').map(Number), seen={};
+  for(var i=0;i<a.length;i++){ if(a[i]>=n||seen[a[i]]) return null; seen[a[i]]=1; } return a; }
+function cleanL(l){ if(!Array.isArray(l)) return null; var r=[ni(l[0],0,2,0), ni(l[1],0,1,0), ni(l[2],0,1,0)]; return r[0]||r[1]||r[2]?r:null; }
 function guestName(){ var d=''; for(var i=0;i<6;i++) d+=Math.floor(Math.random()*10); return '게스트'+d; }
 function myName(){ return cs($('nameIn').value,16)||lsGet('ffq.name')||guestName(); }
 function saveName(n){ lsSet('ffq.name', n); $('nameIn').value=n; $('jName').value=n; }
@@ -429,12 +458,19 @@ var token=lsGet('ffq.token'); if(!token){ token=Math.random().toString(36).slice
    링크·파일·방에서 받은 퀴즈는 모두 cleanQuiz 를 거쳐요. */
 function cleanQ(x){
   if(!x||typeof x!=='object') return null;
-  var y=(x.y==='o'||x.y==='s')?x.y:'c', q=cs(x.q,200); if(!q) return null;
+  var y=YS.indexOf(x.y)>=0?x.y:'c', q=cs(x.q,200); if(!q) return null;
   var r={y:y, q:q, o:[], a:0, t:TIMES.indexOf(+x.t)>=0?+x.t:20, m:+x.m===2?2:1, e:cs(x.e,200)};
   if(y==='c'){
     var src=Array.isArray(x.o)?x.o.slice(0,4):[], a=ni(x.a,0,3,-1), na=-1;
     src.forEach(function(v,i){ v=cs(v,60); if(!v) return; if(i===a) na=r.o.length; r.o.push(v); });
     if(r.o.length<2||na<0) return null; r.a=na;
+  } else if(y==='m'){
+    var srcm=Array.isArray(x.o)?x.o.slice(0,4):[], am=Array.isArray(x.a)?x.a.map(function(v){ return ni(v,0,3,-1); }):[], nm=[];
+    srcm.forEach(function(v,i){ v=cs(v,60); if(!v) return; if(am.indexOf(i)>=0) nm.push(r.o.length); r.o.push(v); });
+    if(r.o.length<2||!nm.length) return null; r.a=nm;
+  } else if(y==='r'){
+    (Array.isArray(x.o)?x.o.slice(0,4):[]).forEach(function(v){ v=cs(v,60); if(v) r.o.push(v); });
+    if(r.o.length<2) return null;
   } else if(y==='o'){ r.o=['O','X']; r.a=+x.a===1?1:0; }
   else { var acc=(Array.isArray(x.a)?x.a:[]).slice(0,6).map(function(v){ return cs(v,60); }).filter(Boolean); if(!acc.length) return null; r.a=acc; }
   return r;
@@ -443,7 +479,8 @@ function cleanQuiz(r){
   if(!r||typeof r!=='object') return null;
   var out=[]; (Array.isArray(r.s)?r.s.slice(0,MAXQ):[]).forEach(function(x){ var q=cleanQ(x); if(q) out.push(q); });
   if(!out.length) return null;
-  return {v:1, n:cs(r.n,40)||'이름 없는 퀴즈', d:cs(r.d,120), u:cs(r.u,16), s:out};
+  var res={v:1, n:cs(r.n,40)||'이름 없는 퀴즈', d:cs(r.d,120), u:cs(r.u,16), s:out}, l=cleanL(r.l); if(l) res.l=l;
+  return res;
 }
 function quizId(q){ var s=JSON.stringify(q), h1=2166136261; for(var i=0;i<s.length;i++){ h1^=s.charCodeAt(i); h1=Math.imul(h1,16777619); } return (h1>>>0).toString(36); }
 function totalSec(q){ return q.s.reduce(function(a,x){ return a+x.t; },0); }
@@ -488,17 +525,20 @@ function putQuiz(rec){ var a=loadAll().filter(function(x){ return x.id!==rec.id;
 function newId(){ return 'q'+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
 
 /* 편집용 문제 모양: 문제 종류를 바꿔도 다른 종류의 답을 잃지 않게 따로 들고 있어요 */
-function newEQ(y){ return {y:y||'c', q:'', o:['','','',''], ca:0, oa:0, sa:'', t:20, m:1, e:''}; }
+function newEQ(y){ return {y:y||'c', q:'', o:['','','',''], ca:0, ma:[0], oa:0, sa:'', t:20, m:1, e:''}; }
 function toEdit(q){
-  return {n:q.n, d:q.d, u:q.u, s:q.s.map(function(x){ var e=newEQ(x.y); e.q=x.q; e.t=x.t; e.m=x.m; e.e=x.e;
-    if(x.y==='c'){ e.o=x.o.concat(['','','','']).slice(0,4); e.ca=x.a; } else if(x.y==='o') e.oa=x.a; else e.sa=x.a.join(', ');
+  return {n:q.n, d:q.d, u:q.u, l:(q.l||[0,0,0]).slice(), s:q.s.map(function(x){ var e=newEQ(x.y); e.q=x.q; e.t=x.t; e.m=x.m; e.e=x.e;
+    if(hasOpts(x.y)) e.o=x.o.concat(['','','','']).slice(0,4);
+    if(x.y==='c') e.ca=x.a; else if(x.y==='m') e.ma=x.a.slice(); else if(x.y==='o') e.oa=x.a; else if(x.y==='s') e.sa=x.a.join(', ');
     return e; })};
 }
 function splitAns(s){ return String(s||'').split(/[,，;；\/\n]/).map(function(v){ return cs(v,60); }).filter(Boolean); }
-function fromEdit(E){ return cleanQuiz({n:E.n, d:E.d, u:E.u, s:E.s.map(function(e){ return {y:e.y, q:e.q, o:e.o, a:e.y==='c'?e.ca:e.y==='o'?e.oa:splitAns(e.sa), t:e.t, m:e.m, e:e.e}; })}); }
+function fromEdit(E){ return cleanQuiz({n:E.n, d:E.d, u:E.u, l:E.l, s:E.s.map(function(e){ return {y:e.y, q:e.q, o:e.o, a:e.y==='c'?e.ca:e.y==='m'?(e.ma||[]):e.y==='o'?e.oa:e.y==='r'?0:splitAns(e.sa), t:e.t, m:e.m, e:e.e}; })}); }
 function problemOf(e){
   if(!cs(e.q,200)) return '문제를 적어 주세요.';
   if(e.y==='c'){ var n=e.o.filter(function(v){ return cs(v,60); }).length; if(n<2) return '보기를 2개 이상 적어 주세요.'; if(!cs(e.o[e.ca],60)) return '정답으로 고른 보기가 비어 있어요.'; }
+  if(e.y==='m'){ if(e.o.filter(function(v){ return cs(v,60); }).length<2) return '보기를 2개 이상 적어 주세요.'; if(!(e.ma||[]).some(function(k){ return cs(e.o[k],60); })) return '정답을 1개 이상 골라 주세요.'; }
+  if(e.y==='r'&&e.o.filter(function(v){ return cs(v,60); }).length<2) return '2개 이상 적어 주세요.';
   if(e.y==='s'&&!splitAns(e.sa).length) return '정답을 적어 주세요.';
   return '';
 }
@@ -537,6 +577,8 @@ $('sampleBtn').onclick=function(){
   var s=cleanQuiz({n:'예시 퀴즈', d:'이렇게 만들어요. 고쳐서 내 퀴즈로 써 보세요.', u:myName(), s:[
     {y:'c', q:'2진수 101을 10진수로 바꾸면?', o:['5','3','6','101'], a:0, t:20, e:'4 + 0 + 1 = 5'},
     {y:'o', q:'지구는 태양 둘레를 돈다.', a:0, t:10},
+    {y:'m', q:'포유류를 모두 고르세요.', o:['고래','상어','박쥐','펭귄'], a:[0,2], t:20},
+    {y:'r', q:'태양에서 가까운 순서대로 놓으세요.', o:['수성','금성','지구','화성'], t:30},
     {y:'s', q:'가는 말이 고와야 오는 말이 ___', a:['곱다'], t:30, m:2, e:'내가 남에게 좋게 말해야 남도 나에게 좋게 말한다는 뜻이에요.'}]});
   openEditor({id:newId(), at:Date.now(), e:toEdit(s)});
 };
@@ -576,6 +618,7 @@ var ED=null, edT=null, cards=[];
 function openEditor(rec){
   ED={id:rec.id, e:rec.e}; if(!ED.e.s.length) ED.e.s.push(newEQ('c'));
   $('edTitle').value=ED.e.n||''; $('edDesc').value=ED.e.d||''; $('edAuthor').value=ED.e.u||myName();
+  if(!Array.isArray(ED.e.l)) ED.e.l=[0,0,0]; $('edLayG').value=String(ED.e.l[0]||0); $('edLayP').value=String(ED.e.l[1]||0); $('edLayB').value=String(ED.e.l[2]||0);
   $('edMsg').textContent=''; $('bulkMsg').textContent='';
   renderCards(); show('sEdit'); edSave();
 }
@@ -600,15 +643,24 @@ function buildCard(e,i){
   var qIn=h('textarea',{class:'in', rows:'2', maxlength:'200', placeholder:'문제를 적으세요', value:e.q});
   qIn.oninput=function(){ e.q=qIn.value; edSave(); };
   var body;
-  if(e.y==='c'){
-    var rows=[];
+  if(e.y==='c'||e.y==='m'){
+    var rows=[], multi=e.y==='m'; if(!Array.isArray(e.ma)) e.ma=[0];
+    var isR=function(j){ return multi?e.ma.indexOf(j)>=0:e.ca===j; };
     body=h('div',{class:'opts'}, e.o.map(function(v,k){
       var inp=h('input',{type:'text', maxlength:'60', placeholder:'보기 '+LT[k]+(k>1?' (비워도 돼요)':''), value:v});
-      var mk=h('button',{class:'mark', type:'button', text:e.ca===k?'정답':'정답으로'});
-      var row=h('div',{class:'oin'+(e.ca===k?' right':'')}, h('span',{class:'lt', style:'background:'+LC[k], text:LT[k]}), inp, mk);
+      var mk=h('button',{class:'mark', type:'button', text:isR(k)?'정답':'정답으로'});
+      var row=h('div',{class:'oin'+(isR(k)?' right':'')}, h('span',{class:'lt', style:'background:'+LC[k], text:LT[k]}), inp, mk);
       inp.oninput=function(){ e.o[k]=inp.value; edSave(); };
-      mk.onclick=function(){ e.ca=k; rows.forEach(function(r,j){ r[0].classList.toggle('right', j===k); r[1].textContent=j===k?'정답':'정답으로'; }); edSave(); };
+      mk.onclick=function(){
+        if(multi){ var at=e.ma.indexOf(k); if(at>=0) e.ma.splice(at,1); else e.ma.push(k); e.ma.sort(); } else e.ca=k;
+        rows.forEach(function(r,j){ r[0].classList.toggle('right', isR(j)); r[1].textContent=isR(j)?'정답':'정답으로'; }); edSave(); };
       rows.push([row,mk]); return row;
+    }));
+  } else if(e.y==='r'){
+    body=h('div',{class:'opts'}, e.o.map(function(v,k){
+      var inp=h('input',{type:'text', maxlength:'60', placeholder:(k+1)+'번째'+(k>1?' (비워도 돼요)':''), value:v});
+      inp.oninput=function(){ e.o[k]=inp.value; edSave(); };
+      return h('div',{class:'oin'}, h('span',{class:'no', text:k+1}), inp);
     }));
   } else if(e.y==='o'){
     var ob=[0,1].map(function(k){ return h('button',{type:'button', class:e.oa===k?'on':'', text:k?'X':'O', 'aria-label':(k?'X':'O')+'가 정답', onclick:function(){ e.oa=k; ob.forEach(function(b,j){ b.classList.toggle('on', j===k); }); edSave(); }}); });
@@ -626,7 +678,7 @@ function buildCard(e,i){
   eIn.oninput=function(){ e.e=eIn.value; edSave(); };
   c.err=h('div',{class:'perr'});
   c.el=h('article',{class:'qc'},
-    h('div',{class:'qh'}, h('span',{class:'no', text:(i+1)+'.'}), h('div',{class:'seg'}, typeBtn('c'), typeBtn('o'), typeBtn('s')), h('span',{class:'sp'}),
+    h('div',{class:'qh'}, h('span',{class:'no', text:(i+1)+'.'}), h('div',{class:'seg'}, YS.map(typeBtn)), h('span',{class:'sp'}),
       h('button',{class:'btn sm ghost', text:'↑', 'aria-label':'위로', disabled:i===0, onclick:function(){ moveQ(i,-1); }}),
       h('button',{class:'btn sm ghost', text:'↓', 'aria-label':'아래로', disabled:i===n-1, onclick:function(){ moveQ(i,1); }}),
       h('button',{class:'btn sm ghost', text:'복제', disabled:n>=MAXQ, onclick:function(){ ED.e.s.splice(i+1,0,JSON.parse(JSON.stringify(e))); renderCards(); edSave(); }}),
@@ -642,6 +694,7 @@ document.querySelectorAll('[data-add]').forEach(function(b){ b.onclick=function(
 $('edTitle').oninput=function(){ ED.e.n=this.value; edSave(); };
 $('edDesc').oninput=function(){ ED.e.d=this.value; edSave(); };
 $('edAuthor').oninput=function(){ ED.e.u=this.value; edSave(); };
+['edLayG','edLayP','edLayB'].forEach(function(id,k){ $(id).onchange=function(){ if(!ED) return; if(!Array.isArray(ED.e.l)) ED.e.l=[0,0,0]; ED.e.l[k]=+this.value; edSave(); }; });
 $('edBack').onclick=function(){ if(ED){ clearTimeout(edT); putQuiz({id:ED.id, at:Date.now(), e:ED.e}); } ED=null; goHome(); };
 function edReady(){ var q=fromEdit(ED.e); if(!q||ED.e.s.some(problemOf)){ var k=ED.e.s.findIndex(problemOf); if(k>=0) cards[k].el.scrollIntoView({block:'center', behavior:'smooth'}); return null; } return q; }
 $('edPlay').onclick=function(){ var q=edReady(); if(q) startSolo(q, true); };
@@ -732,13 +785,14 @@ function nextQ(){
   if(!G) return; clearTimeout(G.autoT);
   G.pos++; if(G.pos>=G.order.length){ endGame(); return; }
   var q=G.quiz.s[G.order[G.pos]], perm=q.o.map(function(_,i){ return i; });
-  if(q.y==='c'&&G.opt.shuf) shuffle(perm);
+  if((q.y==='c'||q.y==='m')&&G.opt.shuf) shuffle(perm);
+  if(q.y==='r'){ for(var tries=0;tries<8;tries++){ shuffle(perm); if(perm.some(function(k,j){ return k!==j; })) break; } }
   G.pq={q:q, perm:perm, start:Date.now()}; G.deadline=G.pq.start+q.t*1000; G.ph='q';
   plist().forEach(function(p){ p.ans=null; p.gain=0; });
   broadcast(qMsg());
   clearInterval(G.timer); G.timer=setInterval(hostTick, 200);
 }
-function qMsg(){ var q=G.pq.q; return {t:'q', i:G.pos, n:G.order.length, y:q.y, q:q.q, o:q.y==='c'?G.pq.perm.map(function(k){ return q.o[k]; }):q.y==='o'?['O','X']:[], m:q.m, dur:q.t, rem:Math.max(0,G.deadline-Date.now())}; }
+function qMsg(){ var q=G.pq.q; return {t:'q', i:G.pos, n:G.order.length, y:q.y, q:q.q, o:hasOpts(q.y)?G.pq.perm.map(function(k){ return q.o[k]; }):q.y==='o'?['O','X']:[], m:q.m, dur:q.t, rem:Math.max(0,G.deadline-Date.now()), l:G.quiz.l||null}; }
 function hostTick(){
   if(!G||G.ph!=='q') return;
   var on=plist().filter(function(p){ return p.online||p.local; }), done=on.filter(function(p){ return p.ans; }).length;
@@ -748,6 +802,12 @@ function onAnswer(p, i, v){
   if(!G||G.ph!=='q'||i!==G.pos||p.ans) return;
   var q=G.pq.q, ok=false, show=null;
   if(q.y==='s'){ if(typeof v!=='string') return; v=cs(v,60); if(!v) return; show=v; var nv=normAns(v); ok=q.a.some(function(a){ return normAns(a)===nv; }); }
+  else if(q.y==='m'||q.y==='r'){
+    var arr=idxList(v, q.o.length); if(!arr||!arr.length) return;
+    if(q.y==='m'){ var got=arr.map(function(k){ return G.pq.perm[k]; }).sort(); ok=got.length===q.a.length&&got.every(function(k,j){ return k===q.a[j]; }); }
+    else { if(arr.length!==q.o.length) return; ok=arr.every(function(k,j){ return G.pq.perm[k]===j; }); }
+    show=arr.join(',');
+  }
   else { v=ni(v,0,q.o.length-1,-1); if(v<0) return; show=v; ok=(q.y==='c'?G.pq.perm[v]:v)===q.a; }
   p.ans={v:show, ok:ok, at:Date.now()}; G.lastAns=Date.now();
   var on=plist().filter(function(x){ return x.online||x.local; });
@@ -756,12 +816,12 @@ function onAnswer(p, i, v){
 function closeQ(){
   if(!G||G.ph!=='q') return;
   clearInterval(G.timer); G.ph='rv';
-  var q=G.pq.q, dur=q.t*1000, dist=q.y==='s'?[0,0]:q.o.map(function(){ return 0; }), right=0, tried=0;
+  var q=G.pq.q, dur=q.t*1000, dist=(q.y==='s'||q.y==='r')?[0,0]:q.o.map(function(){ return 0; }), right=0, tried=0;
   plist().forEach(function(p){
     p.prevRank=p.rank; p.gain=0;
     if(!p.ans){ p.streak=0; return; }
     tried++;
-    if(q.y==='s') dist[p.ans.ok?0:1]++; else dist[p.ans.v]++;
+    if(q.y==='s'||q.y==='r') dist[p.ans.ok?0:1]++; else if(q.y==='m') String(p.ans.v).split(',').forEach(function(k){ dist[+k]++; }); else dist[p.ans.v]++;
     if(p.ans.ok){
       right++; p.ok++; p.streak++;
       var frac=Math.max(0,Math.min(1,(G.deadline-p.ans.at)/dur));
@@ -771,8 +831,11 @@ function closeQ(){
   });
   var all=rankAll(); if(!plist().some(function(p){ return p.prevRank; })) all.forEach(function(p){ p.prevRank=0; });
   G.accs.push([right, tried, plist().length]);
-  var ca=q.y==='c'?G.pq.perm.indexOf(q.a):q.y==='o'?q.a:-1;
-  var common={t:'rv', i:G.pos, ca:ca, ans:q.y==='s'?q.a.join(', '):q.o[q.a], dist:dist, exp:q.e, top:topList(all,10), np:all.length, last:G.pos>=G.order.length-1};
+  var perm=G.pq.perm, ca=q.y==='c'?perm.indexOf(q.a):q.y==='o'?q.a:-1;
+  var ans=q.y==='s'?q.a.join(', '):q.y==='m'?q.a.map(function(k){ return q.o[k]; }).join(', '):q.y==='r'?q.o.join(' → '):q.o[q.a];
+  var common={t:'rv', i:G.pos, ca:ca, ans:ans, dist:dist, exp:q.e, top:topList(all,10), np:all.length, last:G.pos>=G.order.length-1, rc:right, nt:tried};
+  if(q.y==='m') common.cas=q.a.map(function(k){ return perm.indexOf(k); }).sort();
+  if(q.y==='r') common.ord=q.o.map(function(_,j){ return perm.indexOf(j); });
   G.lastRv=common;
   broadcast(common, function(p,m){ return rvFor(p,m); });
   if(G.opt.auto) G.autoT=setTimeout(nextQ, 8000);
@@ -878,6 +941,7 @@ function sendAns(v){
 }
 
 /* ---------- 화면: 받은 메시지 그리기 (방장 기기도 같은 길로 그려요) ---------- */
+function pickIn(v,n){ return v!=null&&idxList(String(v),n)?String(v):null; }
 function rowIn(r){ return Array.isArray(r)?[ni(r[0],0,1e6,0), cs(r[1],16), ni(r[2],0,1e9,0), ni(r[3],0,1e6,0), ni(r[4],-99,99,0)]:null; }
 function uiMsg(d){
   if(!U||!d||typeof d.t!=='string') return;
@@ -886,12 +950,12 @@ function uiMsg(d){
     case 'again': U.ph='lobby'; U.hist=[]; U.score=0; U.rank=0; stopTick(); renderLobby(); show('sLobby'); break;
     case 'pre': U.ph='pre'; U.hist=[]; U.score=0; U.rank=0; U.streak=0; U.board=[]; U.n=ni(d.n,1,MAXQ,U.n); clear($('board')); boardRows={}; splash(); break;
     case 'q': {
-      var y=(d.y==='o'||d.y==='s')?d.y:'c', o=y==='o'?['O','X']:y==='c'?(Array.isArray(d.o)?d.o.slice(0,4).map(function(v){ return cs(v,60); }):[]):[];
-      if(!cs(d.q,200)||(y==='c'&&o.length<2)) return;
+      var y=YS.indexOf(d.y)>=0?d.y:'c', o=y==='o'?['O','X']:hasOpts(y)?(Array.isArray(d.o)?d.o.slice(0,4).map(function(v){ return cs(v,60); }):[]):[];
+      if(!cs(d.q,200)||(hasOpts(y)&&o.length<2)) return;
       var dur=ni(d.dur,3,120,20);
-      U.pq={i:ni(d.i,0,MAXQ,0), n:ni(d.n,1,MAXQ,1), y:y, q:cs(d.q,200), o:o, m:d.m===2?2:1, dur:dur};
+      U.pq={i:ni(d.i,0,MAXQ,0), n:ni(d.n,1,MAXQ,1), y:y, q:cs(d.q,200), o:o, m:d.m===2?2:1, dur:dur, l:cleanL(d.l)||[0,0,0]}; U.sel=[];
       U.t0=performance.now()-(dur*1000-ni(d.rem,0,dur*1000,dur*1000));
-      U.pick=d.answered==null?null:(y==='s'?cs(d.answered,60):ni(d.answered,0,3,null));
+      U.pick=d.answered==null?null:(y==='s'?cs(d.answered,60):(y==='m'||y==='r')?pickIn(d.answered,o.length):ni(d.answered,0,3,null));
       U.ph='q'; U.rv=null; U.cnt=[0,0]; U.live=[];
       $('splash').classList.remove('on'); show('sGame'); renderQ(); startTick(); break; }
     case 'cnt': U.cnt=[ni(d.a,0,999,0), ni(d.n,0,999,0)]; if(U.role!=='guest'&&!(G&&G.local)) U.live=(U.live||[]).concat([cs(d.nm,16)]).slice(-30); if(U.ph==='q') renderInfo(); break;
@@ -900,9 +964,10 @@ function uiMsg(d){
       var me=d.me&&typeof d.me==='object'?d.me:null;
       U.rv={ca:ni(d.ca,-1,3,-1), ans:cs(d.ans,200), dist:(Array.isArray(d.dist)?d.dist.slice(0,4):[]).map(function(v){ return ni(v,0,999,0); }), exp:cs(d.exp,200),
             top:(Array.isArray(d.top)?d.top.slice(0,12):[]).map(rowIn).filter(Boolean), np:ni(d.np,0,999,0), last:!!d.last,
-            me:me?{ok:me.ok===true?true:me.ok===false?false:null, gain:ni(me.gain,0,1e6,0), score:ni(me.score,0,1e9,0), rank:ni(me.rank,0,999,0), streak:ni(me.streak,0,999,0), pick:U.pq.y==='s'?(me.pick==null?null:cs(me.pick,60)):ni(me.pick,0,3,null), row:rowIn(me.row)}:null};
+            rc:ni(d.rc,0,999,-1), nt:ni(d.nt,0,999,-1), cas:(Array.isArray(d.cas)?d.cas.slice(0,4):[]).map(function(v){ return ni(v,0,3,-1); }), ord:(Array.isArray(d.ord)?d.ord.slice(0,4):[]).map(function(v){ return ni(v,0,3,-1); }),
+            me:me?{ok:me.ok===true?true:me.ok===false?false:null, gain:ni(me.gain,0,1e6,0), score:ni(me.score,0,1e9,0), rank:ni(me.rank,0,999,0), streak:ni(me.streak,0,999,0), pick:U.pq.y==='s'?(me.pick==null?null:cs(me.pick,60)):(U.pq.y==='m'||U.pq.y==='r')?pickIn(me.pick,U.pq.o.length):ni(me.pick,0,3,null), row:rowIn(me.row)}:null};
       if(U.rv.me){ U.score=U.rv.me.score; U.rank=U.rv.me.rank; U.streak=U.rv.me.streak; }
-      U.hist.push({q:U.pq.q, y:U.pq.y, o:U.pq.o, ca:U.rv.ca, ans:U.rv.ans, exp:U.rv.exp, ok:U.rv.me?U.rv.me.ok:null, pick:U.rv.me?U.rv.me.pick:null});
+      U.hist.push({q:U.pq.q, y:U.pq.y, o:U.pq.o, ca:U.rv.ca, ord:U.rv.ord, ans:U.rv.ans, exp:U.rv.exp, ok:U.rv.me?U.rv.me.ok:null, pick:U.rv.me?U.rv.me.pick:null});
       U.ph='rv'; stopTick(); show('sGame'); renderQ(); break; }
     case 'end': {
       var m2=d.me&&typeof d.me==='object'?d.me:null;
@@ -963,15 +1028,16 @@ function renderQ(){
   fill($('qText'), pq.q, pq.m===2?h('span',{class:'x2', text:'점수 2배'}):null);
   var body=clear($('qBody')), canPick=player&&U.ph==='q'&&U.pick===null;
   if(pq.y==='s'){
-    if(rv||!player){ if(!rv) add(body, h('p',{class:'wait', style:'margin-top:14px', text:'단답형 문제예요. 참가자가 답을 적고 있어요.'})); }
+    if(rv||!player){ if(!rv) add(body, h('p',{class:'wait', style:'margin-top:14px', text:'주관식 문제예요. 참가자가 답을 적고 있어요.'})); }
     else if(U.pick===null){
       var inp=h('input',{class:'in', type:'text', maxlength:'60', placeholder:'답을 적으세요', autocomplete:'off', 'aria-label':'답'});
       var go=h('button',{class:'btn main big', text:'제출', onclick:function(){ var v=cs(inp.value,60); if(v) sendAns(v); else inp.focus(); }});
       add(body, h('div',{class:'sa'}, inp, go)); setTimeout(function(){ inp.focus(); }, 50);
     } else add(body, h('p',{class:'wait', style:'margin-top:14px'}, '내 답: ', h('b',{text:U.pick})));
-  } else {
+  } else if(pq.y==='m'||pq.y==='r') renderPick(body, pq, rv, player, canPick);
+  else {
     var tot=rv?rv.dist.reduce(function(a,b){ return a+b; },0):0;
-    add(body, h('div',{class:'ogrid'+(pq.y==='o'?' ox':'')}, pq.o.map(function(t,k){
+    add(body, h('div',{class:'ogrid'+(pq.y==='o'?' ox':'')+layCls(pq)}, pq.o.map(function(t,k){
       var cls='opt';
       if(U.pick===k) cls+=' picked';
       if(rv){ if(k===rv.ca) cls+=' right'; else if(U.pick===k) cls+=' wrong'; else cls+=' dim'; }
@@ -985,7 +1051,30 @@ function renderQ(){
       return b;
     })));
   }
+  var gm=document.querySelector('#sGame .gmain'); if(gm) gm.classList.toggle('qside', !!(pq.l&&pq.l[1]));
   renderInfo(); renderCtl(); renderBoard(); tick();
+}
+function layCls(pq){ var l=pq.l||[0,0,0]; return (l[0]===1?' lay1':l[0]===2?' lay2':'')+(l[2]?' big':''); }
+/* 복수 정답: 여러 개 고르고 제출 · 순서 맞추기: 차례대로 눌러 번호를 붙이고 제출 */
+function renderPick(body, pq, rv, player, canPick){
+  var multi=pq.y==='m', mine=U.pick!=null?U.pick.split(',').map(Number):null, sel=mine||U.sel||[], tot=rv?rv.dist.reduce(function(a,b){ return a+b; },0):0;
+  add(body, h('div',{class:'ogrid'+layCls(pq)}, pq.o.map(function(t,k){
+    var cls='opt', at=sel.indexOf(k), badge;
+    if(rv){
+      if(multi){ var good=rv.cas.indexOf(k)>=0; cls+=good?' right':at>=0?' wrong':' dim'; }
+      else if(mine) cls+=mine[rv.ord.indexOf(k)]===k?' right':' wrong';
+    } else if(at>=0) cls+=mine?' picked':' sel';
+    if(multi) badge=h('span',{class:'lt', style:'background:'+LC[k], text:LT[k]});
+    else { var num=rv?rv.ord.indexOf(k)+1:at+1; badge=h('span',{class:'nb'+(num>0?'':' no'), text:num>0?num:''}); }
+    return h('button',{class:cls, disabled:!canPick, 'aria-label':(multi?LT[k]+'. ':'')+t, onclick:function(){
+        var s=U.sel, i=s.indexOf(k); if(i>=0) s.splice(i, multi?1:s.length-i); else s.push(k); renderQ(); }},
+      badge, h('span',{class:'tx', text:t}), rv&&multi?h('span',{class:'ct', text:(rv.dist[k]||0)+'명'}):null,
+      rv&&multi?h('i',{class:'bar', style:'background:'+LC[k]+';width:'+(tot?(rv.dist[k]||0)*100/tot:0)+'%'}):null);
+  })));
+  if(canPick){
+    var ready=multi?U.sel.length>0:U.sel.length===pq.o.length;
+    add(body, h('div',{class:'subm'}, h('button',{class:'btn main big', text:'제출', disabled:!ready, onclick:function(){ if(ready) sendAns((multi?U.sel.slice().sort():U.sel).join(',')); }})));
+  }
 }
 function renderInfo(){
   var box=clear($('qInfo')), rv=U.ph==='rv'?U.rv:null, player=isPlayer(), solo=U.role==='solo';
@@ -1006,14 +1095,15 @@ function renderInfo(){
     if(me.streak>=2) head.push(h('span',{class:'pill gold', text:me.streak+'연속 정답'}));
     if(!solo&&me.rank) head.push(h('span',{class:'pill', text:'지금 '+me.rank+'위 / '+rv.np+'명'}));
   } else {
-    var right=U.pq.y==='s'?rv.dist[0]||0:rv.dist[rv.ca]||0, tot=rv.dist.reduce(function(a,b){ return a+b; },0);
+    var right=rv.rc>=0?rv.rc:U.pq.y==='s'?rv.dist[0]||0:rv.dist[rv.ca]||0, tot=rv.nt>=0?rv.nt:rv.dist.reduce(function(a,b){ return a+b; },0);
     head=[h('span',{class:'big', text:'정답 공개'}), h('span',{class:'pill', text:tot?right+' / '+tot+'명 정답':'아무도 답하지 않았어요'})];
   }
   var ansLine=null;
   if(U.pq.y==='s') ansLine=h('div',{class:'ansline'}, '정답: ', h('b',{text:rv.ans}), player&&me&&me.pick?h('span',null,' · 내 답: ', h('b',{text:me.pick})):null);
+  else if(U.pq.y==='m'||U.pq.y==='r'){ if(!(player&&me&&me.ok)) ansLine=h('div',{class:'ansline'}, '정답: ', h('b',{text:rv.ans})); }
   else if(!(player&&me&&me.ok)) ansLine=h('div',{class:'ansline'}, '정답: ', h('b',{text:(U.pq.y==='c'?LT[rv.ca]+'. ':'')+(U.pq.o[rv.ca]||rv.ans)}));
   add(box, h('div',{class:cls}, head, ansLine, rv.exp?h('div',{class:'exp', text:'해설 · '+rv.exp}):null));
-  if(U.pq.y==='s'&&!player) add(box, h('p',{class:'note', text:'맞힘 '+(rv.dist[0]||0)+'명 · 틀림 '+(rv.dist[1]||0)+'명'}));
+  if((U.pq.y==='s'||U.pq.y==='r')&&!player) add(box, h('p',{class:'note', text:'맞힘 '+(rv.dist[0]||0)+'명 · 틀림 '+(rv.dist[1]||0)+'명'}));
 }
 function renderCtl(){
   var box=clear($('qCtl'));
@@ -1078,7 +1168,8 @@ function renderEnd(){
   $('eRevH').style.display=U.hist.length?'':'none';
   var rev=clear($('eRev')), hs=U.hist.slice().sort(function(a,b){ return (a.ok===true)-(b.ok===true); });
   hs.forEach(function(x){
-    var ans=x.y==='s'?x.ans:(x.y==='c'?LT[x.ca]+'. ':'')+(x.o[x.ca]||x.ans), mine=x.pick==null?'답 안 함':x.y==='s'?x.pick:(x.y==='c'?LT[x.pick]+'. ':'')+(x.o[x.pick]||'');
+    var ans=(x.y==='s'||x.y==='m'||x.y==='r')?x.ans:(x.y==='c'?LT[x.ca]+'. ':'')+(x.o[x.ca]||x.ans);
+    var mine=x.pick==null?'답 안 함':x.y==='s'?x.pick:x.y==='m'?String(x.pick).split(',').map(function(k){ return x.o[+k]||''; }).join(', '):x.y==='r'?String(x.pick).split(',').map(function(k){ return x.o[+k]||''; }).join(' → '):(x.y==='c'?LT[x.pick]+'. ':'')+(x.o[x.pick]||'');
     add(rev, h('article',{class:player?(x.ok?'ok':'no'):''}, h('div',{class:'q', text:x.q}), h('small',{text:'정답: '+ans+(player&&!x.ok?' · 내 답: '+mine:'')}), x.exp?h('small',{text:'해설 · '+x.exp}):null));
   });
   var eb=$('eBoard'); eb.parentNode.style.display=solo?'none':''; clear(eb); drawBoard(eb, e.top, {}, false);
