@@ -122,7 +122,7 @@
   .stat.time.low b{color:var(--bad); animation:blink 1s infinite;}
   @keyframes blink{50%{opacity:.5;}}
   .tbar{height:6px; border-radius:6px; background:var(--panel); margin:12px 0 0; overflow:hidden;}
-  .tbar i{display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--fry),var(--fry2)); transition:width .25s linear;}
+  .tbar i{display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--fry),var(--fry2)); transition:transform .25s linear;}
   .play{display:grid; grid-template-columns:1fr 300px; gap:18px; margin-top:16px;}
 
   .stage{background:var(--panel); border:1px solid var(--line); border-radius:18px; padding:22px 16px 18px; text-align:center; position:relative; overflow:hidden;}
@@ -1237,7 +1237,7 @@ function tick(){
   var now=Date.now(), left=S.endAt-now;
   var txt = fmt(Math.min(left, S.totalMs)), pct = Math.max(0, Math.min(1, left/S.totalMs))*100;
   $('gTime').textContent=txt; $('wTime').textContent=txt;
-  $('gBar').style.width=pct+'%'; $('wBar').style.width=pct+'%';
+  $('gBar').style.transform=$('wBar').style.transform='translateX('+(pct-100)+'%)';
   if($('pen').classList.contains('on')) updatePen();
   var low = left<=10000;
   $('gTimeBox').classList.toggle('low', low); $('wTimeBox').classList.toggle('low', low); $('gBar').parentNode.classList.toggle('low', low); $('wBar').parentNode.classList.toggle('low', low);
@@ -1522,9 +1522,13 @@ $('homeBtn').onclick = goHome;
   function size(){ var r=cv.getBoundingClientRect(); W=r.width; H=r.height; cv.width=W*dpr; cv.height=H*dpr; cx.setTransform(dpr,0,0,dpr,0,0); }
   function star(x){ return { x: x==null?Math.random()*W:x, y:Math.random()*H, z:.2+Math.random()*.8, c:Math.random()<.15?'255,214,140':(Math.random()<.3?'160,200,255':'255,255,255') }; }
   size(); for(var i=0;i<170;i++) st.push(star());
-  window.addEventListener('resize', size);
+  // only animate while the porthole is actually shown (the site design hides .ship) and the tab is visible; one loop at a time
+  var running=false;
+  function wake(){ if(!running && W>0 && H>0 && !document.hidden){ running=true; last=performance.now(); requestAnimationFrame(frame); } }
+  window.addEventListener('resize', function(){ size(); wake(); });
   var last=performance.now();
   function frame(t){
+    if(document.hidden || !(W>0 && H>0) || !cv.offsetWidth){ running=false; return; }
     var dt=Math.min(50,t-last); last=t;
     var fast = S.phase==='play' ? (performance.now()<(S.boostT||0) ? 7 : 3) : 1;
     cx.clearRect(0,0,W,H);
@@ -1535,10 +1539,10 @@ $('homeBtn').onclick = goHome;
       cx.strokeStyle='rgba('+s0.c+','+(.35+s0.z*.65)+')'; cx.lineWidth=s0.z*1.8; cx.lineCap='round';
       cx.beginPath(); cx.moveTo(s0.x,s0.y); cx.lineTo(s0.x+Math.max(.5,v*(fast>1?5:2)),s0.y); cx.stroke();
     }
-    if(!document.hidden) requestAnimationFrame(frame);
+    requestAnimationFrame(frame);
   }
-  requestAnimationFrame(frame);
-  document.addEventListener('visibilitychange', function(){ if(!document.hidden){ last=performance.now(); requestAnimationFrame(frame); } });
+  wake();
+  document.addEventListener('visibilitychange', wake);
 })();
 })();
 </script>

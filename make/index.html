@@ -10,14 +10,15 @@
 <meta property="og:type" content="website"><meta property="og:title" content="문제 직접 만들기 · Frenchfries777 Educations"><meta property="og:description" content="내가 만든 문제를 링크로 나누고, 방을 열어 실시간 순위로 함께 풀어요.">
 <link rel="icon" type="image/svg+xml" href="https://frenchfries777.com/educations/fry-icon.svg?v=20261108b">
 <meta name="theme-color" content="#08090d">
+<script>/* 허브에서 고른 테마(다크·라이트)를 따라가요 */(function(){function a(){var t="dark";try{t=localStorage.getItem("ff.theme")||"dark";}catch(e){}document.documentElement.setAttribute("data-ff-theme",(t==="light"||t==="yellow")?"light":"dark");}a();addEventListener("storage",function(e){if(!e||e.key==="ff.theme")a();});})();</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700;900&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js" defer></script>
 <style>
   :root{ --bg:#08090d; --panel:#10131b; --panel2:#151a25; --line:#232a39; --text:#eef0f5; --dim:#8f98ab; --fry:#d9b45f; --fry2:#b8923a; --ok:#3fe0a0; --bad:#ff5468;
     --c0:#ff5d73; --c1:#5aa8ff; --c2:#f4bf3a; --c3:#3fd69a; }
-  html[data-ff-theme=light]{ --bg:#f7f5ef; --panel:#ffffff; --panel2:#f1eee6; --line:#e2dccd; --text:#1b1913; --dim:#6b6455; --ok:#11a46b; --bad:#d8324a; }
+  html[data-ff-theme=light]{ --bg:#f7f5ef; --panel:#ffffff; --panel2:#f1eee6; --line:#e2dccd; --text:#1b1913; --dim:#6b6455; --ok:#11a46b; --bad:#c42a40; }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0; padding:0; background:var(--bg); color:var(--text); touch-action:manipulation;}
   body{font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',system-ui,sans-serif; font-size:16px; line-height:1.5; min-height:100vh; min-height:100dvh; overflow-x:hidden;
@@ -191,7 +192,11 @@
   .rev .q{font-weight:800;} .rev small{color:var(--dim); display:block; margin-top:4px;}
   .toast{position:fixed; left:50%; bottom:calc(24px + env(safe-area-inset-bottom,0px)); transform:translate(-50%,30px); opacity:0; pointer-events:none; z-index:200; padding:11px 18px; border-radius:12px; background:#1c2230; color:#fff; font-weight:700; font-size:15px; box-shadow:0 10px 30px rgba(0,0,0,.4); transition:.25s; max-width:calc(100vw - 32px); text-align:center;}
   .toast.on{opacity:1; transform:translate(-50%,0);}
-  html[data-ff-theme=light] .splash{background:rgba(250,248,242,.88);} html[data-ff-theme=light] .splash p{color:#3a352a;} html[data-ff-theme=light] .splash b{color:#c08a12;}
+  html[data-ff-theme=light] .splash{background:rgba(250,248,242,.88);} html[data-ff-theme=light] .splash p{color:#3a352a;} html[data-ff-theme=light] .splash b{color:#a07000;}
+  html[data-ff-theme=light] h1 span, html[data-ff-theme=light] .pill.gold, html[data-ff-theme=light] .res .gain, html[data-ff-theme=light] .bigcode, html[data-ff-theme=light] .stat b, html[data-ff-theme=light] .chip.me, html[data-ff-theme=light] .row.r1 .rk{color:#8a6500;}
+  html[data-ff-theme=light] .row.r2 .rk{color:#5f6878;} html[data-ff-theme=light] .row.r3 .rk{color:#9a5216;} html[data-ff-theme=light] .row .dl.up{color:#0b7a4f;}
+  html[data-ff-theme=light] .ox .opt:nth-child(1){color:#2a72c8 !important;} html[data-ff-theme=light] .ox .opt:nth-child(2){color:#d93a52 !important;}
+  .qbox::before{content:''; float:right; width:48px; height:1px;} /* 남은 시간 동그라미가 첫 줄 글자를 가리지 않게 */
   /* 휴대폰 가로: 문제는 왼쪽, 보기는 오른쪽에 두어 한 화면에 다 보이게 */
   @media(orientation:landscape) and (max-height:500px){
     body:has(#sGame.on) .top{display:none;} body{padding-bottom:12px;}
@@ -896,7 +901,12 @@ function hostAgain(){
 
 /* ---------- 방장: 연결 ---------- */
 function newCode(){ var s=''; for(var i=0;i<5;i++) s+=CODE_CH[Math.floor(Math.random()*CODE_CH.length)]; return s; }
+/* 연결 도구(peerjs)는 defer 로 불러와요. 다 받기 전에 누르면 받은 뒤 한 번만 이어서 해요 */
+var domReady=false, peerWait=null;
+document.addEventListener('DOMContentLoaded', function(){ domReady=true; if(peerWait){ var f=peerWait; peerWait=null; f(); } });
+function afterPeer(fn){ if(window.Peer||domReady) return true; peerWait=fn; return false; }
 function startHost(quiz, tries){
+  if(!afterPeer(function(){ startHost(quiz, tries); })) return;
   if(!window.Peer){ toast('연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.'); return; }
   if(!tries){ newGame(quiz,'host'); renderLobby(); show('sLobby'); $('lbCode').textContent='·····'; $('lbLink').textContent='방을 만드는 중...'; $('lbStart').disabled=true; }
   var g=G; g.code=newCode(); if(g.peer){ try{ g.peer.destroy(); }catch(e){} }
@@ -940,6 +950,7 @@ function endGameFor(p){ var all=rankAll(); sendTo(p, {t:'end', top:topList(all,4
 /* ---------- 참가자: 연결 ---------- */
 var J=null;
 function joinRoom(code, name, msgEl){
+  if(!afterPeer(function(){ joinRoom(code, name, msgEl); })) return;
   if(!window.Peer){ msgEl.textContent='연결 도구를 불러오지 못했어요. 인터넷 연결을 확인하고 새로고침하세요.'; return; }
   stopAll(); newU('guest'); msgEl.className='msg info'; msgEl.textContent='방을 찾는 중...';
   var j=J={code:code, name:name, peer:null, conn:null, retries:0, joined:false, msgEl:msgEl};

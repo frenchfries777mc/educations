@@ -529,6 +529,12 @@ html[data-ff-theme] .soloRes .trio{background:transparent!important;max-width:56
 html[data-ff-theme] .soloRes .trio > div:nth-child(2){border-color:var(--fry)}
 html[data-ff-theme] .soloRes p,html[data-ff-theme] .hint,html[data-ff-theme] .left,html[data-ff-theme] .net,html[data-ff-theme] .msg.info,html[data-ff-theme] .done,html[data-ff-theme] .soloRes .why,html[data-ff-theme] .hard .h .f{color:var(--text)}
 @media(max-width:700px){html[data-ff-theme] .stage{background:var(--bg)!important;border-bottom:1px solid var(--fry)}html[data-ff-theme] .title{padding-left:14px}html[data-ff-theme] .ev{border-radius:12px}}
+/* light theme contrast: gold text on white uses the page's own deep gold (#8a6500, 6:1); text on gold fills uses dark ink */
+html[data-ff-theme=light][data-ff-theme=light][data-ff-theme=light]:root{--wine:#8a6500;--brass:#8a6500}
+html[data-ff-theme=light] .kicker,html[data-ff-theme=light] .ticket .cd,html[data-ff-theme=light] .desk label,html[data-ff-theme=light] .stat small,html[data-ff-theme=light] .resTbl th,html[data-ff-theme=light] .soloRes .bl,html[data-ff-theme=light] .soloRes .trio small,html[data-ff-theme=light] .pbx .tg,html[data-ff-theme=light] .soloRes .big,html[data-ff-theme=light] .note .st,html[data-ff-theme=light] .note.bad .st,html[data-ff-theme=light] .soloRes .nb,html[data-ff-theme=light] .note .stk,html[data-ff-theme=light] .tBadge,html[data-ff-theme=light] .fb.ok,html[data-ff-theme=light] .fb.bad,html[data-ff-theme=light] .note.bad .hd .yy,html[data-ff-theme=light] .brow .rk,html[data-ff-theme=light] .brow.r1 .rk,html[data-ff-theme=light] .resTbl tr.me td,html[data-ff-theme=light] .pod .blkp{color:#8a6500}
+html[data-ff-theme=light] .gap span{color:#8a6500!important;border-color:#8a6500!important}
+html[data-ff-theme=light] .btn:hover,html[data-ff-theme=light] .btn.main,html[data-ff-theme=light] .seg button.on,html[data-ff-theme=light] .gap:hover span,html[data-ff-theme=light] .gap.hot span,html[data-ff-theme=light] .gap:focus-visible span,html[data-ff-theme=light] #ev .tag{color:#161616!important}
+html[data-ff-theme=light] .hard .h .m,html[data-ff-theme=light] .pod.p1 .blkp{color:#161616}
 </style>
 <style id="landPhone">
 /* 휴대폰 가로: 카드와 질문은 왼쪽, 연표는 오른쪽에 두어 한 화면에 다 보이게 */
@@ -550,6 +556,10 @@ html[data-ff-theme] .soloRes p,html[data-ff-theme] .hint,html[data-ff-theme] .le
 /* fit pass: no wrapped labels, no overflow, play screen fits one screen */
 .joinRow > div{min-width:0;} .joinRow .inp.code{max-width:100%;} .joinRow .btn{white-space:nowrap; flex:none;}
 .pod{min-width:0;}
+/* long games: skip style/layout/paint of rail cards scrolled out of view (clip margin keeps shadows) */
+.tc{content-visibility:auto; contain-intrinsic-size:150px 330px; overflow-clip-margin:40px;}
+.mytl .tc{contain-intrinsic-size:150px 300px;}
+@media(max-width:700px){ .tc,.mytl .tc{contain-intrinsic-size:auto 62px;} }
 .resTbl th, .resTbl td.n{white-space:nowrap;}
 .pbx{max-height:calc(100dvh - 40px); overflow-y:auto; overscroll-behavior:contain;}
 @media(max-width:400px){ .langSel{max-width:118px;} }

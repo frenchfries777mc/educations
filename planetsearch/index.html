@@ -355,7 +355,9 @@ button.b:not(:disabled):active { transform: scale(.92); }
 @keyframes wavein { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0); } }
 .glass .play { position: absolute; top: 0; bottom: 0; left: 0; width: 2px; background: var(--signal); box-shadow: 0 0 10px 2px #d9b45faa; z-index: 2; display: none; }
 .glass .play.go { display: block; animation: playhead 1s linear 2 forwards; }
-@keyframes playhead { from { left: 0; } to { left: calc(100% - 2px); } }
+@keyframes playhead { from { transform: none; } to { transform: translateX(calc(100% - 2px)); } }
+.glass .play { right: 0; width: auto; background: none; box-shadow: none; } /* the bar moves by transform, not left */
+.glass .play::before { content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 2px; background: var(--signal); box-shadow: 0 0 10px 2px #d9b45faa; }
 .screen .axis { display: flex; justify-content: space-between; font-family: var(--f-mono); font-size: 11px; color: var(--faint); padding: 6px 2px 0; }
 .screen canvas.view { width: min(100%, 260px); }
 .screen canvas.wave { max-width: 520px; width: min(100%, 520px); }
@@ -540,6 +542,9 @@ html[data-ff-theme],html[data-ff-theme] body{background:var(--bg)!important;back
 html[data-ff-theme] body{color:var(--text)!important}
 html[data-ff-theme] canvas.stars{display:none!important}
 html[data-ff-theme] h1,html[data-ff-theme] h2,html[data-ff-theme] h3{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600}
+html[data-ff-theme] :is(h1,h2,h3,.btn.big,.endscore .u){word-spacing:normal} /* the -.22em tightening was for the old display font; with Noto Sans KR it glued words together */
+html[data-ff-theme] .screen::before,html[data-ff-theme] .screen::after{display:none} /* square corner marks sat outside the rounded frame */
+html[data-ff-theme] .chart .pname{stroke:var(--bg)} /* label halo follows the page background (was dark navy, unreadable in light) */
 /* top bar */
 html[data-ff-theme] .hud{background:var(--bg)!important;border-bottom:2px solid var(--fry)!important;backdrop-filter:none!important;box-shadow:none!important}
 html[data-ff-theme] .hud b,html[data-ff-theme] .hud .inner b{font-family:'Oswald','Noto Sans KR',sans-serif;font-weight:600;color:var(--fry);letter-spacing:.06em}
@@ -1047,9 +1052,14 @@ function planetClass(kind, x, y) {
   if (kind === "ice") return (y < 0.45 || Math.hypot(x - 0.35, y - 0.7) < 0.12) ? 3 : 1;
   return 1;
 }
+/* sharp on high-DPI screens: big media canvases get a devicePixelRatio backing store, drawing keeps its 240/460 coordinates */
+function hd(cv) {
+  if (cv._lw == null) { cv._lw = cv.width; cv._lh = cv.height; cv._d = cv._lw >= 200 ? Math.min(3, Math.ceil(window.devicePixelRatio || 1)) : 1; if (cv._d > 1) { cv.width = cv._lw * cv._d; cv.height = cv._lh * cv._d; } }
+  cv.getContext("2d").setTransform(cv._d, 0, 0, cv._d, 0, 0); return cv._lw;
+}
 const PAL2 = ["#090b1c", "#c99a5b", "#3d8bff", "#e8eef7"], PAL1 = ["#090b1c", "#e8eef7"];
 function drawPhoto(cv, kind, res, bits) {
-  const ctx = cv.getContext("2d"), S = cv.width, cs = S / res;
+  const ctx = cv.getContext("2d"), S = hd(cv), cs = S / res;
   for (let j = 0; j < res; j++) for (let i = 0; i < res; i++) {
     const c = planetClass(kind, (i + .5) / res, (j + .5) / res);
     ctx.fillStyle = bits === 1 ? PAL1[c ? 1 : 0] : PAL2[c];
@@ -1068,7 +1078,7 @@ function wave(kind, t) {
 const quant = (v, bits) => { const half = 2 ** bits / 2; return clamp(Math.round(v * half), -half, half - 1) / half; };
 const sampleSound = (kind, rate, bits) => Array.from({ length: rate }, (_, k) => quant(wave(kind, k / rate), bits));
 function drawWave(cv, samples, rate, bits, mini) {
-  const ctx = cv.getContext("2d"), W = cv.width, H = cv.height, pad = mini ? 3 : 14, mid = H / 2;
+  const ctx = cv.getContext("2d"), W = hd(cv), H = cv._lh, pad = mini ? 3 : 14, mid = H / 2;
   const yOf = v => mid - v * (mid - pad);
   const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#0d1336"); bg.addColorStop(.5, "#090b1c"); bg.addColorStop(1, "#0d1336");
   ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
@@ -1080,7 +1090,7 @@ function drawWave(cv, samples, rate, bits, mini) {
   const path = () => { ctx.beginPath(); samples.forEach((v, k) => { const x0 = k / rate * W, x1 = (k + 1) / rate * W; k ? ctx.lineTo(x0, yOf(v)) : ctx.moveTo(x0, yOf(v)); ctx.lineTo(x1, yOf(v)); }); };
   if (!mini) { path(); ctx.lineTo(W, mid); ctx.lineTo(0, mid); ctx.closePath(); const fg = ctx.createLinearGradient(0, 0, 0, H); fg.addColorStop(0, "#52a6ff55"); fg.addColorStop(.5, "#52a6ff12"); fg.addColorStop(1, "#52a6ff55"); ctx.fillStyle = fg; ctx.fill(); }
   ctx.strokeStyle = "#52a6ff"; ctx.lineWidth = mini ? 1.5 : 2.5; ctx.lineJoin = "round";
-  if (!mini) { ctx.shadowColor = "#52a6ff"; ctx.shadowBlur = 10; }
+  if (!mini) { ctx.shadowColor = "#52a6ff"; ctx.shadowBlur = 10 * cv._d; }
   path(); ctx.stroke(); ctx.shadowBlur = 0;
   if (!mini) {
     samples.forEach((v, k) => { const x = k / rate * W, y = yOf(v); ctx.fillStyle = "#090b1c"; ctx.beginPath(); ctx.arc(x, y, 4.5, 0, 7); ctx.fill(); ctx.fillStyle = "#d9b45f"; ctx.beginPath(); ctx.arc(x, y, 3, 0, 7); ctx.fill(); });
@@ -1117,7 +1127,7 @@ function scene(kind, t, x, y) {
 }
 const PALV = ["#1b2350", "#7a6a55", "#ff5a3c", "#cfd6ea"];
 function drawFrame(cv, kind, t, res) {
-  const ctx = cv.getContext("2d"), S = cv.width, cs = S / res;
+  const ctx = cv.getContext("2d"), S = hd(cv), cs = S / res;
   for (let j = 0; j < res; j++) for (let i = 0; i < res; i++) { ctx.fillStyle = PALV[scene(kind, t, (i + .5) / res, (j + .5) / res)]; ctx.fillRect(Math.floor(i * cs), Math.floor(j * cs), Math.ceil(cs), Math.ceil(cs)); }
 }
 function videoPlayer(kind, fps, res) {
@@ -1788,8 +1798,11 @@ function dataNotes() {
       h("div", { class: "row", style: "justify-content:space-between" }, h("h2", {}, tr("데이터 노트")), h("button", { class: "btn sm", onclick: close }, tr("닫기"))),
       h("div", { class: "lessons" }, LESSONS.map(([t, d]) => h("div", {}, h("b", {}, t), d))))));
 }
+let homeArt = null;
 function drawHomePlanet(cv) {
   if (!cv) return;
+  if (homeArt) { cv.getContext("2d").drawImage(homeArt, 0, 0); return; } /* painted once, reused on every return to the title */
+  homeArt = cv;
   const ctx = cv.getContext("2d"), W = cv.width, c = W / 2, r = W * 0.29, R = seeded(7);
   const glow = ctx.createRadialGradient(c, c, r * 0.92, c, c, r * 1.42);
   glow.addColorStop(0, "#6f9cff66"); glow.addColorStop(.35, "#4a6cff22"); glow.addColorStop(1, "#5b7cff00");
@@ -2015,6 +2028,7 @@ function arcMind(redraw) {
     stars = Array.from({ length: Math.round(innerWidth * innerHeight / 2600) }, () => ({ x: Math.random() * W, y: Math.random() * H, z: .3 + Math.random() * .7, p: Math.random() * 6 }));
   }
   function frame(t) {
+    if (!cv.offsetWidth) { ctx.clearRect(0, 0, W, H); setTimeout(() => requestAnimationFrame(frame), 1000); return; } /* hidden by the theme: check again in a second instead of drawing every frame */
     ctx.clearRect(0, 0, W, H);
     for (const st of stars) {
       if (!still) { st.x -= st.z * .25; if (st.x < 0) st.x += W; }
